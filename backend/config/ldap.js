@@ -1,7 +1,8 @@
 //config/ldap.js
-import passport from 'passport';
-import LdapStrategy from 'passport-ldapauth';
+import passport from 'passport'; //estrategia de autenticação
+import LdapStrategy from 'passport-ldapauth'; //conecta ao servidor LDAP da escola, pegando os usuarios e senhas do Active Directory 
 
+//Configiração do LDAP para autenticação e puxar os usuários 
 const ldapOptions = {
   server: {
     url: 'ldap://10.189.87.7:389',
@@ -12,6 +13,7 @@ const ldapOptions = {
   }
 };
 
+//Identificação e retorno do usuário autenticado
 passport.use(new LdapStrategy(ldapOptions, (user, done) => {
   if (!user) {
     return done(null, false, { message: 'Usuário não encontrado' });
@@ -19,11 +21,12 @@ passport.use(new LdapStrategy(ldapOptions, (user, done) => {
   return done(null, user);
 }));
 
-
+//serialização (Essa função define o que será salvo na sessão do usuário autenticado), ou seja, o objeto será guardado na sessão do usuário após o login 
 passport.serializeUser((user, done) => {
   done(null, user);
 });
 
+//esserialização (Essa função define como o usuário será recuperado da sessão) Ou seja, o user salvo lá na sessão volta automaticamente para ser usado no seu backend
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
