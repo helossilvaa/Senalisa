@@ -4,10 +4,9 @@ import session from 'express-session';
 import dotenv from 'dotenv';
 import authRotas from './routes/authRotas.js';
 import passport from './config/ldap.js';
-import usuarioRotas from './routes/usuarioRotas.js';
+//import usuarioRotas from './routes/usuarioRotas.js';
 import chamadoRotas from './routes/chamadoRotas.js';
-import tecnicoRotas from './routes/tecnicoRotas.js';
-import adminRotas from './routes/adminRotas.js';
+//import tecnicoRotas from './routes/tecnicoRotas.js';
 
 
 // 1. Carrega variáveis de ambiente PRIMEIRO
@@ -79,7 +78,6 @@ app.get('/', (req, res) => {
   res.send('Backend funcionando!');
 });
 
-app.use('/usuario', usuarioRotas);
+//app.use('/usuario', usuarioRotas);
 app.use('/chamados', chamadoRotas);
-app.use('/tecnico', tecnicoRotas);
-app.use('/admin', adminRotas);
+//app.use('/tecnico', tecnicoRotas);
