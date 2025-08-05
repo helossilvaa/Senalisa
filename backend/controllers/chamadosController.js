@@ -1,4 +1,4 @@
-import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado} from "../models/chamado.js";
+import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamento} from "../models/chamado.js";
 
 
 const criarChamadoController = async (req, res ) => {
@@ -31,7 +31,7 @@ const criarChamadoController = async (req, res ) => {
 
     } catch (error) {
         console.error('Erro ao criar chamado:', error);
-        res.status(500).json({mensagem: 'Erro ao criar vaga'})
+        res.status(500).json({mensagem: 'Erro ao criar chamado.'})
     }
 };
 
@@ -71,7 +71,7 @@ const atualizarChamadoController = async (req, res) => {
         const chamadoExistente = await obterChamadoPorId(chamado_id);
 
         if (!chamadoExistente) {
-            res.status(404).json({mensagem: 'Chamado não encontrado'});
+            return res.status(404).json({mensagem: 'Chamado não encontrado'});
         }
 
 
@@ -93,8 +93,30 @@ const atualizarChamadoController = async (req, res) => {
 };
 
 
+const criarApontamentoController = async (req, res) => {
+    try {
+        const {
+            chamado_id,
+            usuario_id,
+            apontamento,
+        } = req.body;
+
+        const apontamentoData = {
+            chamado_id: chamado_id,
+            usuario_id: usuario_id,
+            apontamento: apontamento
+        }
+
+        const apontamentoId = await criarApontamento(chamado_id, apontamentoData);
+        res.status(201).json({mensagem: 'Apontamento criado com sucesso', apontamentoData: apontamentoId});
+        
+    } catch (error) {
+        console.error('Erro ao criar apontamento: ', error);
+        res.status(500).json({mensagem: 'Erro ao criar apontamento. '});
+    }
+}
 
 
-export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController}
+export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController}
 
 

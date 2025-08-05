@@ -1,4 +1,4 @@
-import { create, readAll, read, update} from '../config/database.js';
+import {create, readAll, read, update} from '../config/database.js';
 
 
 const criarChamado = async (chamadoData) => { 
@@ -36,4 +36,16 @@ const atualizarChamado = async (id, chamadoData) => {
     throw error;
   }
 }
+
+const criarApontamentos = async (id, apontamentosData) => {
+  try{
+    await create('apontamentos', {...apontamentosData, chamado_id: id});
+  } catch (error) {
+    console.error('Erro ao criar apontamento: ', error);
+    throw error;
+  }
+}
+
+
+
 

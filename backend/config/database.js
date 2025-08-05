@@ -120,44 +120,7 @@ async function compare(senha, hash) {
 }
 
 
-// Adiciona valor a um campo JSON existente (sem sobrescrever)
-async function insert(table, field, key, value, where) {
-    const connection = await getConnection();
-    try {
-        // Buscar o valor atual da coluna JSON
-        const [rows] = await connection.execute(
-            `SELECT ${field} FROM ${table} WHERE ${where}`
-        );
-
-        if (rows.length === 0) {
-            throw new Error('Registro não encontrado para inserção.');
-        }
-
-        let json = rows[0][field] || {};
-
-        //Modificar o campo JSON no Node.js
-        if (!Array.isArray(json[key])) {
-            json[key] = [];
-        }
-
-        json[key].push(value); // Adiciona o novo valor ao array
-
-        //Atualizar o valor no banco de dados
-        const [result] = await connection.execute(
-            `UPDATE ${table} SET ${field} = ? WHERE ${where}`,
-            [JSON.stringify(json)]
-        );
-
-        return result.affectedRows;
-
-    } catch (err) {
-        console.error('Erro ao inserir no campo JSON:', err.message);
-        throw err;
-    } finally {
-        connection.release();
-    }
-}
 
 
-export { create, readAll, read, update, deleteRecord, compare, insert};
+export { create, readAll, read, update, deleteRecord, compare};
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarChamadosController, obterChamadoPorIdController, atualizarChamadoController, criarChamadoController} from '../controllers/chamadosController';
+import { listarChamadosController, obterChamadoPorIdController, atualizarChamadoController, criarChamadoController, criarApontamentoController} from '../controllers/chamadosController';
 import authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
@@ -15,7 +15,14 @@ router.options('/chamados', (req, res) => {
 router.post('/chamados', authMiddleware, criarChamadoController);
 
 router.options('/chamados', (req, res) => {
-    res.setHeader('Allow',  'POST,OPTIONS');
+    res.setHeader('Allow',  'POST, OPTIONS');
+    res.status(204).send();
+})
+
+router.post('/chamados/:id', authMiddleware, criarApontamentoController);
+
+router.options('/chamados/:id', (req, res) => {
+    res.setHeader('Allow', 'POST, OPTIONS');
     res.status(204).send();
 })
 
