@@ -1,6 +1,6 @@
 // 'use client';
-import "bootstrap-icons/font/bootstrap-icons.css";
 import './header.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function Home() {
     return (
