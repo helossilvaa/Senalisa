@@ -1,6 +1,6 @@
 import express from 'express';
-import { criarUsuarioController, listarUsuariosController, obterUsuarioIdController } from '../controllers/usuarioController';
-import authMiddleware from '../middlewares/authMiddleware';
+import { criarUsuarioController, listarUsuariosController, obterUsuarioIdController } from '../controllers/usuarioController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -24,5 +24,6 @@ router.options('/usuarios/:id', (req, res) => {
     res.setHeader('Allow', 'GET, OPTIONS');
     res.status(204).send();
 })
+
 
 export default router;

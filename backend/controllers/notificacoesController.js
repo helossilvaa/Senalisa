@@ -13,6 +13,12 @@ const listarNotificacoesPorTecnicoController = async (req, res) => {
 }
 
 
-const marcarComoVista
+const marcarNotificacaoComoVista = async () => {
+    try {
+        
+    } catch (error) {
+        res.status(500).json({mensagem: 'Erro ao mudar para notificação como vista. '})
+    }
+}
 
 
