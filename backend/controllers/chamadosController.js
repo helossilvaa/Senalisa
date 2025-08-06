@@ -1,4 +1,4 @@
-import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamento} from "../models/chamado.js";
+import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos} from "../models/chamado.js";
 
 
 const criarChamadoController = async (req, res ) => {
@@ -107,7 +107,7 @@ const criarApontamentoController = async (req, res) => {
             apontamento: apontamento
         }
 
-        const apontamentoId = await criarApontamento(chamado_id, apontamentoData);
+        const apontamentoId = await criarApontamentos(chamado_id, apontamentoData);
         res.status(201).json({mensagem: 'Apontamento criado com sucesso', apontamentoData: apontamentoId});
         
     } catch (error) {

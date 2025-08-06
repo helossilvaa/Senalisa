@@ -47,5 +47,4 @@ const criarApontamentos = async (id, apontamentosData) => {
 }
 
 
-
-
+export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos};

@@ -69,9 +69,9 @@ CREATE TABLE relatorios (
 CREATE TABLE pool_tecnico (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_pool INT,
-    id_tecnico INT,
+    tecnico_id INT,
     FOREIGN KEY (id_pool) REFERENCES pool (id),
-    FOREIGN KEY (id_tecnico) REFERENCES usuarios (id)
+    FOREIGN KEY (tecnico_id) REFERENCES usuarios (id)
 );
 
 -- Criação da tabela de 'thread' para apontamentos extras
@@ -85,6 +85,18 @@ CREATE TABLE apontamentos_usuario (
   FOREIGN KEY (chamado_id) REFERENCES chamados (id),
   FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 );
+
+CREATE TABLE apontamentos_tecnico (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  chamado_id INT NOT NULL,
+  tecnico_id INT NOT NULL,
+  apontamento TEXT NOT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (chamado_id) REFERENCES chamados (id),
+  FOREIGN KEY (tecnico_id) REFERENCES usuarios (id)
+);
+
+
 
 
 -- Índices adicionais para otimização

@@ -1,6 +1,6 @@
 import express from 'express';
-import { listarChamadosController, obterChamadoPorIdController, atualizarChamadoController, criarChamadoController, criarApontamentoController} from '../controllers/chamadosController';
-import authMiddleware from '../middlewares/authMiddleware';
+import { listarChamadosController, obterChamadoPorIdController, atualizarChamadoController, criarChamadoController, criarApontamentoController} from '../controllers/chamadosController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
