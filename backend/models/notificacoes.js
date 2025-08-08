@@ -1,4 +1,4 @@
-import { create, readAll, update } from "../config/database";
+import { create, readAll, update } from "../config/database.js";
 
 const criarNotificacao = async () => {
     try {

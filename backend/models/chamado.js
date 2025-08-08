@@ -30,7 +30,7 @@ const obterChamadoPorId = async (id) => {
 
 const atualizarChamado = async (id, chamadoData) => {
   try {
-    await update('chamado', chamadoData, `id = ${id}`)
+    await update('chamados', chamadoData, `id = ${id}`)
   } catch (error) {
     console.error('Erro ao atualizar chamado: ', error);
     throw error;

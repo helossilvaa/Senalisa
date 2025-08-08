@@ -1,5 +1,6 @@
 import express from "express"
 import {obterUsuarioIdController, listarUsuariosController, criarUsuarioController} from '../controllers/usuarioController.js';
+import { listarNotificacoes, marcarComoVista } from '../controllers/notificacoesController.js';
 import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -25,5 +26,7 @@ router.options('/tecnicos/:id', (req, res) => {
     res.status(204).send();
 });
 
+router.get('/tecnicos/:id/notificacoes', authMiddleware ,listarNotificacoes);
+router.put('/tecnicos/:id/notificacoes/vista', authMiddleware, marcarComoVista);
 
-
+export default router;

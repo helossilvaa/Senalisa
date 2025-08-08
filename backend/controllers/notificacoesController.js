@@ -1,24 +1,38 @@
 import { listarNotificacoesPorTecnico, listarNotificacoesPorUsuario, marcarComoVista} from '../models/notificacoes.js'; 
 
-const listarNotificacoesPorTecnicoController = async (req, res) => {
+const listarNotificacoesController = async (req, res) => {
+  try {
 
-    try {
-        return notificacaoTecnico = await listarNotificacoesPorTecnico(id);
-        res.json(notificacoes);
+    const { id, funcao } = req.usuario;
 
-        
-    } catch (error) {
-        res.status(500).json({mensagem: 'Erro ao listar notificações por tecnico.'})
+    let notificacoes;
+
+    if (funcao === 'usuario') {
+      notificacoes = await listarNotificacoesPorUsuario(id);
+    } else if (funcao === 'funcionario') {
+      notificacoes = await listarNotificacoesPorTecnico(id);
+    } else {
+      return res.status(403).json({ mensagem: 'Função não autorizada para visualizar notificações.' });
     }
-}
+
+    return res.json(notificacoes);
+
+  } catch (error) {
+    console.error('Erro ao listar notificações:', error);
+    return res.status(500).json({ mensagem: 'Erro interno ao listar notificações.' });
+  }
+};
 
 
-const marcarNotificacaoComoVista = async () => {
+const marcarComoVistaController = async (req, res) => {
+    const { idNotificacao } = req.params;
     try {
-        
+        await marcarComoVista(idNotificacao);
+        res.json({ mensagem: 'Notificação marcada como vista.' });
     } catch (error) {
-        res.status(500).json({mensagem: 'Erro ao mudar para notificação como vista. '})
+        res.status(500).json({ mensagem: 'Erro ao atualizar notificação.' });
     }
-}
+};
 
+export { listarNotificacoesController, marcarComoVistaController };
 
