@@ -29,6 +29,12 @@ CREATE TABLE pool (
     FOREIGN KEY (updated_by) REFERENCES usuarios (id)
 );
 
+-- Criação da tabela 'Salas'
+CREATE TABLE salas {
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_sala INT NOT NULL
+}
+
 -- Criação da tabela `chamados`
 CREATE TABLE chamados (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -37,6 +43,7 @@ CREATE TABLE chamados (
     tipo_id INT,
     tecnico_id INT,
     usuario_id INT,
+    sala_id INT
     status ENUM(
         'pendente',
         'em andamento',
@@ -46,7 +53,8 @@ CREATE TABLE chamados (
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (tipo_id) REFERENCES pool (id),
     FOREIGN KEY (tecnico_id) REFERENCES usuarios (id),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+    FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
+    FOREIGN KEY (sala_id) REFERENCES salas (id)
 );
 
 -- Criação da tabela `relatorio`
@@ -96,6 +104,31 @@ CREATE TABLE apontamentos_tecnico (
   FOREIGN KEY (tecnico_id) REFERENCES usuarios (id)
 );
 
+-- Para criar avaliações
+CREATE TABLE avaliacoes {
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    chamado_id INT NOT NULL,
+    tecnico_id INT NOT NULL,
+    comentario TEXT NOT NULL,
+    pontuacao INT NOT NULL,
+    data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chamada_id) REFERENCES chamados (id),
+    FOREIGN KEY (tecnico_id) REFERENCES usuarios (id),
+    FOREIGN KEY (usuarios_id) REFERENCES usuarios (id)
+}
+
+-- Para as 'notificações'
+CREATE TABLE notificacoes (
+    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    tecnico_id INT NOT NULL,
+    mensagem TEXT NOT NULL,
+    visualizado tinyint(1) DEFAULT 0,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
+    FOREIGN KEY (tecnico_id) REFERENCES usuarios (id),
+)
 
 
 

@@ -1,0 +1,67 @@
+:root{
+    --fundo: #f8f8fa;
+    --bola: #b10000;
+    --fonte: 'Poppins', sans-serif;
+    --cordata: #535355;
+    --botao: #640d14;
+
+}
+
+.card{
+    width: 30%;
+    height: 20vh;
+    background-color: white;
+    border-radius: 15px;
+    margin-bottom: 2%;
+    padding: 2%;
+    font-family: var(--fonte);
+}
+
+.cabecalho{
+    display: flex;
+    gap: 5px;
+}
+.bola{
+    border-radius: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: 8px;
+    background-color: var(--bola);
+}
+
+.titulo h5{
+   font-size: 17px;
+}
+
+.data p{
+    font-size: 13px;
+    margin: 0 0 0 8px ;
+    color: #535355;
+}
+
+.botoes{
+    display: flex;
+    gap: 55%;
+    margin: 10px 0 0 8px;
+}
+
+.botaoVeja{
+    text-decoration: none;
+    color: var(--botao);
+    font-weight: bold;
+}
+
+.botaoAceitar button{
+    background-color: var(--botao);
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    width: 70px;
+}
+.botaoAceitar p{
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    margin: 0;
+}
+
