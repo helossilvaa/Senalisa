@@ -1,5 +1,6 @@
+-- Active: 1754497943708@@127.0.0.1@3306@mysql
 -- Criação da tabela `usuarios`
-CREATE TABLE usuarios (
+IF NOT EXISTS CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     senha VARCHAR(255) NOT NULL,
@@ -11,7 +12,7 @@ CREATE TABLE usuarios (
 );
 
 -- Criação da tabela `pool`
-CREATE TABLE pool (
+ CREATE TABLE pool (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo ENUM(
         'externo',
@@ -32,7 +33,7 @@ CREATE TABLE pool (
 -- Criação da tabela 'Salas'
 CREATE TABLE salas {
     id INT AUTO_INCREMENT PRIMARY KEY,
-    numero_sala INT NOT NULL
+    numero_sala VARCHAR(255) NOT NULL
 }
 
 -- Criação da tabela `chamados`
@@ -128,7 +129,18 @@ CREATE TABLE notificacoes (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
     FOREIGN KEY (tecnico_id) REFERENCES usuarios (id),
-)
+);
+
+-- Para os 'equipamentos'
+CREATE TABLE equipamentos (
+    id INT NOT NULL,
+    patrimonio INT NOT NULL,
+    sala_id INT NOT NULL,
+    equipamento VARCHAR(255) NOT NULL,
+    FOREIGN KEY (sala_id) REFERENCES salas (id)
+);
+
+--Para as mensagens 
 
 
 
