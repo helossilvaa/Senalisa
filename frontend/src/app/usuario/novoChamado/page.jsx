@@ -1,7 +1,7 @@
 'use client';
 import './novo.css';
 import Header from '@/components/Header/header';
-import Calendario from '@/components/Calendario/Calendario'
+import Calendario from '@/components/Calendario/Calendar'
 
 export default function Chamados() {
 

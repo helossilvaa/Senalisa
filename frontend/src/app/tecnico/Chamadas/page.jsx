@@ -3,7 +3,7 @@ import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
 import styles from '@/app/tecnico/Chamadas/page.module.css';
 
 export default function Chamadas() {
-    
+
     const infoChamadas = [
         {
             id: 1,

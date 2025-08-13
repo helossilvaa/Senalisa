@@ -1,0 +1,29 @@
+:root {
+    --fundo: #f8f8fa;
+    --branco: #ffffff;
+    --bola: #b10000;
+    --fonte: 'Poppins', sans-serif;
+    --cordata: #535355;
+    --vermelhoEscuro: #640d14;
+}
+
+.calendario{
+    background-color: var(--branco);
+    border-radius: 10px;
+    box-shadow: 0 0 30px #f8f8fa;
+    overflow: hidden;
+    width: 300px;
+    color: var(--vermelhoEscuro);
+    padding: 20px;
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.btn{
+    cursor: pointer;
+}
