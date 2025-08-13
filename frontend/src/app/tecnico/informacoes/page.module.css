@@ -1,0 +1,97 @@
+:root {
+    --fundo: #f8f8fa;
+    --branco: #ffffff;
+    --bola: #b10000;
+    --fonte: 'Poppins', sans-serif;
+    --cordata: #535355;
+    --botao: #640d14;
+}
+
+.page {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    flex: 0 0 250px; 
+  }
+  
+  .detalhesPrincipais {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .informacoes,
+  .prazo{
+    flex: 1;
+  }
+  
+  .secaoTitulo {
+    color: #5a0c0c;
+    font-weight: bold;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tituloCard {
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-top: 5px;
+  }
+
+  .subInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .autor,
+  .data {
+    font-size: 0.85rem;
+    color: gray;
+    margin-top: 5px;
+  }
+  
+  .descricao {
+    font-size: 0.95rem;
+    text-align: justify;
+  }
+  
+  .botoes {
+    display: flex;
+    margin-left: 190px;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .emProgresso {
+    background: var(--botao);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+  }
+  
+  .concluido {
+    background: var(--botao);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+  }
+  
+  .calendario {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }  

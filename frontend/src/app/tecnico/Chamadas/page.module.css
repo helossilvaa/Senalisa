@@ -4,11 +4,17 @@
     --fonte: 'Poppins', sans-serif;
     --cordata: #535355;
     --botao: #640d14;
+}
 
+.container {
+    display: flex;
+    min-height: 100vh;
 }
 
 .chamadas {
     background-color: var(--fundo);
+    flex: 1;
+    padding: 20px;
 }
 
 .titulo h1 {

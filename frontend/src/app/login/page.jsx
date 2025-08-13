@@ -3,12 +3,10 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function Login() {
-
   const [loginParams, setLoginParams] = useState({ username: "", password: "" });
   const [retorno, setRetorno] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
   const API_URL = "http://localhost:8080";
 
   
@@ -17,7 +15,6 @@ export default function Login() {
     const checkToken = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
-
 
       try {
         const res = await fetch(`${API_URL}/auth/validate`, {
@@ -48,7 +45,7 @@ export default function Login() {
     setRetorno(null);
 
     try {
-      const res = await fetch(`${API_URL}/login`, {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginParams),
