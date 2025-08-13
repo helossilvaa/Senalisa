@@ -21,7 +21,7 @@ const listarChamado = async () => {
 
 const obterChamadoPorId = async (id) => {
   try {
-    return await read ('chamados', `id = ${id}`);
+    return await read('chamados', `id = ${id}`);
   } catch (error) {
     console.error('Erro ao obter chamado por ID: ', error);
     throw error;

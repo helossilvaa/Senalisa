@@ -2,8 +2,23 @@
 import './novo.css';
 import Header from '@/components/Header/header';
 import Calendario from '@/components/Calendario/Calendario'
+import React, { useState, useEffect } from 'react'; 
 
 export default function Chamados() {
+  const [titulo, setTitulo] = useState(''); 
+  const [descricao, setDescricao] = useState(''); 
+  const [tipoId, setTipoId] = useState(''); 
+  const [salaId, setSalaId] = useState(''); 
+  const [equipamentoId, setEquipamentoId] = useState(''); 
+  const [salas, setSalas] = useState([]); 
+  const [equipamentos, setEquipamentos] = useState([]); 
+  const [pools, setPools] = useState([]); 
+  const [chamadoCriado, setChamadoCriado] = useState(null); 
+  const [error, setError] = useState(''); 
+
+  useEffect(() => {
+    const 
+  })
 
   return (
     <div className="d-flex">
@@ -11,7 +26,6 @@ export default function Chamados() {
       <div className="container">
 
 
-      
         <div className="container space-2">
          
           <div className="w-md-80 w-lg-50 mx-md-auto mb-5 mb-md-9">
@@ -36,18 +50,31 @@ export default function Chamados() {
                     />
                   </div>
                 </div>
-               
                 <div className="col-sm-6 mb-4">
                   <div className="js-form-message">
-                    <label className="input-label">Item</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="item"
-                      placeholder="Insira o item"
-                      required=""
-                      data-msg="Please enter a valid email address."
-                    />
+                    <label className="input-label">Tipo de assistência</label>
+                    <select id="inputState" class="form-select">
+                    <option selected>Selecione</option>
+                    <option>...</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="col-sm-6 mb-4">
+                  <div className="js-form-message">
+                    <label className="input-label">Sala</label>
+                    <select id="inputState" class="form-select">
+                    <option selected>Selecione</option>
+                    <option>...</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="col-sm-6 mb-4">
+                  <div className="js-form-message">
+                    <label className="input-label">Equipamento</label>
+                    <select id="inputState" class="form-select">
+                    <option selected>Selecione</option>
+                    <option>...</option>
+                    </select>
                   </div>
                 </div>
                
@@ -63,47 +90,23 @@ export default function Chamados() {
                 
                 <div className="col-sm-6 mb-4">
                   <div className="js-form-message">
-                    <label className="input-label">Status</label>
-                  
-                    <div className="form-check form-check">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="inlineRadioOptions"
-                        id="inlineRadio1"
-                        defaultValue="opcao1"
-                      />
-                     
-                      <label className="form-check-label" htmlFor="inlineRadio1">
-                      Finalizado
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="inlineRadioOptions"
-                        id="inlineRadio2"
-                        defaultValue="opcao2"
-                      />
-                      <label className="form-check-label" htmlFor="inlineRadio2">
-                        Em processo
-                      </label>
+                    
                     </div>
                   </div>
-                </div>
+               
               </div>
 
               
               
               <div className="js-form-message mb-6">
-                <label className="input-label">Deixe seu comentário</label>
+                <label className="input-label">Descrição</label>
                 <div className="input-group">
                   <textarea
                     className="form-control"
                     rows={4}
                     name="text"
                     required=""
+                    placeholder='Descreva aqui o problema'
                     data-msg="Please enter a reason."
                     defaultValue={""}
                   />

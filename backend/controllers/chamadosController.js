@@ -11,6 +11,8 @@ const criarChamadoController = async (req, res ) => {
             tecnico_id,
             usuario_id,
             criado_em,
+            sala_id,
+            equipamento_id,
             atualizado_em
         } = req.body;
         
@@ -22,7 +24,9 @@ const criarChamadoController = async (req, res ) => {
         tecnico_id: tecnico_id,
         usuario_id: usuario_id,
         criado_em: criado_em,
-        atualizado_em: atualizado_em
+        atualizado_em: atualizado_em,
+        sala_id: sala_id,
+        equipamento_id: equipamento_id
         };
 
         const chamadoId = await criarChamado(chamadoData)
@@ -33,7 +37,7 @@ const criarChamadoController = async (req, res ) => {
         console.error('Erro ao criar chamado:', error);
         res.status(500).json({mensagem: 'Erro ao criar chamado.'})
     }
-};
+}; 
 
 const listarChamadosController = async (req, res) => {
     try {
