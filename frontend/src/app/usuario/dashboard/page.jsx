@@ -1,76 +1,37 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+'use client'
 
-export default function DashboardUsuario({ params }) {
+import React, { useEffect, useState } from 'react';
+import styles from './page.module.css';
 
-    const router = useRouter();
-    const [usuario, setUsuario] = useState(null);
-    const [carregando, setCarregando] = useState(true);
-    const API_URL = "http://localhost:8080";
+export default function DashboardTecnico() {
+  const [nomeUsuario, setNomeUsuario] = useState(''); // Nome que virá do backend
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
+  useEffect(() => {
+    // Aqui você faz a chamada à API do backend
+    const fetchUsuario = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/usuario'); // Ajuste para sua rota real
+        const data = await response.json();
+        setNomeUsuario(data.nome); // Supondo que o backend retorne { nome: 'William' }
+      } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+        setNomeUsuario('Usuário'); // fallback
+      }
+    };
 
-        if (!token) {
-            router.push("/login");
-            return;
-        }
+    fetchUsuario();
+  }, []);
 
-        try {
-            
-            const decoded = jwtDecode(token);
+  return (
+    <div className={styles.dashboardContainer}>
+      <h2 className={styles.welcome}>Olá, {nomeUsuario}!</h2>
 
-            if (decoded.funcao !== "usuario") {
-                router.push("/");
-                return;
-            }
-
-            if (decoded.exp < Date.now() / 1000) {
-                localStorage.removeItem("token");
-                alert("Seu login expirou.");
-                router.push("/login");
-                return;
-            }
-
-            const id = decoded.id;
-
-            fetch(`${API_URL}/usuarios/${id}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    setUsuario(data);
-                    setCarregando(false);
-                })
-                .catch((err) => {
-                    console.error("Erro ao buscar usuário: ", err);
-                    setCarregando(false);
-                });
-
-        } catch (error) {
-            console.error("Token inválido:", error);
-            localStorage.removeItem("token");
-            router.push("/login");
-        }
-    }, [router]);
-
-    if (carregando) {
-        return <div>.</div>;
-    }
-
-    if (!usuario) {
-        return null;
-    }
-
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        router.push('/')
-    }
-
-    return (
-        <div>
-            <h1>Olá, {usuario.nome}</h1>
-        </div>
-    )
-    
+      <div className={styles.cardsContainer}>
+        <div className={styles.card}></div>
+        <div className={styles.card}></div>
+        <div className={styles.cardLarge}></div>
+        <div className={styles.cardSmallBottom}></div>
+      </div>
+    </div>
+  );
 }
