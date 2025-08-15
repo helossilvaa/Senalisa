@@ -14,64 +14,62 @@ const testUsers = [
 
 // Rota de Login
 router.post('/login', (req, res, next) => {
-  passport.authenticate('ldapauth', { session: false }, async (err, ldapUser, info) => {
+  passport.authenticate('ldapauth', { session: true }, async (err, user, info) => {
     if (err) {
-      console.error('Erro na autenticação LDAP:', err);
+      console.error('Erro na autenticação:', err);
       return res.status(500).json({ error: 'Erro interno no servidor' });
     }
 
-    if (!ldapUser) {
+    if (!user) {
       console.warn('Falha na autenticação LDAP:', info?.message || 'Credenciais inválidas');
       return res.status(401).json({ error: info?.message || 'Autenticação falhou' });
     }
 
-    try {
-      // Busca usuário no banco pelo email
-      let usuario = await findByEmail(ldapUser.mail);
-
-      if (!usuario) {
-        
-        const testUser = testUsers.find(u => u.email === ldapUser.mail);
-        if (testUser) {
-          await criarUsuario({
-            nome: testUser.nome,
-            email: testUser.email,
-            senha: testUser.senha,
-            funcao: testUser.funcao
-          });
-          usuario = await findByEmail(testUser.email);
-        } else {
-          
-          await criarUsuario({
-            nome: ldapUser.displayName,
-            email: ldapUser.mail,
-            senha: ldapUser.userPassword || 'senha_padrao',
-            funcao: 'usuario_comum'
-          });
-          usuario = await findByEmail(ldapUser.mail);
-        }
+    // Loga o usuário manualmente para garantir a sessão
+    req.logIn(user, async (loginErr) => {
+      if (loginErr) {
+        console.error('Erro ao criar sessão:', loginErr);
+        return res.status(500).json({ error: 'Erro ao criar sessão' });
       }
 
-      // Gera token JWT
-      const payload = { id: usuario.id, funcao: usuario.funcao };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+      try {
+        // Busca usuário no banco pelo email
+        let usuario = await findByEmail(user.mail);
 
-      res.json({
-        message: 'Autenticado com sucesso',
-        token,
-        user: {
-          id: usuario.id,
-          nome: usuario.nome,
-          email: usuario.email,
-          funcao: usuario.funcao
+        if (!usuario) {
+          const testUser = testUsers.find(u => u.email === user.mail);
+          if (testUser) {
+            await criarUsuario({
+              nome: testUser.nome,
+              email: testUser.email,
+              senha: testUser.senha,
+              funcao: testUser.funcao
+            });
+            usuario = await findByEmail(testUser.email);
+          }
         }
-      });
-    } catch (error) {
-      console.error('Erro ao processar login:', error);
-      res.status(500).json({ error: 'Erro inesperado no servidor' });
-    }
+
+        // Gera token JWT
+        const payload = { id: usuario.id, funcao: usuario.funcao };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        return res.json({
+          message: 'Autenticado com sucesso',
+          token, 
+          user: {
+            username: user.username,
+            displayName: user.displayName,
+            email: user.mail
+          }
+        });
+      } catch (error) {
+        console.error('Erro inesperado:', error);
+        res.status(500).json({ error: 'Erro inesperado no servidor' });
+      }
+    });
   })(req, res, next);
 });
+
 
 // Rota de Logout
 router.post('/logout', (req, res) => {
