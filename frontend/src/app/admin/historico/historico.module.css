@@ -1,0 +1,42 @@
+:root {
+    --fundo: #f8f8fa;
+    --bola: #b10000;
+    --fonte: 'Poppins', sans-serif;
+    --cordata: #535355;
+    --botao: #640d14;
+}
+
+.page{
+    display: flex;
+}
+
+.tituloPrincipal h1{
+    font-family: var(--fonte);
+    font-weight: bold;
+    font-size: 30px;
+    padding: 20px;
+}
+
+
+.conteudoPrincipal{
+    display: flex;
+    padding: 15px;
+}
+.chamados{
+    width: 25%; 
+    align-items: center;
+    justify-content: center;
+}
+
+.chamados button{
+    border: none;
+    width: 250px;
+    height: 150px;
+    background-color: var(--botao);
+    color: var(--fundo);
+    font-weight: bold;
+    border-radius: 15px;
+    font-family: var(--fonte);
+    font-size: 20px;
+}
+

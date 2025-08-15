@@ -6,7 +6,9 @@
     --cordata: #535355;
     --vermelhoEscuro: #640d14;
 }
-  
+  .page{
+    display: flex;
+  }
   .conteudoPrincipal {
     width: 100%;
     padding: 2rem;
@@ -18,10 +20,6 @@
   
   .infos {
     width: 60%;
-  }
-  
-  .prazo {
-    width: 40%;
   }
   
   .titulo {
@@ -53,26 +51,26 @@
     font-size: 0.85rem;
     width: 50%;
     color: gray;
-    margin-top: 10px;
+    margin-top: 7px;
   }
 
   .data{
     font-size: 0.85rem;
     width: 50%;
     color: gray;
-    margin-top: 10px;
+    margin-top: 7px;
     margin-left: 370px;
   }
   
   .descricao{
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
     font-size: 0.95rem;
   }
   
   .botoes {
     display: flex;
     gap: 0.5rem;
-    margin-top: 0.5rem;
+    margin-top: 0.2rem;
     float: right;
   }
   
@@ -102,14 +100,6 @@
 
   .concluido:hover {
     background: var(--bola);
-  }
-  
-  .calendario {
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
   }
 
   .tituloLinhaTempo{

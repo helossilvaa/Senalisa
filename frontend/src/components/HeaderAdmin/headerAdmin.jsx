@@ -1,19 +1,19 @@
 'use client';
 import { useEffect } from 'react';
 import "bootstrap-icons/font/bootstrap-icons.css";
-import './headerTecnico.css';
-
-export default function HeaderTecnico() {
-
+import './headerAdmin.css';
+ 
+export default function Home() {
+ 
     useEffect(() => {
-
+ 
         const button = document.getElementById('open_btn');
         const sidebar = document.getElementById('sidebar');
-
+ 
         const handleClick = () => {
             sidebar.classList.toggle('open-sidebar');
         };
-
+ 
         if (button) {
             button.addEventListener('click', handleClick);
         }
@@ -22,9 +22,9 @@ export default function HeaderTecnico() {
                 button.removeEventListener('click', handleClick);
             }
         };
-
+ 
     }, []);
-
+ 
     return (
         <>
             <link
@@ -34,13 +34,14 @@ export default function HeaderTecnico() {
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
             />
-
+            
             <nav id="sidebar">
                 <div id="sidebar_content">
                     <div className="senaiLogo">
                         <img src="/Senalisa.png" className="logo logoExpandida" alt="Logo" />
                         <img src="/logoMenor.png" className="logo logoColapsada" alt="Simples Logo" />
                     </div>
+                    {/* <hr /> */}
                     <ul id="side_items">
                         <li className="side-item active mt-4">
                             <a href="#">
@@ -58,18 +59,6 @@ export default function HeaderTecnico() {
                             <a href="#">
                                 <i className="bi bi-chat-left-text me-2" />
                                 <span className="item-description">Conversas</span>
-                            </a>
-                        </li>
-                        <li className="side-item">
-                            <a href="#">
-                                <i className="bi bi-exclamation-circle-fill me-2" />
-                                <span className="item-description">Chamados</span>
-                            </a>
-                        </li>
-                        <li className="side-item">
-                            <a href="#">
-                                <i className="bi bi-megaphone me-1"/>
-                                <span className="item-description">Meus chamados</span>
                             </a>
                         </li>
                         <li className="side-item">
@@ -94,7 +83,7 @@ export default function HeaderTecnico() {
                     </button>
                 </div>
             </nav>
-
+            
         </>
     );
 }
