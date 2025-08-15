@@ -65,7 +65,7 @@ CREATE TABLE relatorios (
     tecnico_id INT,
     descricao TEXT,
     comeco TIMESTAMP NOT NULL,
-    fim TIMESTAMP NOT NULL,
+    fim TIMESTAMP,
     duracao INT AS (TIMESTAMPDIFF(SECOND, comeco, fim)) STORED,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chamado_id) REFERENCES chamados(id),

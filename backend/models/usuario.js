@@ -18,25 +18,13 @@ const listarUsuarios = async () => {
     }
 }
 
-const obterUsuarioId = async (id)=> {
+const obterUsuario = async (registro)=> {
     try {
-        return await read('usuarios', `id = ${id}`)
+        return await read('usuarios', `registro = ${registro}`)
     } catch (error) {
-        console.error('Erro ao obter usuario por ID: ', error);
+        console.error('Erro ao obter usuario por registro: ', error);
         throw error;
     }
-}
-/** 
- * @param {string} email
- */
-export const findByEmail = async (email) => {
-  try {
-
-    return await read('usuarios', `email = '${email}'`);
-  } catch (error) {
-    console.error('Erro ao buscar usuário por email: ', error);
-    throw error;
-  }
 };
 
-export {criarUsuario, listarUsuarios, obterUsuarioId};
+export {criarUsuario, listarUsuarios, obterUsuario};
