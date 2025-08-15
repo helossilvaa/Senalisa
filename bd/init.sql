@@ -10,6 +10,20 @@ CREATE TABLE usuarios (
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Tabela `salas`
+CREATE TABLE salas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_sala VARCHAR(255) NOT NULL
+);
+
+-- Tabela `equipamentos`
+CREATE TABLE equipamentos (
+    patrimonio INT NOT NULL PRIMARY KEY UNIQUE,
+    sala_id INT NOT NULL,
+    equipamento VARCHAR(255) NOT NULL,
+    FOREIGN KEY (sala_id) REFERENCES salas(id)
+);
+
 -- Tabela `pool`
 CREATE TABLE pool (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,12 +36,6 @@ CREATE TABLE pool (
     updated_by INT,
     FOREIGN KEY (created_by) REFERENCES usuarios(id),
     FOREIGN KEY (updated_by) REFERENCES usuarios(id)
-);
-
--- Tabela `salas`
-CREATE TABLE salas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome_sala VARCHAR(255) NOT NULL
 );
 
 -- Tabela `chamados`
@@ -47,7 +55,7 @@ CREATE TABLE chamados (
     FOREIGN KEY (tecnico_id) REFERENCES usuarios(id),
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
     FOREIGN KEY (sala_id) REFERENCES salas(id),
-    FOREIGN KEY (equipamento_id) REFERENCES equipamentos(id)
+    FOREIGN KEY (equipamento_id) REFERENCES equipamentos(patrimonio)
 );
 
 -- Tabela `relatorios`
@@ -73,27 +81,17 @@ CREATE TABLE pool_tecnico (
     FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)
 );
 
--- Tabela `apontamentos_usuario`
-CREATE TABLE apontamentos_usuario (
+CREATE TABLE apontamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     chamado_id INT NOT NULL,
-    usuario_id INT NOT NULL,
+    usuario_id INT NOT NULL,       
+    tipo ENUM('tecnico','usuario') NOT NULL, 
     apontamento TEXT NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chamado_id) REFERENCES chamados(id),
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
--- Tabela `apontamentos_tecnico`
-CREATE TABLE apontamentos_tecnico (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    chamado_id INT NOT NULL,
-    tecnico_id INT NOT NULL,
-    apontamento TEXT NOT NULL,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (chamado_id) REFERENCES chamados(id),
-    FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)
-);
 
 -- Tabela `avaliacoes`
 CREATE TABLE avaliacoes (
@@ -119,14 +117,6 @@ CREATE TABLE notificacoes (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
     FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)
-);
-
--- Tabela `equipamentos`
-CREATE TABLE equipamentos (
-    patrimonio UNIQUE INT NOT NULL PRIMARY KEY,
-    sala_id INT NOT NULL,
-    equipamento VARCHAR(255) NOT NULL,
-    FOREIGN KEY (sala_id) REFERENCES salas(id)
 );
 
 -- Índices adicionais para otimização
@@ -163,7 +153,7 @@ INSERT INTO salas (nome_sala) VALUES
 ('2026_B02_EDU_SLGE_HIDRAULICA'),
 ('2026_D01_EDU_SLGE_DESENHOI'),
 ('2026_D01_EDU_SLGE_DESENHOII'),
-('2026_C02_ADM_SL07_SERVIDOR');
+m('2026_C02_ADM_SL07_SERVIDOR');
 
 -- Inserir equipamentos
 INSERT INTO equipamentos (patrimonio, sala_id, equipamento) VALUES

@@ -25,7 +25,7 @@ const criarSalaController = async (req, res) => {
 const listarSalasController = async (req, res) => {
     try {
         const salas = await listarSalas();
-        res.status(201).json(salas);
+        res.status(200).json(salas);
         
     } catch (error) {
         console.error('Erro ao listar salas: ', error);

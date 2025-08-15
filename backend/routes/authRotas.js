@@ -1,42 +1,73 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
+import { criarUsuario, findByEmail } from '../models/usuario.js';
 import passport from '../config/ldap.js';
 
 const router = express.Router();
 
+// Dados dos usuários de teste
+const testUsers = [
+  { nome: 'Admin User', email: 'admin@zelos.com', senha: 'password123', funcao: 'administrador' },
+  { nome: 'Tech User', email: 'tecnico@zelos.com', senha: 'password123', funcao: 'tecnico' },
+  { nome: 'Common User', email: 'usuario@zelos.com', senha: 'password123', funcao: 'usuario_comum' },
+];
+
 // Rota de Login
 router.post('/login', (req, res, next) => {
-  // Middleware de autenticação com tratamento de erros
-  passport.authenticate('ldapauth', { session: true }, (err, user, info) => {
+  passport.authenticate('ldapauth', { session: false }, async (err, ldapUser, info) => {
+    if (err) {
+      console.error('Erro na autenticação LDAP:', err);
+      return res.status(500).json({ error: 'Erro interno no servidor' });
+    }
+
+    if (!ldapUser) {
+      console.warn('Falha na autenticação LDAP:', info?.message || 'Credenciais inválidas');
+      return res.status(401).json({ error: info?.message || 'Autenticação falhou' });
+    }
+
     try {
-      if (err) {
-        console.error('Erro na autenticação:', err);
-        return res.status(500).json({ error: 'Erro interno no servidor' });
-      }
-      
-      if (!user) {
-        console.warn('Falha na autenticação:', info?.message || 'Credenciais inválidas');
-        return res.status(401).json({ error: info?.message || 'Autenticação falhou' });
-      }
+      // Busca usuário no banco pelo email
+      let usuario = await findByEmail(ldapUser.mail);
 
-      // Loga o usuário manualmente para garantir a sessão
-      req.logIn(user, (loginErr) => {
-        if (loginErr) {
-          console.error('Erro ao criar sessão:', loginErr);
-          return res.status(500).json({ error: 'Erro ao criar sessão' });
+      if (!usuario) {
+        
+        const testUser = testUsers.find(u => u.email === ldapUser.mail);
+        if (testUser) {
+          await criarUsuario({
+            nome: testUser.nome,
+            email: testUser.email,
+            senha: testUser.senha,
+            funcao: testUser.funcao
+          });
+          usuario = await findByEmail(testUser.email);
+        } else {
+          
+          await criarUsuario({
+            nome: ldapUser.displayName,
+            email: ldapUser.mail,
+            senha: ldapUser.userPassword || 'senha_padrao',
+            funcao: 'usuario_comum'
+          });
+          usuario = await findByEmail(ldapUser.mail);
         }
+      }
 
-        console.log('Usuário autenticado:', user.username);
-        return res.json({ 
-          message: 'Autenticado com sucesso', 
-          user: {
-            username: user.username,
-            displayName: user.displayName,
-            email: user.mail
-          }
-        });
+      // Gera token JWT
+      const payload = { id: usuario.id, funcao: usuario.funcao };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+      res.json({
+        message: 'Autenticado com sucesso',
+        token,
+        user: {
+          id: usuario.id,
+          nome: usuario.nome,
+          email: usuario.email,
+          funcao: usuario.funcao
+        }
       });
     } catch (error) {
-      console.error('Erro inesperado:', error);
+      console.error('Erro ao processar login:', error);
       res.status(500).json({ error: 'Erro inesperado no servidor' });
     }
   })(req, res, next);
@@ -44,35 +75,28 @@ router.post('/login', (req, res, next) => {
 
 // Rota de Logout
 router.post('/logout', (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ error: 'Nenhum usuário autenticado' });
-  }
+  if (!req.isAuthenticated()) return res.status(401).json({ error: 'Nenhum usuário autenticado' });
 
-  console.log('Usuário deslogando:', req.user?.username);
-  
-  req.logout((err) => {
+  req.logout(err => {
     if (err) {
       console.error('Erro no logout:', err);
       return res.status(500).json({ error: 'Erro ao realizar logout' });
     }
-    
-    // Destrói a sessão completamente
-    req.session.destroy((destroyErr) => {
+    req.session.destroy(destroyErr => {
       if (destroyErr) {
         console.error('Erro ao destruir sessão:', destroyErr);
         return res.status(500).json({ error: 'Erro ao encerrar sessão' });
       }
-      
-      res.clearCookie('connect.sid'); // Remove o cookie de sessão
+      res.clearCookie('connect.sid');
       res.json({ message: 'Logout realizado com sucesso' });
     });
   });
 });
 
-// Rota para verificar autenticação
+// Rota para checar autenticação
 router.get('/check-auth', (req, res) => {
   if (req.isAuthenticated()) {
-    return res.json({ 
+    return res.json({
       authenticated: true,
       user: {
         username: req.user.username,

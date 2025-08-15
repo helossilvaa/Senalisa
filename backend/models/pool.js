@@ -40,7 +40,7 @@ const deletarPool = async (id) => {
 
 const atualizarPool = async (id, poolData) => {
     try {
-        return await update('pools', `id = ${id}`);
+        return await update('pools', poolData, `id = ${id}`);
 
     } catch (error) {
         console.error('Erro ao atualizar pool: ', error);

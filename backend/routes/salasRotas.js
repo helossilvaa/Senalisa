@@ -1,6 +1,6 @@
 import express from 'express';
-import { atualizarSalaController, obterSalaIdController, criarSalaController, deletarSalaController, listarSalasController } from '../controllers/salaController';
-import authMiddleware from '../middlewares/authMiddleware';
+import { atualizarSalaController, obterSalaIdController, criarSalaController, deletarSalaController, listarSalasController } from '../controllers/salaController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 

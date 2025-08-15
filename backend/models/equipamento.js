@@ -3,49 +3,46 @@ import { create, deleteRecord, read, readAll, update } from '../config/database.
 const criarEquipamento = async (equipamentoData) => {
     try {
         return await create('equipamentos', equipamentoData);
-        
     } catch (error) {
-       console.error('Erro ao criar equipamento: ', error);
-       throw error; 
+        console.error('Erro ao criar equipamento: ', error);
+        throw error; 
     }
 };
 
 const listarEquipamentos = async () => {
     try {
-        return await readAll('equipamentos')
+        return await readAll('equipamentos');
     } catch (error) {
         console.error('Erro ao listar equipamentos: ', error);
         throw error;
     }
 };
 
-const obterEquipamentoId = async (id) => {
+const obterEquipamentoPorPatrimonio = async (patrimonio) => {
     try {
-        return await read('equipamentos', `id = ${id}`);
-        
+        return await read('equipamentos', `patrimonio = ${patrimonio}`);
     } catch (error) {
-        console.error('Erro ao obter equipamento por Id: ', error);
+        console.error('Erro ao obter equipamento por patrimônio: ', error);
         throw error;
     }
 };
 
-const atualizarEquipamento = async (id, equipamentoData) => {
+const atualizarEquipamento = async (patrimonio, equipamentoData) => {
     try {
-        return await update('equipamentos', equipamentoData, `id = ${id}`)
-
+        return await update('equipamentos', equipamentoData, `patrimonio = ${patrimonio}`);
     } catch (error) {
         console.error('Erro ao atualizar equipamento: ', error);
         throw error;
     }
 };
 
-const deletarEquipamento = async (id) => {
+const deletarEquipamento = async (patrimonio) => {
     try {
-        return await deleteRecord('equipamentos', `id = ${id}`);
+        return await deleteRecord('equipamentos', `patrimonio = ${patrimonio}`);
     } catch (error) {
         console.error('Erro ao deletar equipamento: ', error);
         throw error;
     }
 };
 
-export {criarEquipamento, atualizarEquipamento, listarEquipamentos, deletarEquipamento, obterEquipamentoId};
+export { criarEquipamento, atualizarEquipamento, listarEquipamentos, deletarEquipamento, obterEquipamentoPorPatrimonio};

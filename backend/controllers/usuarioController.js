@@ -1,9 +1,10 @@
-import {criarUsuario, listarUsuarios, obterUsuarioId} from '../models/usuario.js';
+import { criarUsuario, listarUsuarios, obterUsuarioId } from '../models/usuario.js';
+import bcrypt from 'bcryptjs';
+
 
 const criarUsuarioController = async (req, res) => {
     try {
         const {
-            id,
             nome,
             email,
             senha,
@@ -11,10 +12,9 @@ const criarUsuarioController = async (req, res) => {
         } = req.body;
 
         const usuarioData = {
-            id: id,
             nome: nome,
             email: email,
-            senha: senha,
+            senha: await bcrypt.hash(senha, 10),
             funcao: funcao
         }
         

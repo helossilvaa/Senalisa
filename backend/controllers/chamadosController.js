@@ -1,43 +1,36 @@
-import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos} from "../models/chamado.js";
+import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado} from "../models/chamado.js";
 
 
-const criarChamadoController = async (req, res ) => {
+const criarChamadoController = async (req, res) => {
     try {
         const {
-            chamado_id,
             titulo,
             descricao,
             tipo_id,
-            tecnico_id,
-            usuario_id,
-            criado_em,
+            sala_id,
+            equipamento_id
+        } = req.body;
+
+        const chamadoData = {
+            titulo,
+            descricao,
+            tipo_id,
+            usuario_id: req.user.id, 
+            tecnico_id: null,        
             sala_id,
             equipamento_id,
-            atualizado_em
-        } = req.body;
-        
-        const chamadoData = {
-        chamado_id: chamado_id,
-        titulo: titulo,
-        descricao: descricao,
-        tipo_id: tipo_id,
-        tecnico_id: tecnico_id,
-        usuario_id: usuario_id,
-        criado_em: criado_em,
-        atualizado_em: atualizado_em,
-        sala_id: sala_id,
-        equipamento_id: equipamento_id
+            status: 'aberto',       
         };
 
-        const chamadoId = await criarChamado(chamadoData)
-        
-        res.status(201).json({mensagem: 'Chamado criado com sucesso', chamadoId});
+        const chamadoId = await criarChamado(chamadoData);
+        res.status(201).json({ mensagem: 'Chamado criado com sucesso', chamadoId });
 
     } catch (error) {
         console.error('Erro ao criar chamado:', error);
-        res.status(500).json({mensagem: 'Erro ao criar chamado.'})
+        res.status(500).json({ mensagem: 'Erro ao criar chamado.' });
     }
-}; 
+};
+
 
 const listarChamadosController = async (req, res) => {
     try {
@@ -120,7 +113,36 @@ const criarApontamentoController = async (req, res) => {
     }
 }
 
+const assumirChamadoController = async (req, res) => {
+    try {
+        const { chamado_id } = req.body;
+        const tecnico_id = req.user.id; 
 
-export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController}
+        const resultado = await assumirChamado(chamado_id, tecnico_id);
+
+        res.status(200).json({ mensagem: 'Chamado assumido com sucesso', chamado: resultado });
+    } catch (error) {
+        console.error('Erro ao assumir chamado:', error);
+        res.status(400).json({ mensagem: error.message });
+    }
+};
+
+const listarChamadosParaTecnicoController = async (req, res) => {
+    try {
+        const tecnico_id = req.user.id;
+        const chamados = await readAll(
+            'chamados',
+            `status != 'encerrado' AND (tecnico_id IS NULL OR tecnico_id = ${tecnico_id})`
+        );
+        res.status(200).json(chamados);
+    } catch (error) {
+        console.error('Erro ao listar chamados para técnico:', error);
+        res.status(500).json({ mensagem: 'Erro ao listar chamados' });
+    }
+};
+
+
+
+export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosParaTecnicoController};
 
 

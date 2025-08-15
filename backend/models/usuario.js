@@ -26,5 +26,17 @@ const obterUsuarioId = async (id)=> {
         throw error;
     }
 }
+/** 
+ * @param {string} email
+ */
+export const findByEmail = async (email) => {
+  try {
+
+    return await read('usuarios', `email = '${email}'`);
+  } catch (error) {
+    console.error('Erro ao buscar usuário por email: ', error);
+    throw error;
+  }
+};
 
 export {criarUsuario, listarUsuarios, obterUsuarioId};
