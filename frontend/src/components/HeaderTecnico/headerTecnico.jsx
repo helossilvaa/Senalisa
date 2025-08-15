@@ -41,7 +41,6 @@ export default function HeaderTecnico() {
                         <img src="/Senalisa.png" className="logo logoExpandida" alt="Logo" />
                         <img src="/logoMenor.png" className="logo logoColapsada" alt="Simples Logo" />
                     </div>
-                    {/* <hr /> */}
                     <ul id="side_items">
                         <li className="side-item active mt-4">
                             <a href="#">
