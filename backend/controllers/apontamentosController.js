@@ -14,7 +14,7 @@ const criarApontamentoController = async (req, res) => {
             apontamento
         };
 
-        const apontamentoId = await criarApontamentos(chamado_id, apontamentoData);
+        const apontamentoId = await criarApontamento(chamado_id, apontamentoData);
         res.status(201).json({ mensagem: 'Apontamento criado com sucesso', apontamentoId });
 
     } catch (error) {
