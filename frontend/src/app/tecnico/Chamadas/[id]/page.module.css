@@ -1,0 +1,119 @@
+:root {
+    --fundo: #f8f8fa;
+    --branco: #ffffff;
+    --bola: #b10000;
+    --fonte: 'Poppins', sans-serif;
+    --cordata: #535355;
+    --vermelhoEscuro: #640d14;
+}
+  .page{
+    display: flex;
+  }
+  .conteudoPrincipal {
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: row; 
+    align-items: flex-start; 
+    gap: 2rem;
+  }
+  
+  .infos {
+    width: 60%;
+  }
+  
+  .titulo {
+    color: var(--vermelhoEscuro);
+    font-weight: bold;
+  }
+  
+  .card {
+    height: 260px;
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tituloCard {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+
+  .subInfo{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .autor{
+    font-size: 0.85rem;
+    width: 50%;
+    color: gray;
+    margin-top: 7px;
+  }
+
+  .data{
+    font-size: 0.85rem;
+    width: 50%;
+    color: gray;
+    margin-top: 7px;
+    margin-left: 370px;
+  }
+  
+  .descricao{
+    margin-top: 0.3rem;
+    font-size: 0.95rem;
+  }
+  
+  .botoes {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+    float: right;
+  }
+  
+  .emProgresso {
+    background: var(--vermelhoEscuro);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .emProgresso:hover {
+    background: var(--bola);
+  }
+
+  .concluido {
+    background: var(--vermelhoEscuro);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .concluido:hover {
+    background: var(--bola);
+  }
+
+  .tituloLinhaTempo{
+    margin-left: 30px;
+  }
+
+  .tituloLinhaTempo p{
+    font-weight: bold;
+    color: var(--vermelhoEscuro);
+    font-size: 20px;
+  }
+
+  .tituloLinhaTempo i{
+    color: var(--vermelhoEscuro);
+    font-weight: bold;
+    cursor: pointer;
+  }

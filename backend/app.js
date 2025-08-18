@@ -6,7 +6,8 @@ import authRotas from './routes/authRotas.js';
 import passport from './config/ldap.js';
 import usuarioRotas from './routes/usuarioRotas.js';
 import chamadoRotas from './routes/chamadoRotas.js';
-
+import salasRotas from './routes/salasRotas.js';
+import EquipamentoRotas from './routes/equipamento.js';
 
 // 1. Carrega variáveis de ambiente PRIMEIRO
 dotenv.config();
@@ -79,3 +80,5 @@ app.get('/', (req, res) => {
 
 app.use('/usuario', usuarioRotas);
 app.use('/chamados', chamadoRotas);
+app.use('/salas', salasRotas);
+app.use('/equipamentos', EquipamentoRotas);

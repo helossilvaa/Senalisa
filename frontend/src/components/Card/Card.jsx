@@ -11,7 +11,8 @@ export default function Card({ titulo, id, data }) {
                 </div>
                 <div className={styles.data}><p>{data}</p></div>
                 <div className={styles.botoes}>
-                    <Link href={`/Chamadas/${id}`} className={styles.botaoVeja}>
+
+                    <Link href={`/tecnico/Chamadas/${id}`} className={styles.botaoVeja}>
                         Ver mais
                     </Link>
                     <div className={styles.botaoAceitar}>

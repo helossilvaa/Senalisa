@@ -11,6 +11,7 @@ const ldapOptions = {
     searchBase: 'ou=Alunos,ou=Usuarios123,dc=educ123,dc=sp,dc=senai,dc=br',
     searchFilter: '(sAMAccountName={{username}})'
   }
+  
 };
 
 //Identificação e retorno do usuário autenticado
@@ -32,3 +33,5 @@ passport.deserializeUser((user, done) => {
 });
 
 export default passport;
+
+

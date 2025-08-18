@@ -12,7 +12,7 @@ const criarChamado = async (chamadoData) => {
 
 const listarChamado = async () => {
   try {
-    return await readAll('chamados');
+    return await readAll('chamados', 'tecnico_id IS NULL');
   } catch (error) {
     console.error('Erro ao listar chamados: ', error);
     throw error;
@@ -21,7 +21,7 @@ const listarChamado = async () => {
 
 const obterChamadoPorId = async (id) => {
   try {
-    return await read ('chamados', `id = ${id}`);
+    return await read('chamados', `id = ${id}`);
   } catch (error) {
     console.error('Erro ao obter chamado por ID: ', error);
     throw error;
@@ -46,6 +46,17 @@ const criarApontamentos = async (id, apontamentosData) => {
   }
 }
 
+const assumirChamado = async (id, tecnicoId) => {
+    try {
+        const chamado = await read('chamados', `id = ${id}`);
+        if (!chamado) throw new Error('Chamado não encontrado');
+        if (chamado.tecnico_id) throw new Error('Chamado já foi assumido');
 
+        return await update('chamados', { tecnico_id: tecnicoId, status: 'em andamento' }, `id = ${id}`);
+    } catch (error) {
+        console.error('Erro ao assumir chamado: ', error);
+        throw error;
+    }
+};
 
-export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos};
+export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado};

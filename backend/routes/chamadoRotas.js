@@ -1,43 +1,23 @@
 import express from 'express';
-import { listarChamadosController, obterChamadoPorIdController, atualizarChamadoController, criarChamadoController, criarApontamentoController} from '../controllers/chamadosController.js';
+import { criarChamadoController, listarChamadosController, listarChamadosParaTecnicoController, obterChamadoPorIdController, atualizarChamadoController, assumirChamadoController, criarApontamentoController} from '../controllers/chamadosController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import verifyRole from '../middlewares/authVerifyRole.js';
 
 const router = express.Router();
+router.use(authMiddleware);
 
+//se for admin
+router.get('/todoschamados', verifyRole(['admin']), listarChamadosController); 
+router.post('/criarchamado', verifyRole(['admin']), criarChamadoController);       
+router.put('/chamados/:id', verifyRole(['admin']), atualizarChamadoController); 
+router.get('/chamados/:id', verifyRole(['admin']), obterChamadoPorIdController);
 
-router.get('/chamados', authMiddleware, listarChamadosController);
+//se for tecnico 
+router.get('/meuschamados', verifyRole(['tecnico']), listarChamadosParaTecnicoController); 
+router.put('/assumirChamado/:id', verifyRole(['tecnico']), assumirChamadoController);
+router.put('/meusChamados/:id/status', verifyRole(['tecnico']), atualizarChamadoController);
 
-router.options('/chamados', (req, res) => {
-    res.setHeader('Allow', 'GET, OPTIONS');
-    res.status(204).send();
-})
+router.post('/:id/apontamentos', verifyRole(['admin','tecnico']), criarApontamentoController);
 
-router.post('/chamados', authMiddleware, criarChamadoController);
-
-router.options('/chamados', (req, res) => {
-    res.setHeader('Allow',  'POST, OPTIONS');
-    res.status(204).send();
-})
-
-router.post('/chamados/:id', authMiddleware, criarApontamentoController);
-
-router.options('/chamados/:id', (req, res) => {
-    res.setHeader('Allow', 'POST, OPTIONS');
-    res.status(204).send();
-})
-
-router.get('/chamados/:id', authMiddleware, obterChamadoPorIdController);
-
-router.options('/chamados/:id', (req, res) => {
-    res.setHeader('Allow', 'GET, OPTIONS');
-    res.status(204).send();
-})
-
-router.put('/chamados/:id', authMiddleware, atualizarChamadoController);
-
-router.options('/chamados/:id', (req, res) => {
-    res.setHeader('Allow', 'PUT, OPTIONS');
-    res.status(204).send();
-})
 
 export default router;

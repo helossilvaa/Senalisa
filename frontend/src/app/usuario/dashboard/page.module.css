@@ -1,0 +1,58 @@
+.dashboardContainer {
+    padding: 2rem;
+    background-color: #f7f7f9;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .welcome {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  /* Grid fixo com layout responsivo */
+  .cardsContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 160px 300px;
+    gap: 1.5rem;
+  }
+  
+  .card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1rem;
+  }
+  
+  .cardLarge {
+    grid-column: 1 / 2;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1rem;
+  }
+  
+  .cardSmallBottom {
+    grid-column: 2 / 3;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1rem;
+  }
+  
+  /* Responsivo para telas menores */
+  @media (max-width: 768px) {
+    .cardsContainer {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(4, auto);
+    }
+  
+    .cardLarge,
+    .cardSmallBottom {
+      grid-column: auto;
+    }
+  }
+  

@@ -1,6 +1,11 @@
+"use client";
+
 import Card from '@/components/Card/Card';
 import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
 import styles from '@/app/tecnico/Chamadas/page.module.css';
+
+
+
 
 export default function Chamadas() {
     

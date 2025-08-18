@@ -1,0 +1,84 @@
+:root {
+    --fundo: #f8f8fa;
+    --branco: #ffffff;
+    --preto: #000000;
+    --bola: #b10000;
+    --fonte: 'Poppins', sans-serif;
+    --cordata: #535355;
+    --vermelhoEscuro: #640d14;
+}
+
+.calendario {
+    background-color: var(--branco);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 350px;
+    height: 350px;
+    color: var(--preto);
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.monthYear {
+    color: var(--vermelhoEscuro);
+    font-weight: bold;
+}
+
+.btn {
+    cursor: pointer;
+    color: var(--vermelhoEscuro);
+    font-weight: bold;
+}
+
+.semanaDias,
+.days {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.days {
+    height: 240px;
+}
+
+.semanaDias div {
+    color: var(--vermelhoEscuro);
+    width: 14.28%;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 5px;
+}
+
+.days div {
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 14.28%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+.days div:hover {
+    background-color: var(--vermelhoEscuro);
+    color: var(--branco);
+}
+
+.days .today {
+    background-color: var(--bola);
+    color: var(--branco);
+}
+
+.days .fade {
+    color: var(--cordata);
+}
+
+.days .active {
+    border: 2px solid var(--vermelhoEscuro);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+}
