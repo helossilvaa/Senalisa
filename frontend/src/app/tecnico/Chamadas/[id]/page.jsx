@@ -1,5 +1,5 @@
 import styles from "./page.module.css";
-
+import HeaderTecnico from "@/components/HeaderTecnico/headerTecnico";
 
 export default function InfoPage({ params }) {
   const { id } = params;
@@ -11,6 +11,8 @@ export default function InfoPage({ params }) {
 
   return (
     <>
+      <HeaderTecnico/>
+      
     </>
   );
 }
