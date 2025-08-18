@@ -44,7 +44,7 @@ export default function HeaderTecnico() {
 
                     <ul id="side_items">
                         <li className="side-item active mt-4">
-                            <a href="#">
+                            <a href="/tecnico/Dashboard">
                                 <i className="bi bi-speedometer2 me-2" />
                                 <span className="item-description">Dashboard</span>
                             </a>
@@ -62,19 +62,19 @@ export default function HeaderTecnico() {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/tecnico/Chamadas">
                                 <i className="bi bi-exclamation-circle-fill me-2" />
                                 <span className="item-description">Chamados</span>
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/tecnico/meusChamados">
                                 <i className="bi bi-megaphone me-1"/>
                                 <span className="item-description">Meus chamados</span>
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/tecnico/Historico">
                                 <i className="bi bi-clock me-2" />
                                 <span className="item-description">Histórico</span>
                             </a>
