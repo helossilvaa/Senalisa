@@ -153,7 +153,7 @@
 }
 
 .numeroNotificacoes {
-  font-size: 4rem;
+  font-size: 3.5rem;
   font-weight: bold;
   color: var(--bola);
   margin: 0.5rem 0;
@@ -312,6 +312,7 @@
 
   .cardLarge{
     height: 530px;
+    margin-top: 20px;
   }
 
   .cardSmallBottom{

@@ -1,0 +1,182 @@
+:root {
+  --fundo: #f8f8fa;
+  --branco: #ffffff;
+  --preto: #000000;
+  --bola: #b10000;
+  --fonte: 'Poppins', sans-serif;
+  --cordata: #535355;
+  --vermelhoEscuro: #640d14;
+}
+
+.page {
+  display: flex;
+  height: 100vh;
+  font-family: var(--fonte);
+}
+
+.dashboardContainer {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f7f7f9;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+
+.welcome {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.cardsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 160px 300px;
+  gap: 1.5rem;
+}
+
+.cardStatusChamados {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  width: 790px;
+  height: 190px;
+}
+
+.cardStatusChamados h3 {
+  font-size: 23px;
+}
+
+.cardRelatorios {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  height: 480px;
+  text-align: center;
+}
+
+.cardRelatorios h3 {
+  font-size: 23px;
+}
+
+.cardLarge {
+  width: 790px;
+  height: 270px;
+  margin-top: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+}
+
+.numeroChamados {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.numeroChamados span {
+  font-size: 0.9rem;
+  color: var(--cordata);
+}
+
+.barraProgresso {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  margin: 8px 0 12px;
+}
+
+.progresso {
+  width: 70%;
+  height: 100%;
+  background: var(--bola);
+  border-radius: 6px;
+}
+
+.legenda {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--cordata);
+}
+
+.bolinhaFinalizado {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #b3b3b3;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.bolinhaAberto {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #d52531;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.bolinhaAndamento {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: var(--vermelhoEscuro);
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+@media (max-width: 1024px) {
+  .cardsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .cardStatusChamados {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .cardsContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardContainer {
+    padding: 1rem;
+  }
+
+  .cardStatusChamados {
+    height: 295px;
+  }
+
+  .welcome {
+    font-size: 1.2rem;
+    margin-top: 17px;
+  }
+
+  .cardNotificacoes {
+    margin-top: 130px;
+  }
+
+  .legenda {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}
