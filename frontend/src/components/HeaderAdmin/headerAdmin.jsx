@@ -62,13 +62,13 @@ export default function HeaderAdmin () {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
-                                <i class="bi bi-file-bar-graph"/>
+                            <a href="/admin/relatorios">
+                                <i className="bi bi-file-bar-graph me-2"/>
                                 <span className="item-description">Relatórios</span>
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/admin/historico">
                                 <i className="bi bi-clock me-2" />
                                 <span className="item-description">Histórico</span>
                             </a>
