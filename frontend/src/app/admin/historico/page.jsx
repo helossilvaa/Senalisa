@@ -1,5 +1,6 @@
 import styles from "@/app/admin/historico/historico.module.css";
 import HeaderAdmin from "@/components/HeaderAdmin/headerAdmin";
+import Card from "@/components/Card/Card";
 
 export default function Informacoes() {
     return (
@@ -20,6 +21,9 @@ export default function Informacoes() {
         <div className={styles.chamados}>
             <button>Chamados Concluídos</button>
         </div>
+    </div>
+    <div className={styles.todos}>
+       <h3>Chamados</h3>
     </div>
     </div>
            
