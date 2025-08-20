@@ -1,6 +1,6 @@
 import express from 'express';
-import { obterPoolIdController, listarPoolsController } from "../controllers/poolController";
-import authMiddleware from '../middlewares/authMiddleware';
+import { obterPoolIdController, listarPoolsController } from "../controllers/poolController.js";
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 

@@ -69,7 +69,7 @@ const criarUsuarioController = async (req, res) => {
         nome: usuario.nome,
         email: usuario.email,
         numeroRegistro: usuario.registro,
-        descricao: usuario.descricao,
+        funcao: usuario.funcao,
       },
       JWT_SECRET,
       { expiresIn: '1h' }
@@ -83,7 +83,7 @@ const criarUsuarioController = async (req, res) => {
         numeroRegistro: usuario.registro,
         displayName: usuario.nome,
         email: usuario.email,
-        funcao: usuario.descricao,
+        funcao: usuario.funcao,
       },
     });
   } catch (error) {

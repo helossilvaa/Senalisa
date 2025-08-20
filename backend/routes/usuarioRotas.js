@@ -22,23 +22,3 @@ router.options('/:id', (req, res) => {
  
  
 export default router;
- 
-
-
-
-// import express from 'express';
-// import { CriarLoginController } from '../controllers/usuarioController.js';
-// import authMiddleware from '../middlewares/authMiddleware.js';
-
-// const router = express.Router();
-
-// router.post('/usuarios', authMiddleware, CriarLoginController);
-
-
-
-// router.options('/usuarios', (req, res) => {
-//     res.setHeader('Allow', 'POST, OPTIONS');
-//     res.status(204).send();
-// });
-
-// export default router;

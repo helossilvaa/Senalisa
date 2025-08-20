@@ -1,6 +1,11 @@
+drop database senaliza;
+create database senaliza;
+use senaliza;
+
 -- Tabela `usuarios`
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    registro INT NOT NULL,
     nome VARCHAR(255) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -65,7 +70,7 @@ CREATE TABLE relatorios (
     tecnico_id INT,
     descricao TEXT,
     comeco TIMESTAMP NOT NULL,
-    fim TIMESTAMP,
+    fim TIMESTAMP null,
     duracao INT AS (TIMESTAMPDIFF(SECOND, comeco, fim)) STORED,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chamado_id) REFERENCES chamados(id),
@@ -153,7 +158,7 @@ INSERT INTO salas (nome_sala) VALUES
 ('2026_B02_EDU_SLGE_HIDRAULICA'),
 ('2026_D01_EDU_SLGE_DESENHOI'),
 ('2026_D01_EDU_SLGE_DESENHOII'),
-m('2026_C02_ADM_SL07_SERVIDOR');
+('2026_C02_ADM_SL07_SERVIDOR');
 
 -- Inserir equipamentos
 INSERT INTO equipamentos (patrimonio, sala_id, equipamento) VALUES

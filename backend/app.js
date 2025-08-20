@@ -8,6 +8,7 @@ import usuarioRotas from './routes/usuarioRotas.js';
 import chamadoRotas from './routes/chamadoRotas.js';
 import salasRotas from './routes/salasRotas.js';
 import EquipamentoRotas from './routes/equipamento.js';
+import PoolRotas from './routes/poolRotas.js';
 
 // 1. Carrega variáveis de ambiente PRIMEIRO
 dotenv.config();
@@ -82,3 +83,4 @@ app.use('/usuario', usuarioRotas);
 app.use('/chamados', chamadoRotas);
 app.use('/salas', salasRotas);
 app.use('/equipamentos', EquipamentoRotas);
+app.use('/pools', PoolRotas);

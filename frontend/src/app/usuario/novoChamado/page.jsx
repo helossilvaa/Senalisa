@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import './novo.css';
 import Header from '@/components/Header/header';
 import { jwtDecode } from "jwt-decode";
-import { JWT_SECRET } from '../config/jwt.js';
 import { useRouter } from "next/navigation";
 
 export default function Chamados() {
@@ -37,7 +36,7 @@ export default function Chamados() {
 
           const decoded = jwtDecode(token);
     
-          if (decoded.descricao !== 'usuario') {
+          if (decoded.funcao !== 'usuario') {
             router.push('/');
             return;
           }
@@ -51,7 +50,7 @@ export default function Chamados() {
     
           const id = decoded.id;
     
-          fetch(`${API_URL}/${id}`)
+          fetch(`${API_URL}/usuarios/${id}`)
             .then(res => res.json())
             .then(data => {
               setNomeUsuario(data.nome);
