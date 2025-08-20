@@ -1,119 +1,329 @@
 :root {
-    --fundo: #f8f8fa;
-    --branco: #ffffff;
-    --bola: #b10000;
-    --fonte: 'Poppins', sans-serif;
-    --cordata: #535355;
-    --vermelhoEscuro: #640d14;
+  --fundo: #f8f8fa;
+  --branco: #ffffff;
+  --bola: #b10000;
+  --fonte: 'Poppins', sans-serif;
+  --cordata: #535355;
+  --vermelhoEscuro: #640d14;
 }
-  .page{
-    display: flex;
-  }
+
+.page {
+  display: flex;
+}
+
+.conteudoPrincipal {
+  width: 100%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.infos {
+  width: 60%;
+}
+
+.titulo {
+  color: var(--vermelhoEscuro);
+  font-weight: bold;
+}
+
+.card {
+  height: 350px;
+  background: var(--branco);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tituloCard {
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-top: 12px;
+}
+
+.subInfo {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.autor {
+  font-size: 0.85rem;
+  width: 50%;
+  color: gray;
+  margin-top: 15px;
+}
+
+.data {
+  font-size: 0.85rem;
+  width: 50%;
+  color: gray;
+  margin-top: 15px;
+  margin-left: 430px;
+}
+
+.descricao {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  text-align: justify;
+}
+
+.botoes {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 2.2rem;
+  float: right;
+}
+
+.emProgresso {
+  background: var(--vermelhoEscuro);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.emProgresso:hover {
+  background: var(--bola);
+}
+
+.concluido {
+  background: var(--vermelhoEscuro);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.concluido:hover {
+  background: var(--bola);
+}
+
+.linhaTempo{
+  margin-top: 5px;
+  margin-left: 40px;
+}
+
+.tituloLinhaTempo {
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.tituloLinhaTempo p {
+  font-weight: bold;
+  color: var(--vermelhoEscuro);
+  font-size: 22px;
+  margin-bottom: -25px;
+}
+
+.tituloLinhaTempo i {
+  color: var(--vermelhoEscuro);
+  margin-left: 440px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.informacoesLinhaTempo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.ponto {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: var(--vermelhoEscuro);
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.informacoesLinhaTempo h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.informacoesLinhaTempo p{
+  font-style: var(--fonte);
+  color: #535355;
+  font-size: 15px;
+  margin-top: 5px;
+}
+
+.dataLinhaTempo {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--cordata);
+}
+
+.timelineContainer {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.formTimeline {
+  background: var(--branco);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.formTimeline label {
+  font-weight: bold;
+  color: var(--vermelhoEscuro);
+  font-size: 0.9rem;
+}
+
+.formTimeline input,
+.formTimeline textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0.6rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  resize: none;
+}
+
+.btnEnviar {
+  background: var(--vermelhoEscuro);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  align-self: flex-end;
+}
+
+.btnEnviar:hover {
+  background: var(--bola);
+}
+
+@media (max-width: 1024px) {
   .conteudoPrincipal {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .infos,
+  .prazo {
     width: 100%;
-    padding: 2rem;
-    display: flex;
-    flex-direction: row; 
-    align-items: flex-start; 
-    gap: 2rem;
   }
-  
-  .infos {
-    width: 60%;
+
+  .data {
+    margin-left: 0;
+    text-align: right;
   }
-  
-  .titulo {
-    color: var(--vermelhoEscuro);
-    font-weight: bold;
+
+  .timelineContainer {
+    flex-direction: column;
   }
-  
+
+  .linhaTempo {
+    margin-left: 0;
+  }
+
+  .tituloLinhaTempo i {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
   .card {
-    height: 260px;
-    background: var(--branco);
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .tituloCard {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-top: 10px;
+    height: auto;
   }
 
-  .subInfo{
+  .botoes {
+    float: none;
+    justify-content: flex-start;
+  }
+
+  .tituloLinhaTempo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tituloLinhaTempo p {
+    margin-bottom: 0;
+  }
+
+  .tituloLinhaTempo i {
+    font-size: 20px;
+    align-self: flex-end;
+  }
+
+  .formTimeline {
     width: 100%;
-    display: flex;
-    flex-direction: row;
+  }
+}
+
+@media (max-width: 480px) {
+  .conteudoPrincipal {
+    padding: 1rem;
+    gap: 1rem;
   }
 
-  .autor{
-    font-size: 0.85rem;
-    width: 50%;
-    color: gray;
-    margin-top: 7px;
+  .tituloCard {
+    font-size: 1.1rem;
   }
 
-  .data{
-    font-size: 0.85rem;
-    width: 50%;
-    color: gray;
-    margin-top: 7px;
-    margin-left: 370px;
-  }
-  
-  .descricao{
-    margin-top: 0.3rem;
+  .descricao {
     font-size: 0.95rem;
   }
-  
+
+  .subInfo {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .autor,
+  .data {
+    width: 100%;
+    margin-left: 0;
+    text-align: left;
+  }
+
   .botoes {
-    display: flex;
+    flex-direction: column;
+    width: 100%;
     gap: 0.5rem;
-    margin-top: 0.2rem;
-    float: right;
-  }
-  
-  .emProgresso {
-    background: var(--vermelhoEscuro);
-    color: white;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s ease;
   }
 
-  .emProgresso:hover {
-    background: var(--bola);
+  .emProgresso,
+  .concluido,
+  .btnEnviar {
+    width: 100%;
+    text-align: center;
   }
 
-  .concluido {
-    background: var(--vermelhoEscuro);
-    color: white;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+  .linhaTempo {
+    margin-left: 0;
   }
 
-  .concluido:hover {
-    background: var(--bola);
+  .informacoesLinhaTempo h4 {
+    font-size: 1rem;
   }
 
-  .tituloLinhaTempo{
-    margin-left: 30px;
+  .informacoesLinhaTempo p {
+    font-size: 0.8rem;
   }
-
-  .tituloLinhaTempo p{
-    font-weight: bold;
-    color: var(--vermelhoEscuro);
-    font-size: 20px;
-  }
-
-  .tituloLinhaTempo i{
-    color: var(--vermelhoEscuro);
-    font-weight: bold;
-    cursor: pointer;
-  }
+}
