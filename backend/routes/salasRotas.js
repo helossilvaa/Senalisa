@@ -4,22 +4,22 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/salas', authMiddleware, criarSalaController);
+router.post('/', authMiddleware, criarSalaController);
 
-router.get('/salas', authMiddleware, listarSalasController);
+router.get('/', authMiddleware, listarSalasController);
 
-router.get('/salas/:id', authMiddleware, obterSalaIdController);
+router.get('/:id', authMiddleware, obterSalaIdController);
 
-router.put('/salas/:id', authMiddleware, atualizarSalaController);
+router.put('/:id', authMiddleware, atualizarSalaController);
 
-router.delete('/salas/:id', authMiddleware, deletarSalaController);
+router.delete('/:id', authMiddleware, deletarSalaController);
 
-router.options('/salas', (req, res) => {
+router.options('/', (req, res) => {
     res.setHeader('Allow', 'GET, POST, OPTIONS');
     res.status(204).send();
 });
 
-router.options('/salas/:id', (req, res) => {
+router.options('/:id', (req, res) => {
     res.setHeader('Allow', 'PUT, DELETE, GET, OPTIONS');
     res.status(204).send();
 

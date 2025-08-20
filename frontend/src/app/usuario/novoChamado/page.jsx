@@ -2,8 +2,12 @@
 import { useEffect, useState } from 'react';
 import './novo.css';
 import Header from '@/components/Header/header';
+import { jwtDecode } from "jwt-decode";
+import { JWT_SECRET } from '../config/jwt.js';
+import { useRouter } from "next/navigation";
 
 export default function Chamados() {
+  
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [tipoId, setTipoId] = useState('');
@@ -14,26 +18,68 @@ export default function Chamados() {
   const [pools, setPools] = useState([]);
   const [chamadoCriado, setChamadoCriado] = useState(null);
   const [error, setError] = useState('');
+  const router = useRouter();
+  const [nomeUsuario, setNomeUsuario] = useState('');
 
   const API_URL = 'http://localhost:8080';
 
-  // Busca salas, equipamentos e pools do backend
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
 
-    Promise.all([
-      fetch(`${API_URL}/salas`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-      fetch(`${API_URL}/equipamentos`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-      fetch(`${API_URL}/pool`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
-    ])
-      .then(([salasData, equipamentosData, poolsData]) => {
-        setSalas(salasData);
-        setEquipamentos(equipamentosData);
-        setPools(poolsData);
-      })
-      .catch(err => console.error(err));
-  }, []);
+  useEffect(() => {
+
+    const token = localStorage.getItem("token");
+    
+        if (!token) {
+          router.push("/login");
+          return;
+        }
+    
+        try {
+
+          const decoded = jwtDecode(token);
+    
+          if (decoded.descricao !== 'usuario') {
+            router.push('/');
+            return;
+          }
+    
+          if (decoded.exp < Date.now() / 1000) {
+            localStorage.removeItem("token");
+            alert('Seu Login Expirou.');
+            router.push('/login');
+            return;
+          }
+    
+          const id = decoded.id;
+    
+          fetch(`${API_URL}/${id}`)
+            .then(res => res.json())
+            .then(data => {
+              setNomeUsuario(data.nome);
+            })
+            .catch(err => {
+              console.error("Erro ao buscar usuário: ", err);
+              setNomeUsuario('Usuário'); 
+            });
+    
+        } catch (error) {
+          console.error("Token inválido:", error);
+          localStorage.removeItem("token");
+          router.push("/login");
+        }
+
+        Promise.all([
+          fetch(`${API_URL}/salas`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+          fetch(`${API_URL}/equipamentos`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+          fetch(`${API_URL}/pools`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
+        ])
+          .then(([salasData, equipamentosData, poolsData]) => {
+            setSalas(salasData);
+            setEquipamentos(equipamentosData);
+            setPools(poolsData);
+          })
+          .catch(err => console.error(err));
+
+      }, []);
 
   // Filtra equipamentos da sala selecionada
   const equipamentosFiltrados = equipamentos.filter(

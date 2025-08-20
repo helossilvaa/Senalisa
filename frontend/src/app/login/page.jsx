@@ -3,16 +3,18 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function Login() {
+
   const [loginParams, setLoginParams] = useState({ username: "", password: "" });
   const [retorno, setRetorno] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const API_URL = "http://localhost:8080";
 
-  
+
   useEffect(() => {
-    
+
     const checkToken = async () => {
+
       const token = localStorage.getItem("token");
       if (!token) return;
 
@@ -25,7 +27,21 @@ export default function Login() {
         });
 
         if (res.ok) {
-          router.push("/usuario/dashboard");
+
+          const usuario = await res.json()
+
+          setTimeout(() => {
+
+            if (data.usuario.funcao === "usuario") {
+              router.push("/usuario/dashboard");
+
+            } else if (data.usuario.funcao === "tecnico") {
+              router.push("/tecnico/dashboard");
+
+            } else {
+              router.push("/admin/dashboard");
+            }
+          }, 1000);
         } else {
           localStorage.removeItem("token");
         }
@@ -54,16 +70,30 @@ export default function Login() {
       const data = await res.json();
 
       if (res.ok) {
+
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
+
         setRetorno({ status: "success", mensagem: "Login realizado com sucesso!" });
+
         setTimeout(() => {
-          router.push("/usuario/dashboard");
-        }, 1000);
+
+            if (data.usuario.funcao === "usuario") {
+              router.push("/usuario/dashboard");
+
+            } else if (data.usuario.funcao === "tecnico") {
+              router.push("/tecnico/dashboard");
+
+            } else {
+              router.push("/admin/dashboard");
+            }
+          }, 1000);
+
       } else {
         setRetorno({ status: "error", mensagem: "Credenciais inválidas" });
       }
+
     } catch (error) {
       console.error("Erro ao fazer login:", error);
       setRetorno({ status: "error", mensagem: "Erro na requisição" });

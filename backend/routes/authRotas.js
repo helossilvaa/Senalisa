@@ -1,43 +1,89 @@
 import express from 'express';
 import passport from '../config/ldap.js';
-import { criarUsuarioController } from "../controllers/usuarioController.js";
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../config/jwt.js';
+import { criarUsuarioController } from '../controllers/usuarioController.js';
 
 const router = express.Router();
 
+const fakeUsers = [
+  {
+    registro: '12345678',
+    nome: 'William',
+    senha: '12345',
+    email: '12345678@educ123.sp.senai.br',
+    funcao: 'usuario',
+  },
+  {
+    registro: '87654321',
+    nome: 'Rodrigo',
+    senha: '12345',
+    email: '87654321@educ123.sp.senai.br',
+    funcao: 'tecnico',
+  },
+  {
+    registro: '11223344',
+    nome: 'Arioci',
+    senha: '12345',
+    email: '11223344@educ123.sp.senai.br',
+    funcao: 'admin',
+  },
+];
 
-router.post('/login', (req, res, next) => {
+const USE_FAKE_AUTH = true;
 
-  passport.authenticate('ldapauth', { session: true }, (err, user, info) => {
+router.post('/login', async (req, res, next) => {
+  const { username, password } = req.body;
 
-    try {
-      if (err) {
-        console.error('Erro na autenticação:', err);
-        return res.status(500).json({ error: 'Erro interno no servidor' });
-      }
+  if (USE_FAKE_AUTH) {
+    const usuarioFake = fakeUsers.find(
+      (u) => u.registro === username && u.senha === password
+    );
 
-      if (!user) {
-        console.warn('Falha na autenticação:', info?.message || 'Credenciais inválidas');
-        return res.status(401).json({ error: info?.message || 'Autenticação falhou' });
-      }
-
-      req.logIn(user, async (loginErr) => {
-        if (loginErr) {
-          console.error('Erro ao criar sessão:', loginErr);
-          return res.status(500).json({ error: 'Erro ao criar sessão' });
-        }
-
-        console.log('Usuário autenticado:', user.username);
-
-        // Chama o controller que cria/verifica o usuário e gera token
-        await criarUsuarioController(req, res); 
-        
-      });
-    } catch (error) {
-      console.error('Erro inesperado:', error);
-      res.status(500).json({ error: 'Erro inesperado no servidor' });
+    if (!usuarioFake) {
+      return res
+        .status(401)
+        .json({ error: 'Credenciais inválidas (fake auth)' });
     }
+
+    // Injeta dados fake no req.body para passar no controller
+    req.body = {
+      fake: true,
+      registro: usuarioFake.registro,
+      nome: usuarioFake.nome,
+      email: usuarioFake.email,
+      password: usuarioFake.senha,
+      funcao: usuarioFake.funcao,
+    };
+
+    return criarUsuarioController(req, res);
+  }
+
+  // Se não for fake auth, usa LDAP
+  
+  passport.authenticate('ldapauth', { session: true }, (err, user, info) => {
+    if (err) {
+      console.error('Erro na autenticação LDAP:', err);
+      return res.status(500).json({ error: 'Erro interno no servidor' });
+    }
+
+    if (!user) {
+      console.warn('Falha na autenticação LDAP:', info?.message || 'Credenciais inválidas');
+      return res.status(401).json({ error: info?.message || 'Autenticação falhou' });
+    }
+
+    req.logIn(user, async (loginErr) => {
+      if (loginErr) {
+        console.error('Erro ao criar sessão:', loginErr);
+        return res.status(500).json({ error: 'Erro ao criar sessão' });
+      }
+
+      console.log('Usuário autenticado:', user.username);
+      await criarUsuarioController(req, res);
+    });
   })(req, res, next);
 });
+
 
 // Logout
 router.post('/logout', (req, res) => {
@@ -83,3 +129,4 @@ router.get('/check-auth', (req, res) => {
 export default router;
 
 
+  

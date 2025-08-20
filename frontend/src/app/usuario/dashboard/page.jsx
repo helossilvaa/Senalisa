@@ -1,25 +1,55 @@
 'use client'
-
 import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
-export default function DashboardTecnico() {
-  const [nomeUsuario, setNomeUsuario] = useState(''); // Nome que virá do backend
+export default function DashboardTecnico({ params }) {
+
+  const [nomeUsuario, setNomeUsuario] = useState('');
+  const router = useRouter();
+  const API_URL = "http://localhost:8080/usuarios";
 
   useEffect(() => {
-    // Aqui você faz a chamada à API do backend
-    const fetchUsuario = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/usuario'); // Ajuste para sua rota real
-        const data = await response.json();
-        setNomeUsuario(data.nome); // Supondo que o backend retorne { nome: 'William' }
-      } catch (error) {
-        console.error('Erro ao buscar usuário:', error);
-        setNomeUsuario('Usuário'); // fallback
-      }
-    };
+    const token = localStorage.getItem("token");
 
-    fetchUsuario();
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+
+      if (decoded.descricao !== 'usuario') {
+        router.push('/');
+        return;
+      }
+
+      if (decoded.exp < Date.now() / 1000) {
+        localStorage.removeItem("token");
+        alert('Seu Login Expirou.');
+        router.push('/login');
+        return;
+      }
+
+      const id = decoded.id;
+
+      fetch(`${API_URL}/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          setNomeUsuario(data.nome);
+        })
+        .catch(err => {
+          console.error("Erro ao buscar usuário: ", err);
+          setNomeUsuario('Usuário'); // fallback
+        });
+
+    } catch (error) {
+      console.error("Token inválido:", error);
+      localStorage.removeItem("token");
+      router.push("/login");
+    }
   }, []);
 
   return (
@@ -35,3 +65,4 @@ export default function DashboardTecnico() {
     </div>
   );
 }
+

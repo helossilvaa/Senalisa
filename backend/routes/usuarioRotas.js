@@ -4,23 +4,18 @@ import authMiddleware from '../middlewares/authMiddleware.js';
  
 const router = express.Router();
  
-router.post('/usuarios', authMiddleware, criarUsuarioController);
+router.post('/', authMiddleware, criarUsuarioController);
  
-router.options('/usuarios', (req, res) => {
-    res.setHeader('Allow', 'POST, OPTIONS');
+router.get('/', authMiddleware, listarUsuariosController);
+ 
+router.get('/:id', authMiddleware, obterUsuarioIdController);
+
+router.options('/', (req, res) => {
+    res.setHeader('Allow', 'POST, GET, OPTIONS');
     res.status(204).send();
 })
  
-router.get('/usuarios', authMiddleware, listarUsuariosController);
- 
-router.options('/usuarios', (req, res) => {
-    res.setHeader('Allow', 'GET, OPTIONS');
-    res.status(204).send();
-})
- 
-router.get('/usuarios/:id', authMiddleware, obterUsuarioIdController);
- 
-router.options('/usuarios/:id', (req, res) => {
+router.options('/:id', (req, res) => {
     res.setHeader('Allow', 'GET, OPTIONS');
     res.status(204).send();
 })

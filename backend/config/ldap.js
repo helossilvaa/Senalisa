@@ -14,6 +14,7 @@ const ldapOptions = {
   
 };
 
+
 //Identificação e retorno do usuário autenticado
 passport.use(new LdapStrategy(ldapOptions, (user, done) => {
   if (!user) {

@@ -27,4 +27,15 @@ const obterUsuario = async (registro)=> {
     }
 };
 
-export {criarUsuario, listarUsuarios, obterUsuario};
+const obterUsuarioPorEmail = async (email) => {
+
+    try {
+        return await read('usuarios', `email = '${email}'`);
+    } catch (error) {
+        console.error('Erro ao obter usuario por email: ', error);
+        throw error;
+    }
+    
+  };
+
+export {criarUsuario, listarUsuarios, obterUsuario, obterUsuarioPorEmail};
