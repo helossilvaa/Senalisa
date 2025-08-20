@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import './headerAdmin.css';
  
-export default function Home() {
+export default function HeaderAdmin () {
  
     useEffect(() => {
  
@@ -59,6 +59,12 @@ export default function Home() {
                             <a href="#">
                                 <i className="bi bi-chat-left-text me-2" />
                                 <span className="item-description">Conversas</span>
+                            </a>
+                        </li>
+                        <li className="side-item">
+                            <a href="#">
+                                <i class="bi bi-file-bar-graph"/>
+                                <span className="item-description">Relatórios</span>
                             </a>
                         </li>
                         <li className="side-item">
