@@ -1,21 +1,44 @@
 'use client';
 import './chamados.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header/header';
 
 export default function Chamados() {
   const [filtro, setFiltro] = useState("Todas");
+  const [chamados, setChamados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const chamados = [
-    { id: 1, numero: "12345", item: "Notebook", tecnico: "Junior", data: "30/07", status: "Finalizado" },
-    { id: 2, numero: "12346", item: "Impressora", tecnico: "Maria", data: "01/08", status: "Em progresso" },
-    { id: 3, numero: "12347", item: "Monitor", tecnico: "Carlos", data: "02/08", status: "Finalizado" }
-  ];
+  const API_URL = 'http://localhost:8080'; 
 
-  // Filtro dinâmico
+  // Buscar chamados do backend
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const fetchChamados = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${API_URL}/chamados`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Erro ao buscar chamados');
+        const data = await res.json();
+        setChamados(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChamados();
+  }, []);
+
+  // Filtra chamados de acordo com o status
   const chamadosFiltrados = chamados.filter((chamado) => {
     if (filtro === "Todas") return true;
-    return chamado.status === filtro;
+    return chamado.status.toLowerCase() === filtro.toLowerCase();
   });
 
   return (
@@ -43,39 +66,45 @@ export default function Chamados() {
         </div>
         <hr />
 
+        {/* Mensagem de erro ou loading */}
+        {loading && <p>Carregando chamados...</p>}
+        {error && <p className="text-danger">{error}</p>}
+
         {/* Tabela */}
-        <div className="table-responsive">
-          <table className="table">
-            <thead className="table-header">
-              <tr>
-                <th>Número do chamado</th>
-                <th>Item</th>
-                <th>Técnico resp.</th>
-                <th>Data</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chamadosFiltrados.length === 0 ? (
-                <tr><td colSpan="5" className="text-center text-muted">Nenhum chamado encontrado.</td></tr>
-              ) : (
-                chamadosFiltrados.map((chamado) => (
-                  <tr key={chamado.id}>
-                    <td>{chamado.numero}</td>
-                    <td>{chamado.item}</td>
-                    <td>{chamado.tecnico}</td>
-                    <td>{chamado.data}</td>
-                    <td>
-                      <span className={`status ${chamado.status.toLowerCase().replace(" ", "-")}`}>
-                        {chamado.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        {!loading && !error && (
+          <div className="table-responsive">
+            <table className="table">
+              <thead className="table-header">
+                <tr>
+                  <th>Número do chamado</th>
+                  <th>Título</th>
+                  <th>Técnico resp.</th>
+                  <th>Data</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {chamadosFiltrados.length === 0 ? (
+                  <tr><td colSpan="5" className="text-center text-muted">Nenhum chamado encontrado.</td></tr>
+                ) : (
+                  chamadosFiltrados.map((chamado) => (
+                    <tr key={chamado.id}>
+                      <td>{chamado.id}</td>
+                      <td>{chamado.titulo}</td>
+                      <td>{chamado.tecnico_nome || '-'}</td>
+                      <td>{new Date(chamado.created_at).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`status ${chamado.status.toLowerCase().replace(" ", "-")}`}>
+                          {chamado.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

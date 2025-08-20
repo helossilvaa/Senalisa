@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import './novo.css';
 import Header from '@/components/Header/header';
-// import Calendario from '@/components/Calendario/Calendar';
 
 export default function Chamados() {
   const [titulo, setTitulo] = useState('');
@@ -18,6 +17,7 @@ export default function Chamados() {
 
   const API_URL = 'http://localhost:8080';
 
+  // Busca salas, equipamentos e pools do backend
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -34,6 +34,11 @@ export default function Chamados() {
       })
       .catch(err => console.error(err));
   }, []);
+
+  // Filtra equipamentos da sala selecionada
+  const equipamentosFiltrados = equipamentos.filter(
+    eq => eq.sala_id.toString() === salaId
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,114 +89,94 @@ export default function Chamados() {
       <Header />
       <div className="container">
         <div className="container space-2">
-          <div className="w-md-80 w-lg-50 mx-md-auto mb-5 mb-md-9">
-            <h2 className="fw-bold">Novo chamado</h2>
-          </div>
-          <div className="w-lg-80 mx-auto">
-            <form className="js-validate" onSubmit={handleSubmit}>
-              <div className="row">
-                {/* Título */}
-                <div className="col-sm-6 mb-4">
-                  <label className="input-label">Título</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Título do chamado"
-                    value={titulo}
-                    onChange={(e) => setTitulo(e.target.value)}
-                    required
-                  />
-                </div>
+          <h2 className="fw-bold">Novo chamado</h2>
+          <form className="js-validate" onSubmit={handleSubmit}>
+            <div className="row">
 
-                {/* Tipo */}
-                <div className="col-sm-6 mb-4">
-                  <label className="input-label">Tipo de assistência</label>
-                  <select
-                    className="form-select"
-                    value={tipoId}
-                    onChange={(e) => setTipoId(e.target.value)}
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    {pools.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.titulo}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Sala */}
-                <div className="col-sm-6 mb-4">
-                  <label className="input-label">Sala</label>
-                  <select
-                    className="form-select"
-                    value={salaId}
-                    onChange={(e) => setSalaId(e.target.value)}
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    {salas.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.nome_sala}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Equipamento */}
-                <div className="col-sm-6 mb-4">
-                  <label className="input-label">Equipamento</label>
-                  <select
-                    className="form-select"
-                    value={equipamentoId}
-                    onChange={(e) => setEquipamentoId(e.target.value)}
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    {equipamentos.map((eq) => (
-                      <option key={eq.patrimonio} value={eq.patrimonio}>
-                        {eq.equipamento} (Patrimônio {eq.patrimonio})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Calendário futuro */}
-                {/*
-                <div className="col-sm-6 mb-4">
-                  <Calendario value={dataChamado} onChange={setDataChamado} />
-                </div>
-                */}
-              </div>
-
-              {/* Descrição */}
-              <div className="js-form-message mb-6">
-                <label className="input-label">Descrição</label>
-                <textarea
+              {/* Título */}
+              <div className="col-sm-6 mb-4">
+                <label className="input-label">Título</label>
+                <input
+                  type="text"
                   className="form-control"
-                  rows={4}
-                  placeholder="Descreva aqui o problema"
-                  value={descricao}
-                  onChange={(e) => setDescricao(e.target.value)}
+                  placeholder="Título do chamado"
+                  value={titulo}
+                  onChange={(e) => setTitulo(e.target.value)}
                   required
                 />
               </div>
 
-              {error && <p className="text-danger">{error}</p>}
-              {chamadoCriado && (
-                <p className="text-success">
-                  Chamado criado com sucesso! ID: {chamadoCriado}
-                </p>
-              )}
-
-              <div className="enviar">
-                <button type="submit" className="btn btn-wide mb-4">
-                  Enviar
-                </button>
+              {/* Tipo de assistência */}
+              <div className="col-sm-6 mb-4">
+                <label className="input-label">Tipo de assistência</label>
+                <select
+                  className="form-select"
+                  value={tipoId}
+                  onChange={(e) => setTipoId(e.target.value)}
+                  required
+                >
+                  <option value="">Selecione</option>
+                  {pools.map(p => (
+                    <option key={p.id} value={p.id}>{p.titulo}</option>
+                  ))}
+                </select>
               </div>
-            </form>
-          </div>
+
+              {/* Sala */}
+              <div className="col-sm-6 mb-4">
+                <label className="input-label">Sala</label>
+                <select
+                  className="form-select"
+                  value={salaId}
+                  onChange={(e) => setSalaId(e.target.value)}
+                  required
+                >
+                  <option value="">Selecione</option>
+                  {salas.map(s => (
+                    <option key={s.id} value={s.id}>{s.nome_sala}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Equipamento */}
+              <div className="col-sm-6 mb-4">
+                <label className="input-label">Equipamento</label>
+                <select
+                  className="form-select"
+                  value={equipamentoId}
+                  onChange={(e) => setEquipamentoId(e.target.value)}
+                  required
+                  disabled={!salaId} // desabilita se nenhuma sala estiver selecionada
+                >
+                  <option value="">Selecione</option>
+                  {equipamentosFiltrados.map(eq => (
+                    <option key={eq.patrimonio} value={eq.patrimonio}>
+                      {eq.equipamento} (Patrimônio {eq.patrimonio})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+            </div>
+
+            {/* Descrição */}
+            <div className="js-form-message mb-6">
+              <label className="input-label">Descrição</label>
+              <textarea
+                className="form-control"
+                rows={4}
+                placeholder="Descreva aqui o problema"
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <p className="text-danger">{error}</p>}
+            {chamadoCriado && <p className="text-success">Chamado criado com sucesso! ID: {chamadoCriado}</p>}
+
+            <button type="submit" className="btn btn-wide mb-4">Enviar</button>
+          </form>
         </div>
       </div>
     </div>
