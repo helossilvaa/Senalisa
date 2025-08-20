@@ -1,10 +1,11 @@
 :root {
     --fundo: #f8f8fa;
+    --branco: #ffffff;
+    --preto: #000000;
     --bola: #b10000;
     --fonte: 'Poppins', sans-serif;
     --cordata: #535355;
-    --botao: #640d14;
-
+    --vermelhoEscuro: #640d14;
 }
 
 .card {
