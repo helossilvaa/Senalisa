@@ -16,7 +16,7 @@
 
 .dashboardContainer {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem;
   background-color: #f7f7f9;
   min-height: 100vh;
   overflow-y: auto;
@@ -55,7 +55,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 1rem;
-  height: 480px;
+  height: 475px;
   text-align: center;
 }
 
@@ -64,13 +64,14 @@
 }
 
 .cardLarge {
-  width: 790px;
-  height: 270px;
+  width: 100%;
+  height: 260px;
   margin-top: 30px;
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 1rem;
+  display: flex;
 }
 
 .numeroChamados {
@@ -133,6 +134,56 @@
   background: var(--vermelhoEscuro);
   border-radius: 50%;
   margin-right: 4px;
+}
+
+.graficoTecnicos{
+  width: 40%;
+}
+
+.graficoTecnicos h4{
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 3px;
+}
+
+.estatistica{
+  width: 50%;
+}
+
+.estatistica h4{
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 3px;
+}
+
+.tecnicoBar {
+  margin: 12px 0;
+}
+
+.nomeTecnico {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.preenchimento {
+  width: 100%;
+  height: 25px;
+  background: var(--vermelhoEscuro);
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  transition: width 0.4s ease;
+}
+
+.graficoObjetos{
+  margin-top: -30px;
 }
 
 @media (max-width: 1024px) {

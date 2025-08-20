@@ -4,6 +4,7 @@ import * as React from "react";
 import styles from "@/app/tecnico/Chamadas/[id]/page.module.css";
 import HeaderTecnico from "@/components/HeaderTecnico/headerTecnico";
 import CalendarPage from "@/components/Calendario/page";
+import Relatorios from "@/components/Relatorios/relatorios";
 
 const infoChamadas = [
   {
@@ -77,6 +78,7 @@ export default function InfoPage({ params }) {
                 principle of selection: he rejects pleasures to secure other
                 greater pleasures, or else he endures pains to avoid worse pains.
               </p>
+              <Relatorios/>
               <div className={styles.botoes}>
                 <button className={styles.emProgresso}>Em Andamento</button>
                 <button className={styles.concluido}>Finalizado</button>

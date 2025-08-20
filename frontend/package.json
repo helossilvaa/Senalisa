@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "add": "^2.0.6",
     "axios": "^1.11.0",
     "bootstrap": "^5.3.7",
     "bootstrap-icons": "^1.13.1",
@@ -18,6 +19,13 @@
     "react": "19.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "19.1.0",
-    "react-loading-indicators": "^1.0.1"
+    "react-loading-indicators": "^1.0.1",
+    "react-native-chart-kit": "^6.12.0",
+    "react-native-svg": "^15.12.1",
+    "recharts": "^3.1.2",
+    "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-flow-strip-types": "^7.27.1"
   }
 }
