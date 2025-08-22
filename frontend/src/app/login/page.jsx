@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import styles from "@/app/login/page.module.css";
 
 export default function Login() {
   const [loginParams, setLoginParams] = useState({ username: "", password: "" });
@@ -14,9 +15,10 @@ export default function Login() {
 
     const checkToken = async () => {
 
+
       const token = localStorage.getItem("token");
       if (!token) return;
-  
+ 
       try {
         const res = await fetch(`${API_URL}/auth/validate`, {
           method: "GET",
@@ -24,15 +26,15 @@ export default function Login() {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+ 
         if (!res.ok) {
           localStorage.removeItem("token");
           return;
         }
-  
+ 
         const data = await res.json();
         const funcao = data?.usuario?.funcao;
-  
+ 
         if (funcao === "usuario") {
           router.push("/usuario/dashboard");
         } else if (funcao === "tecnico") {
@@ -48,7 +50,7 @@ export default function Login() {
         localStorage.removeItem("token");
       }
     };
-  
+ 
     checkToken();
   }, [router]);
   
@@ -58,7 +60,6 @@ export default function Login() {
     setRetorno(null);
     setLoading(true);
 
-    
 
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
@@ -76,7 +77,10 @@ export default function Login() {
           localStorage.setItem("token", data.token);
         }
 
-        setRetorno({ status: "success", mensagem: "Login realizado com sucesso!" });
+        setRetorno({
+          status: "success",
+          mensagem: "Login realizado com sucesso!",
+        });
 
         setTimeout(() => {
           if (data.usuario.funcao === "usuario") {
@@ -99,44 +103,48 @@ export default function Login() {
   };
 
   return (
-    <main className="form-signin w-100 m-auto">
+    <main className={styles.page}>
+    <div className={styles.imagem}>
+      <img src="../public/Senalisa.png" alt="Logo Senalisa" />
+    </div>
+    <div className={styles.formulario}>
       <form onSubmit={login}>
-        <h1 className="h3 mb-3 fw-normal">Entrar</h1>
+        <h1>Entrar</h1>
 
-        <div className="form-floating">
+        <div className={styles.camposPreenchimento}>
+          <label htmlFor="floatingInput">Usuário</label>
           <input
             type="text"
             className="form-control"
             id="floatingInput"
-            placeholder="Usuário"
             value={loginParams.username}
             onChange={(e) => setLoginParams({ ...loginParams, username: e.target.value })}
           />
-          <label htmlFor="floatingInput">Usuário</label>
         </div>
 
-        <div className="form-floating">
+        <div className={styles.camposPreenchimento}>
+          <label htmlFor="floatingPassword">Senha</label>
           <input
             type="password"
             className="form-control"
             id="floatingPassword"
-            placeholder="Senha"
             value={loginParams.password}
             onChange={(e) => setLoginParams({ ...loginParams, password: e.target.value })}
           />
-          <label htmlFor="floatingPassword">Senha</label>
         </div>
 
-        <button className="btn btn-primary w-100 py-2 mt-3" type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className={styles.botao}>
           {loading ? "Entrando..." : "Entrar"}
         </button>
 
         {retorno && (
-          <div className={`alert mt-3 alert-${retorno.status === "success" ? "success" : "danger"}`}>
+          <div className={`alert alert-${retorno.status === "success" ? "success" : "danger"}`}>
             {retorno.mensagem}
           </div>
         )}
       </form>
-    </main>
+    </div>
+
+  </main>
   );
 }

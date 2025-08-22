@@ -1,0 +1,70 @@
+"use client";
+
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+
+const data = [
+  { name: "Computador travando", value: 35 },
+  { name: "Internet lenta", value: 25 },
+  { name: "Impressora", value: 15 },
+  { name: "Projetor", value: 10 },
+  { name: "Outros", value: 15 },
+];
+
+const COLORS = ["#640d14", "#d52531", "#b10000", "#b3b3b3", "#000000"];
+
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  value,
+}) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) / 2;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontSize={13}
+      fontWeight="bold"
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
+export default function CategoriasChamados() {
+  return (
+    <PieChart width={400} height={250} >
+      <Pie
+        data={data}
+        cx="50%"
+        cy="50%"
+        outerRadius={80}
+        fill="#8884d8"
+        dataKey="value"
+        label={renderCustomizedLabel}
+        labelLine={false}
+      >
+        {data.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Pie>
+
+      <Tooltip />
+      <Legend
+        layout="vertical"
+        verticalAlign="middle"
+        align="right"
+      />
+    </PieChart>
+  );
+}

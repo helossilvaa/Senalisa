@@ -11,7 +11,7 @@ export default function Relatorios () {
                 <div className={styles.link}><p>mouseQuebrado.pdf</p></div>  
             </div>
             <div className={styles.download}>
-           <div className={styles.baixar}><i class="bi bi-arrow-down-circle-fill"/></div></div>
+           <div className={styles.baixar}><i className="bi bi-arrow-down-circle-fill"/></div></div>
         </div>
     )
 }
