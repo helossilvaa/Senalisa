@@ -1,7 +1,5 @@
 import express from 'express';
 import passport from '../config/ldap.js';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/jwt.js';
 import { criarUsuarioController } from '../controllers/usuarioController.js';
 
 const router = express.Router();
@@ -60,7 +58,7 @@ router.post('/login', async (req, res, next) => {
   }
 
   // Se não for fake auth, usa LDAP
-  
+
   passport.authenticate('ldapauth', { session: true }, (err, user, info) => {
     if (err) {
       console.error('Erro na autenticação LDAP:', err);

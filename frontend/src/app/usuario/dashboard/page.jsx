@@ -7,7 +7,9 @@ import { jwtDecode } from "jwt-decode";
 export default function DashboardTecnico({ params }) {
 
   const [nomeUsuario, setNomeUsuario] = useState('');
+
   const router = useRouter();
+
   const API_URL = "http://localhost:8080/usuarios";
 
   useEffect(() => {
@@ -19,9 +21,10 @@ export default function DashboardTecnico({ params }) {
     }
 
     try {
+
       const decoded = jwtDecode(token);
 
-      if (decoded.descricao !== 'usuario') {
+      if (decoded.funcao !== 'usuario') {
         router.push('/');
         return;
       }
@@ -42,7 +45,7 @@ export default function DashboardTecnico({ params }) {
         })
         .catch(err => {
           console.error("Erro ao buscar usuário: ", err);
-          setNomeUsuario('Usuário'); // fallback
+          setNomeUsuario(data.nome); 
         });
 
     } catch (error) {

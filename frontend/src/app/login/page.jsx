@@ -7,14 +7,16 @@ export default function Login() {
   const [loginParams, setLoginParams] = useState({ username: "", password: "" });
   const [retorno, setRetorno] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const router = useRouter();
   const API_URL = "http://localhost:8080";
 
   useEffect(() => {
     const checkToken = async () => {
+
       const token = localStorage.getItem("token");
       if (!token) return;
-
+  
       try {
         const res = await fetch(`${API_URL}/auth/validate`, {
           method: "GET",
@@ -22,6 +24,7 @@ export default function Login() {
             Authorization: `Bearer ${token}`,
           },
         });
+
 
         if (res.ok) {
           const data = await res.json();
@@ -35,7 +38,23 @@ export default function Login() {
               router.push("/admin/dashboard");
             }
           }, 1000);
+  
+        if (!res.ok) {
+          localStorage.removeItem("token");
+          return;
+        }
+  
+        const data = await res.json();
+        const funcao = data?.usuario?.funcao;
+  
+        if (funcao === "usuario") {
+          router.push("/usuario/dashboard");
+        } else if (funcao === "tecnico") {
+          router.push("/tecnico/dashboard");
+        } else if (funcao === "admin") {
+          router.push("/admin/dashboard");
         } else {
+          console.warn("Função desconhecida:", funcao);
           localStorage.removeItem("token");
         }
       } catch (err) {
@@ -43,20 +62,23 @@ export default function Login() {
         localStorage.removeItem("token");
       }
     };
-
+  
     checkToken();
-  }, []);
-
-  // Função de login
+  }, [router]);
+  
+}
   const login = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setRetorno(null);
+    setLoading(true);
+
 
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(loginParams),
       });
 
@@ -82,7 +104,7 @@ export default function Login() {
           }
         }, 1000);
       } else {
-        setRetorno({ status: "error", mensagem: "Credenciais inválidas" });
+        setRetorno({ status: "error", mensagem: data.error || "Credenciais inválidas" });
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
@@ -93,43 +115,37 @@ export default function Login() {
   };
 
   return (
-    <main className={styles.page}>
-      <div className={styles.imagem}>
-        <img src="/public/Senalisa.png" alt="Logo Senalisa" />
-      </div>
-      <div className={styles.formulario}>
-        <form onSubmit={login}>
-          <h1>Entrar</h1>
+    <main className="form-signin w-100 m-auto">
+      <form onSubmit={login}>
+        <h1 className="h3 mb-3 fw-normal">Entrar</h1>
 
-          <div className={styles.camposPreenchimento}>
-            <label htmlFor="floatingInput">Usuário</label>
-            <input
-              type="text"
-              className="form-control"
-              id="floatingInput"
-              value={loginParams.username}
-              onChange={(e) =>
-                setLoginParams({ ...loginParams, username: e.target.value })
-              }
-            />
-          </div>
+        <div className="form-floating">
+          <input
+            type="text"
+            className="form-control"
+            id="floatingInput"
+            placeholder="Usuário"
+            value={loginParams.username}
+            onChange={(e) => setLoginParams({ ...loginParams, username: e.target.value })}
+          />
+          <label htmlFor="floatingInput">Usuário</label>
+        </div>
 
-          <div className={styles.camposPreenchimento}>
-            <label htmlFor="floatingPassword">Senha</label>
-            <input
-              type="password"
-              className="form-control"
-              id="floatingPassword"
-              value={loginParams.password}
-              onChange={(e) =>
-                setLoginParams({ ...loginParams, password: e.target.value })
-              }
-            />
-          </div>
+        <div className="form-floating">
+          <input
+            type="password"
+            className="form-control"
+            id="floatingPassword"
+            placeholder="Senha"
+            value={loginParams.password}
+            onChange={(e) => setLoginParams({ ...loginParams, password: e.target.value })}
+          />
+          <label htmlFor="floatingPassword">Senha</label>
+        </div>
 
-          <button type="submit" disabled={loading} className={styles.botao}>
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
+        <button className="btn btn-primary w-100 py-2 mt-3" type="submit" disabled={loading}>
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
 
           {retorno && (
             <div
@@ -141,7 +157,6 @@ export default function Login() {
             </div>
           )}
         </form>
-      </div>
     </main>
   );
 }
