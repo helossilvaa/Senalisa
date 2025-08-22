@@ -3,6 +3,7 @@ import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarA
 
 const criarChamadoController = async (req, res) => {
     try {
+
         const {
             titulo,
             descricao,
@@ -15,13 +16,21 @@ const criarChamadoController = async (req, res) => {
             titulo,
             descricao,
             tipo_id,
-            usuario_id: req.user.id, 
+            usuario_id: req.usuarioId, 
             tecnico_id: null,        
             sala_id,
             equipamento_id,
-            status: 'aberto',       
+            status: 'pendente'   
         };
+        
+        const chamadosExistentes = await listarChamado();
+        const jaExiste = chamadosExistentes.some(c => 
+            c.equipamento_id === equipamento_id && c.status !== 'encerrado'
+        );
 
+        if (jaExiste) {
+            return res.status(400).json({ mensagem: 'Já existe um chamado ativo para este equipamento.' });
+        }
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso', chamadoId });
 
@@ -43,6 +52,22 @@ const listarChamadosController = async (req, res) => {
         res.status(500).json({mensagem: "Erro ao listar chamados."});
     }
 }
+
+
+export const listarChamadosDoUsuarioController = async (req, res) => {
+    try {
+    const userId = req.usuarioId; 
+    const todosChamados = await listarChamado(); 
+    const chamadosDoUsuario = todosChamados.filter(c => c.usuario_id === userId);
+    res.json(chamadosDoUsuario);
+
+    } catch (error) {
+        console.error('Erro ao listar chamados: ', error);
+        res.status(500).json({mensagem: "Erro ao listar chamados."});
+    }
+    
+};
+  
 
 const obterChamadoPorIdController = async (req, res) => {
     try {
@@ -129,7 +154,7 @@ const assumirChamadoController = async (req, res) => {
 
 const listarChamadosParaTecnicoController = async (req, res) => {
     try {
-        const tecnico_id = req.user.id;
+        const tecnico_id = req.usuarioId;
         const chamados = await readAll(
             'chamados',
             `status != 'encerrado' AND (tecnico_id IS NULL OR tecnico_id = ${tecnico_id})`
