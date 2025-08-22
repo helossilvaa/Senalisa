@@ -105,7 +105,7 @@ export default function Login() {
   return (
     <main className={styles.page}>
     <div className={styles.imagem}>
-      <img src="../public/Senalisa.png" alt="Logo Senalisa" />
+      <img src="Senalisa.png" alt="Logo Senalisa" />
     </div>
     <div className={styles.formulario}>
       <form onSubmit={login}>
