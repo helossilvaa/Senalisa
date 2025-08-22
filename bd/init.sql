@@ -124,6 +124,26 @@ CREATE TABLE notificacoes (
     FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)
 );
 
+
+CREATE TABLE chats (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  tecnico_id INT NOT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+  FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE chat_mensagens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  chat_id INT NOT NULL,
+  remetente_id INT NOT NULL,
+  mensagem TEXT NOT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (chat_id) REFERENCES chats(id),
+  FOREIGN KEY (remetente_id) REFERENCES usuarios(id)
+);
+
 -- Índices adicionais para otimização
 CREATE INDEX idx_usuarios_email ON usuarios(email);
 CREATE INDEX idx_chamados_status ON chamados(status);
