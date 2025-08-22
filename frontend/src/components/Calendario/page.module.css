@@ -13,10 +13,14 @@
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    width: 350px;
-    height: 350px;
     color: var(--preto);
-    padding: 20px;
+    height: auto;
+    padding: 5px 10px;
+}
+
+.calendarioitens{
+    height: 100%;
+    width: 60vh;
 }
 
 .header {
@@ -36,33 +40,33 @@
     font-weight: bold;
 }
 
+.semanaDias{
+    gap: 16.3px;
+}
 .semanaDias,
 .days {
     display: flex;
     flex-wrap: wrap;
+    border-bottom: #640d14;
 }
 
-.days {
-    height: 240px;
-}
-
-.semanaDias div {
-    color: var(--vermelhoEscuro);
-    width: 14.28%;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 5px;
+.semanaDias,
+.days p{
+    justify-content: center;
+    margin-top: 20px;
 }
 
 .days div {
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 14.28%;
+    width: 5.9vh;
+    font-size: 10px;
+    justify-content: center;
     text-align: center;
-    padding: 10px 0;
+    padding: 9px 0;
     border-radius: 5px;
-}
 
+}
 .days div:hover {
     background-color: var(--vermelhoEscuro);
     color: var(--branco);
@@ -81,4 +85,19 @@
     border: 2px solid var(--vermelhoEscuro);
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     font-weight: bold;
+}
+
+@media (max-width: 1300px) {
+    .calendario {
+      width: 100%;
+      height: auto;
+    }
+
+    .calendarioitens{
+        width: 100%;
+    }
+    .semanaDias,
+    .days{
+        font-size: 1.6vh;
+    }
 }
