@@ -10,7 +10,7 @@ export default function DashboardTecnico({ params }) {
 
   const router = useRouter();
 
-  const API_URL = "http://localhost:8080/usuarios";
+  const API_URL = "http://localhost:8080";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,23 +38,24 @@ export default function DashboardTecnico({ params }) {
 
       const id = decoded.id;
 
-      fetch(`${API_URL}/${id}`)
-        .then(res => res.json())
-        .then(data => {
-          setNomeUsuario(data.nome);
-        })
-        .catch(err => {
-          console.error("Erro ao buscar usuário: ", err);
-          setNomeUsuario(data.nome); 
-        });
-
-    } catch (error) {
-      console.error("Token inválido:", error);
-      localStorage.removeItem("token");
-      router.push("/login");
-    }
+      fetch(`${API_URL}/usuarios/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+            .then(res => res.json())
+            .then(data => {
+              setNomeUsuario(data.nome);
+            })
+            .catch(err => {
+              console.error("Erro ao buscar usuário: ", err);
+              setNomeUsuario('nome'); 
+            });
+    
+        } catch (error) {
+          console.error("Token inválido:", error);
+          localStorage.removeItem("token");
+          router.push("/login");
+        }
   }, []);
 
+  
   return (
     <div className={styles.dashboardContainer}>
       <h2 className={styles.welcome}>Olá, {nomeUsuario}!</h2>

@@ -63,4 +63,13 @@ body{
     color: #54575a;
   }
 
+  .status.concluído {
+    color: green; 
+    font-weight: bold;
+  }
+  
+  tr.concluido {
+    opacity: 0.5;          
+  }
+  
 

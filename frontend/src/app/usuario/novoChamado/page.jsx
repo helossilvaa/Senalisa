@@ -17,8 +17,9 @@ export default function Chamados() {
   const [pools, setPools] = useState([]);
   const [chamadoCriado, setChamadoCriado] = useState(null);
   const [error, setError] = useState('');
+  const [equipamentosFiltrados, setEquipamentosFiltrados] = useState([]);
   const router = useRouter();
-  const [nomeUsuario, setNomeUsuario] = useState('');
+
 
   const API_URL = 'http://localhost:8080';
 
@@ -31,6 +32,8 @@ export default function Chamados() {
           router.push("/login");
           return;
         }
+
+        console.log(localStorage.getItem("token"))
     
         try {
 
@@ -50,14 +53,10 @@ export default function Chamados() {
     
           const id = decoded.id;
     
-          fetch(`${API_URL}/usuarios/${id}`)
+          fetch(`${API_URL}/usuarios/${id}`, { headers: { Authorization: `Bearer ${token}` } })
             .then(res => res.json())
-            .then(data => {
-              setNomeUsuario(data.nome);
-            })
             .catch(err => {
-              console.error("Erro ao buscar usuário: ", err);
-              setNomeUsuario('Usuário'); 
+              console.error("Erro ao buscar usuário: ", err); 
             });
     
         } catch (error) {
@@ -66,24 +65,63 @@ export default function Chamados() {
           router.push("/login");
         }
 
-        Promise.all([
-          fetch(`${API_URL}/salas`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-          fetch(`${API_URL}/equipamentos`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-          fetch(`${API_URL}/pools`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
-        ])
-          .then(([salasData, equipamentosData, poolsData]) => {
-            setSalas(salasData);
-            setEquipamentos(equipamentosData);
-            setPools(poolsData);
+
+        fetch(`${API_URL}/salas`, { 
+          headers: { Authorization: `Bearer ${token}` } 
+        })
+          .then(async r => {
+            const data = await r.json();
+            return data;
           })
-          .catch(err => console.error(err));
+          .then(data => setSalas(data))
+          .catch(err => console.error("Erro /salas:", err));
 
+          
+          fetch(`${API_URL}/equipamentos`, { 
+            headers: { Authorization: `Bearer ${token}` } 
+          })
+            .then(async r => {
+              const data = await r.json();
+              return data;
+            })
+            .then(data => setEquipamentos(data))
+            .catch(err => console.error("Erro /equipamentos:", err));
+
+
+            fetch(`${API_URL}/pools`, { 
+              headers: { Authorization: `Bearer ${token}` } 
+            })
+              .then(async r => {
+                const data = await r.json();
+                return data;
+              })
+              .then(data => setPools(data))
+              .catch(err => console.error("Erro /pools:", err));
+        
+         
       }, []);
+    
 
-  // Filtra equipamentos da sala selecionada
-  const equipamentosFiltrados = equipamentos.filter(
-    eq => eq.sala_id.toString() === salaId
-  );
+      useEffect(() => {
+
+        if (!salaId) { setEquipamentosFiltrados([]); return; }
+    
+        const filtrados = equipamentos
+          .filter(eq => eq?.sala_id != null && eq?.patrimonio != null && eq.sala_id.toString() === salaId)
+          .map(eq => {
+
+            const temChamado = pools.some(
+            c => c.equipamento_id?.toString() === eq.patrimonio?.toString() && c.status !== 'encerrado'
+          );
+
+            return { ...eq, temChamado };
+          });
+          
+        setEquipamentosFiltrados(filtrados);
+        setEquipamentoId(''); // resetar seleção ao mudar de sala
+      }, [salaId, equipamentos, pools]);
+    
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,6 +129,7 @@ export default function Chamados() {
     setChamadoCriado(null);
 
     try {
+
       const token = localStorage.getItem('token');
       if (!token) {
         setError('Você precisa estar logado.');
@@ -103,13 +142,16 @@ export default function Chamados() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
+
         body: JSON.stringify({
           titulo,
           descricao,
           tipo_id: tipoId,
-          patrimonio: equipamentoId,
-          sala_id: salaId
+          sala_id: salaId,
+          equipamento_id: equipamentoId
         })
+        
+
       });
 
       if (!res.ok) {
@@ -124,6 +166,7 @@ export default function Chamados() {
       setTipoId('');
       setSalaId('');
       setEquipamentoId('');
+
     } catch (err) {
       setError(err.message);
     }
@@ -195,7 +238,9 @@ export default function Chamados() {
                 >
                   <option value="">Selecione</option>
                   {equipamentosFiltrados.map(eq => (
-                    <option key={eq.patrimonio} value={eq.patrimonio}>
+                    <option key={eq.patrimonio} 
+                    value={eq.patrimonio}
+                    disabled={eq.temChamado}>
                       {eq.equipamento} (Patrimônio {eq.patrimonio})
                     </option>
                   ))}

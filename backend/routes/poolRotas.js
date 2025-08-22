@@ -4,16 +4,16 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/pools', authMiddleware, listarPoolsController);
+router.get('/', authMiddleware, listarPoolsController);
 
-router.options('/pools', (req, res) => {
+router.options('/', (req, res) => {
     res.setHeader('Allow', 'GET, OPTIONS');
     res.status(204).send();
 })
 
-router.get('/pools/:id', authMiddleware, obterPoolIdController);
+router.get('/:id', authMiddleware, obterPoolIdController);
 
-router.options('/pools/:id', (req, res) => {
+router.options('/:id', (req, res) => {
     res.setHeader('Allow', 'GET, OPTIONS');
     res.status(204).send();
 });

@@ -79,7 +79,7 @@ app.get('/', (req, res) => {
   res.send('Backend funcionando!');
 });
 
-app.use('/usuario', usuarioRotas);
+app.use('/usuarios', usuarioRotas);
 app.use('/chamados', chamadoRotas);
 app.use('/salas', salasRotas);
 app.use('/equipamentos', EquipamentoRotas);
