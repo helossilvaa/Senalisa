@@ -16,18 +16,15 @@
     display: flex;
     flex-direction: column;
     background-color: #000000;
-    height: 100%;
+    overflow: hidden;
     max-width: 250px;
     position: relative;
     transition: all .5s;
     z-index: 2;
 }
-
-#sidebar_content {
-    padding: 15px;
-
+.sideitens{
+    height: 100%;
 }
-
 .senaiLogo {
     display: flex;
     align-items: center;
