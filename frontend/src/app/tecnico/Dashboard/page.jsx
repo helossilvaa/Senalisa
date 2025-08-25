@@ -7,13 +7,13 @@ export default function DashboardTecnico() {
             <div className={styles.page}>
                 <HeaderTecnico />
                 <div className={styles.dashboardContainer}>
-                    <h2 className={styles.welcome}>Olá, William!</h2>
+                    <h2 className={styles.welcome}>Olá, (nome do técnico)!</h2>
 
                     <div className={styles.cardsContainer}>
                         
                         <div className={styles.cardStatusChamados}>
                             <h3>Status dos seus chamados:</h3>
-                            <p className={styles.numeroChamados}>90 <span>(quantidade total de chamados)</span></p>
+                            <p className={styles.numeroChamados}>(quantidade total de chamados em números)</p>
                             <div className={styles.barraProgresso}>
                                 <div className={styles.progresso}></div>
                             </div>
@@ -26,7 +26,7 @@ export default function DashboardTecnico() {
 
                         <div className={styles.cardNotificacoes}>
                             <h3>Você tem</h3>
-                            <p className={styles.numeroNotificacoes}>5</p>
+                            <p className={styles.numeroNotificacoes}>(número de notificações)</p>
                             <p className={styles.textoNotificacoes}>notificações novas</p>
                         </div>
 
