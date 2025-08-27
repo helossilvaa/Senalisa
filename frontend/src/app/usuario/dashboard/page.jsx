@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import Home from '@/components/Header/header';
 
 export default function DashboardTecnico({ params }) {
 
@@ -57,7 +58,8 @@ export default function DashboardTecnico({ params }) {
 
   
   return (
-    <div className={styles.dashboardContainer}>
+<div className={styles.dashboardContainer}>
+      < Home/>
       <h2 className={styles.welcome}>Olá, {nomeUsuario}!</h2>
 
       <div className={styles.cardsContainer}>

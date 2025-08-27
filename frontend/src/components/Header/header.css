@@ -173,7 +173,7 @@
      width: 100px;
      height: auto;
  }
-  
+
  #sidebar.open-sidebar .side-item a {
      justify-content: flex-start;
      gap: 14px;
