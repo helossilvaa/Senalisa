@@ -4,6 +4,7 @@ import './novo.css';
 import Header from '@/components/Header/header';
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+import { SidebarProvider } from '@/components/Header/sidebarContext'
 
 export default function Chamados() {
   
@@ -171,6 +172,7 @@ export default function Chamados() {
   };
 
   return (
+    <SidebarProvider>
     <div className="d-flex">
       <Header />
       <div className="container">
@@ -268,5 +270,6 @@ export default function Chamados() {
         </div>
       </div>
     </div>
+    </SidebarProvider>
   );
 }

@@ -1,50 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import "bootstrap/dist/css/bootstrap.min.css"; // garante bootstrap carregado
-import "./ConversationsList.css"; // só para o badge vermelho
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./ConversationsList.css";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 export default function ConversationsList({ onSelectConversation }) {
-  // Estado inicial das conversas
-  const [conversations] = useState([
-    {
-      id: 1,
-      name: "Julio Junior Cavaliere",
-      lastMessage: "is simply dummy text of the printing and...",
-      time: "1h",
-      unread: 2,
-    },
-    {
-      id: 2,
-      name: "Maria Oliveira",
-      lastMessage: "Oi, tudo bem?",
-      time: "10m",
-      unread: 0,
-    },
-    {
-      id: 3,
-      name: "Carlos Souza",
-      lastMessage: "Me chama quando puder!",
-      time: "5m",
-      unread: 5,
-    },
-  ]);
-
+  const [conversations, setConversations] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+  const router = useRouter(); 
 
-  const filteredConversations =
+  const api_url = "https://localhost:8080";
+
+  useEffect(() => {
+
+    const fetchChat = async () => {
+      try {
+
+        const decoded = jwtDecode(token);
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          router.push("/login");
+          return;
+        }
+
+        if (decoded.exp < Date.now() / 1000) {
+          localStorage.removeItem("token");
+          alert("Seu login expirou");
+          router.push("/login");
+          return;
+        }
+
+        const response = await fetch(`${api_url}/chat`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar dados");
+        }
+
+        const data = await response.json();
+        setConversations(data);
+      } catch (error) {
+        console.error("Erro ao buscar chat", error);
+      }
+    };
+
+    fetchChat();
+  }, [router]);
+
+  const conversasFiltradas =
     activeTab === "unread"
       ? conversations.filter((c) => c.unread > 0)
       : conversations;
 
   return (
     <div className="conversations-list container-fluid">
-      {/* Header */}
+     
       <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
         <h2 className="h5 m-0">Conversas</h2>
         <CloseIcon style={{ cursor: "pointer" }} />
       </div>
 
-      {/* Tabs */}
+    
       <div className="d-flex gap-3 py-2 border-bottom">
         <span
           className={`cursor-pointer ${
@@ -64,9 +86,9 @@ export default function ConversationsList({ onSelectConversation }) {
         </span>
       </div>
 
-      {/* Lista */}
+   
       <div className="list-group list-group-flush">
-        {filteredConversations.map((conv) => (
+        {conversasFiltradas.map((conv) => (
           <div
             key={conv.id}
             className="list-group-item d-flex justify-content-between align-items-center"
@@ -74,22 +96,24 @@ export default function ConversationsList({ onSelectConversation }) {
             onClick={() => onSelectConversation?.(conv)}
           >
             <div className="d-flex align-items-center">
-              {/* Avatar + badge */}
-              <div className="position-relative rounded-circle bg-secondary me-3"
-                   style={{ width: "40px", height: "40px" }}>
+          
+              <div
+                className="position-relative rounded-circle bg-secondary me-3"
+                style={{ width: "40px", height: "40px" }}
+              >
                 {conv.unread > 0 && (
                   <span className="unread-badge">{conv.unread}</span>
                 )}
               </div>
 
-              {/* Info */}
+              
               <div>
                 <h6 className="mb-0">{conv.name}</h6>
                 <small className="text-muted">{conv.lastMessage}</small>
               </div>
             </div>
 
-            {/* Time */}
+         
             <small className="text-muted">{conv.time}</small>
           </div>
         ))}

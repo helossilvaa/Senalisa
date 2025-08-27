@@ -3,6 +3,7 @@ import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '@/components/Header/header';
 import "./notificacoes.css";
+import { SidebarProvider } from '@/components/Header/sidebarContext'
 
 export default function App() {
     const [selected, setSelected] = useState(null);
@@ -39,6 +40,7 @@ export default function App() {
     ];
 
     return (
+        <SidebarProvider>
         <div className="container-fluid vh-100">
             <div className="row h-100">
                 <Header />
@@ -88,5 +90,6 @@ export default function App() {
             </main>
         </div>
     </div >
+    </SidebarProvider>
   );
 }
