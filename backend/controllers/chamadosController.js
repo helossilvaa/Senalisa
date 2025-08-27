@@ -11,6 +11,8 @@ const criarChamadoController = async (req, res) => {
             equipamento_id
         } = req.body;
 
+        const equipamentoIdNumerico = parseInt(equipamento_id, 10);
+
         const chamadoData = {
             titulo,
             descricao,
@@ -18,21 +20,22 @@ const criarChamadoController = async (req, res) => {
             usuario_id: req.usuarioId, 
             tecnico_id: null,        
             sala_id,
-            equipamento_id,
+            equipamento_id: equipamentoIdNumerico,
             status: 'pendente'   
         };
         
-        // Verifica se já existe um chamado ativo para o equipamento
+       
         const chamadosExistentes = await listarChamado();
         const jaExiste = chamadosExistentes.some(c => 
-            c.equipamento_id === equipamento_id && c.status !== 'encerrado'
+            c.equipamento_id === equipamentoIdNumerico && c.status !== 'concluído'
         );
+        console.log('Resultado da verificação (jaExiste):', jaExiste);
 
         if (jaExiste) {
             return res.status(400).json({ mensagem: 'Já existe um chamado ativo para este equipamento.' });
         }
 
-        // Se não existir, cria o chamado
+        
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso', chamadoId });
 

@@ -1,11 +1,57 @@
 'use client'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '@/components/Header/header';
 import "./notificacoes.css";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+
 
 export default function App() {
+
+    const [notificacoes, setNotificacoes] = useState([]);
     const [selected, setSelected] = useState(null);
+
+     const router = useRouter();
+     const API_URL = 'http://localhost:8080';
+
+
+     useEffect(()=> {
+
+    const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const decoded = jwtDecode(token);
+
+        if (decoded.exp < Date.now() / 1000) {
+          localStorage.removeItem("token");
+          alert('Seu Login expirou.');
+          router.push("/login");
+          return;
+        }
+
+        const id = decoded.id;
+
+      fetch(`${API_URL}/usuarios/${id}`, 
+        { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => res.json())
+        .catch(err => {
+          console.error("Erro ao buscar usuário: ", err);
+        });
+
+    } catch (error) {
+      console.error("Token inválido:", error);
+      localStorage.removeItem("token");
+      router.push("/login");
+    }
+
+
+});
+    
 
     const notifications = [
         {
