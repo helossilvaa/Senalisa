@@ -41,6 +41,8 @@ const criarChamadoController = async (req, res) => {
         if (jaExiste) {
             return res.status(400).json({ mensagem: 'Já existe um chamado ativo para este equipamento.' });
         }
+
+        // Se não existir, cria o chamado
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso', chamadoId });
 
@@ -50,7 +52,6 @@ const criarChamadoController = async (req, res) => {
     }
 };
 
-// Função para listar todos os chamados
 const listarChamadosController = async (req, res) => {
     try {
         const chamados = await listarChamado();
@@ -147,7 +148,9 @@ const criarApontamentoController = async (req, res) => {
 const assumirChamadoController = async (req, res) => {
     try {
         const { chamado_id } = req.body;
+
         const tecnico_id = req.user.id; 
+
         const resultado = await assumirChamado(chamado_id, tecnico_id);
 
         res.status(200).json({ mensagem: 'Chamado assumido com sucesso', chamado: resultado });
@@ -157,16 +160,27 @@ const assumirChamadoController = async (req, res) => {
     }
 };
 
-// Função para listar chamados para um técnico
-const listarChamadosParaTecnicoController = async (req, res) => {
-    try {
-        const tecnico_id = req.usuarioId;
-        const chamadosFiltrados = chamados.filter(c => c.status !== 'encerrado' && (c.tecnico_id === null || c.tecnico_id === tecnico_id));
-        res.status(200).json(chamadosFiltrados);
-    } catch (error) {
-        console.error('Erro ao listar chamados para técnico:', error);
-        res.status(500).json({ mensagem: 'Erro ao listar chamados' });
-    }
+
+const listarChamadosGeraisController = async (req, res) => {
+  try {
+    const todosChamados = await listarChamado();
+    const chamadosGerais = todosChamados.filter(c => c.status === 'pendente' && !c.tecnico_id);
+    res.status(200).json(chamadosGerais);
+  } catch (error) {
+    res.status(500).json({ mensagem: 'Erro ao listar chamados gerais' });
+  }
+};
+
+
+const listarChamadosDoTecnicoController = async (req, res) => {
+  try {
+    const tecnico_id = req.usuarioId;
+    const todosChamados = await listarChamado();
+    const chamadosDoTecnico = todosChamados.filter(c => c.status === 'pendente' && c.tecnico_id === tecnico_id);
+    res.status(200).json(chamadosDoTecnico);
+  } catch (error) {
+    res.status(500).json({ mensagem: 'Erro ao listar chamados do técnico' });
+  }
 };
 
 // Função para obter o status dos chamados de um técnico
@@ -191,6 +205,7 @@ const getChamadosStatusAdminController = async (req, res) => {
         res.status(500).json({ mensagem: "Erro ao buscar status admin" });
     }
 };
+
 
 // Função para obter o ranking de técnicos
 const getRankingTecnicosController = async (req, res) => {
@@ -222,7 +237,8 @@ export {
     atualizarChamadoController,
     criarApontamentoController,
     assumirChamadoController,
-    listarChamadosParaTecnicoController,
+    listarChamadosDoTecnicoController,
+    listarChamadosGeraisController,
     getChamadosStatusController,
     getChamadosStatusAdminController,
     getRankingTecnicosController,

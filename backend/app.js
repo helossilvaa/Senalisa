@@ -9,6 +9,8 @@ import chamadoRotas from './routes/chamadoRotas.js';
 import salasRotas from './routes/salasRotas.js';
 import EquipamentoRotas from './routes/equipamento.js';
 import PoolRotas from './routes/poolRotas.js';
+import relatoriosRotas from './routes/relatoriosRotas.js';
+import TarefaRotas from './routes/tarefasRotas.js';
 
 dotenv.config();
 
@@ -40,13 +42,9 @@ try {
   process.exit(1);
 }
 
-app.use('/auth', authRotas);
-
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'online' });
 });
-
-app.use("/api/chamados", chamadoRotas);
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Rejeição não tratada em:', promise, 'motivo:', reason);
@@ -73,8 +71,12 @@ app.get('/', (req, res) => {
   res.send('Backend funcionando!');
 });
 
+app.use('/auth', authRotas);
+app.use("/api/chamados", chamadoRotas);
 app.use('/usuarios', usuarioRotas);
 app.use('/chamados', chamadoRotas);
 app.use('/salas', salasRotas);
+app.use('/relatorios', relatoriosRotas);
 app.use('/equipamentos', EquipamentoRotas);
 app.use('/pools', PoolRotas);
+app.use('/tarefas', TarefaRotas);

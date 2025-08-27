@@ -62,5 +62,3 @@ export const buscarRelatorios = async (filtro) => {
     throw error;
   }
 };
-
-export {criarRelatorio, listarRelatorios, obterRelatorioPorId, buscarRelatorios};

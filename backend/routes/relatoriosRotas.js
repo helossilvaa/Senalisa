@@ -1,25 +1,30 @@
 import express from 'express';
-import { listarRelatoriosController, buscarRelatoriosController } from '../controllers/relatoriosController.js';
+import { 
+  listarRelatoriosController, 
+  listarRelatoriosPorTecnicoController,
+  listarRelatoriosPorEquipamentoController,
+  buscarRelatoriosController
+} from '../controllers/relatorioController.js'; 
 import { gerarRelatoriosPdfController } from '../controllers/relatorioPDFcontroller.js';
-import authMiddleware from '../middlewares/authMiddleware.js'; 
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Todas as rotas requerem autenticação
 router.use(authMiddleware);
 
-// Listar todos os relatórios (admin)
-router.get('/chamados/relatorios', listarRelatoriosController);
+// Rota para listar todos os relatórios (chamados)
+router.get('/', listarRelatoriosController);
 
-// Buscar relatórios filtrados (admin)
-router.get('/chamados/buscar', buscarRelatoriosController);
+// Rota para listar relatórios de todos os técnicos
+router.get('/tecnicos', listarRelatoriosPorTecnicoController);
 
-router.get('/chamados/pdf', gerarRelatoriosPdfController);
+// Rota para listar relatórios de todos os equipamentos
+router.get('/equipamentos', listarRelatoriosPorEquipamentoController);
 
-router.get('/reports', listarRelatoriosController);
+// Rota para buscar relatórios com filtros (query params)
+router.get('/buscar', buscarRelatoriosController);
 
-router.get('/reports/buscar', buscarRelatoriosController);
-
-router.get('/reports/pdf', gerarRelatoriosPdfController);
+// Rota para gerar PDF
+router.get('/pdf', gerarRelatoriosPdfController);
 
 export default router;

@@ -134,7 +134,7 @@ export default function Login() {
         </div>
 
         <button type="submit" disabled={loading} className={styles.botao}>
-          {loading ? "Entrando..." : "Entrar"}
+          Entrar
         </button>
 
         {retorno && (

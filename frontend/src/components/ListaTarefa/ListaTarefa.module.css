@@ -41,7 +41,7 @@
 .form input {
   flex: 1;
   min-width: 0;
-  height: 50px;
+  height: 35px;
   padding: 10px;
   border-radius: 5px 0 0 5px;
   border: 1px solid #535353;
@@ -50,14 +50,13 @@
 
 .form button {
   width: 120px;
-  height: 50px;
-  padding: 11px;
+  height: 35px;
+  padding: 6px;
   border-radius: 0 5px 5px 0;
   background: var(--vermelhoEscuro);
   border: none;
   color: var(--branco);
   cursor: pointer;
-  flex-shrink: 0;
 }
 
 .delete {

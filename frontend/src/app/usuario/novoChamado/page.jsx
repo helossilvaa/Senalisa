@@ -103,24 +103,22 @@ export default function Chamados() {
     
 
       useEffect(() => {
-
-        if (!salaId) { setEquipamentosFiltrados([]); return; }
-    
-        const filtrados = equipamentos
-          .filter(eq => eq?.sala_id != null && eq?.patrimonio != null && eq.sala_id.toString() === salaId)
-          .map(eq => {
-
+    if (!salaId) { 
+        setEquipamentosFiltrados([]); 
+        return; 
+    }
+    const filtrados = equipamentos
+        .filter(eq => eq?.sala_id != null && eq?.patrimonio != null && eq.sala_id.toString() === salaId)
+        .map(eq => {
             const temChamado = pools.some(
-            c => c.equipamento_id?.toString() === eq.patrimonio?.toString() && c.status !== 'encerrado'
-          );
-
+                c => c.equipamento_id?.toString() === eq.patrimonio?.toString() && c.status !== 'encerrado'
+            );
             return { ...eq, temChamado };
-          });
-          
-        setEquipamentosFiltrados(filtrados);
-        setEquipamentoId(''); // resetar seleção ao mudar de sala
-      }, [salaId, equipamentos, pools]);
-    
+        });
+        
+    setEquipamentosFiltrados(filtrados);
+    setEquipamentoId(''); // resetar seleção ao mudar de sala
+}, [salaId, equipamentos, pools]);
 
 
   const handleSubmit = async (e) => {
@@ -230,21 +228,21 @@ export default function Chamados() {
               <div className="col-sm-6 mb-4">
                 <label className="input-label">Equipamento</label>
                 <select
-                  className="form-select"
-                  value={equipamentoId}
-                  onChange={(e) => setEquipamentoId(e.target.value)}
-                  required
-                  disabled={!salaId} // desabilita se nenhuma sala estiver selecionada
-                >
-                  <option value="">Selecione</option>
-                  {equipamentosFiltrados.map(eq => (
-                    <option key={eq.patrimonio} 
-                    value={eq.patrimonio}
-                    disabled={eq.temChamado}>
-                      {eq.equipamento} (Patrimônio {eq.patrimonio})
-                    </option>
-                  ))}
-                </select>
+    className="form-select"
+    value={equipamentoId}
+    onChange={(e) => setEquipamentoId(e.target.value)}
+    required
+    disabled={!salaId} // desabilita se nenhuma sala estiver selecionada
+>
+    <option value="">Selecione</option>
+    {equipamentosFiltrados.map(eq => (
+        <option key={eq.id} 
+                value={eq.id}
+                disabled={eq.temChamado}> {/* Desabilita se já houver um chamado ativo */}
+            {eq.equipamento} (Patrimônio {eq.patrimonio})
+        </option>
+    ))}
+</select>
               </div>
 
             </div>

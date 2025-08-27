@@ -4,7 +4,7 @@ import styles from "./page.module.css";
 export default function CardDashboardTecnico({ chamado }) {
     async function handleAceitar() {
         try {
-            const res = await fetch(`http://localhost:3000/api/chamados/assumirChamado/${chamado.id}`, {
+            const res = await fetch(`http://localhost:8080/api/chamados/assumirChamado/${chamado.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

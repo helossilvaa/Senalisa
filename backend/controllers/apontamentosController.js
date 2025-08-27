@@ -1,6 +1,5 @@
 import { criarApontamento, listarApontamentos } from '../models/apontamentos.js';
 
-
 const criarApontamentoController = async (req, res) => {
     try {
         const { chamado_id, apontamento } = req.body;
@@ -22,8 +21,6 @@ const criarApontamentoController = async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao criar apontamento.' });
     }
 };
-
-
 
 const listarApontamentosController = async (req, res) => {
     try {

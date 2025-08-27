@@ -144,11 +144,29 @@ CREATE TABLE chat_mensagens (
   FOREIGN KEY (remetente_id) REFERENCES usuarios(id)
 );
 
+CREATE TABLE tarefas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    concluida BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+
 -- Índices adicionais para otimização
 CREATE INDEX idx_usuarios_email ON usuarios(email);
 CREATE INDEX idx_chamados_status ON chamados(status);
 CREATE INDEX idx_relatorios_comeco_fim ON relatorios(comeco, fim);
 
+
+
+INSERT INTO pool (titulo, descricao, status) VALUES
+('externo', 'Atendimento externo a empresas parceiras', 'ativo'),
+('manutencao', 'Manutenção preventiva e corretiva em equipamentos', 'ativo'),
+('apoio_tecnico', 'Suporte técnico em sala de aula', 'ativo'),
+('limpeza', 'Serviço de limpeza dos laboratórios e áreas comuns', 'inativo');
 
 
 

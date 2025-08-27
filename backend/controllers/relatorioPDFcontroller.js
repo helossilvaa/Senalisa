@@ -11,15 +11,18 @@ export const gerarRelatoriosPdfController = async (req, res) => {
 
     const relatorios = await listarRelatorios();
 
-    // Pega os dados completos de chamado e técnico
+    // Pega os dados completos de chamado, técnico e equipamento
     const relatoriosComDados = await Promise.all(
       relatorios.map(async (r) => {
         const chamado = await read('chamados', `id = ${r.chamado_id}`);
         const tecnico = await read('usuarios', `id = ${r.tecnico_id}`);
+        const equipamento = chamado?.equipamento_id ? await read('equipamentos', `id = ${chamado.equipamento_id}`) : null;
+
         return {
           ...r,
           chamado,
-          tecnico: tecnico ? { id: tecnico.id, nome: tecnico.nome, email: tecnico.email } : null
+          tecnico: tecnico ? { id: tecnico.id, nome: tecnico.nome, email: tecnico.email } : null,
+          equipamento: equipamento || null,
         };
       })
     );
@@ -42,6 +45,7 @@ export const gerarRelatoriosPdfController = async (req, res) => {
       doc.fontSize(12).text(`Relatório #${r.id}`, { underline: true });
       doc.text(`Chamado: ${r.chamado?.titulo || 'N/A'}`);
       doc.text(`Técnico: ${r.tecnico?.nome || 'N/A'} (${r.tecnico?.email || ''})`);
+      doc.text(`Equipamento: ${r.equipamento?.equipamento || 'N/A'}`);
       doc.text(`Descrição: ${r.descricao}`);
       doc.text(`Início: ${r.comeco}`);
       doc.text(`Fim: ${r.fim}`);

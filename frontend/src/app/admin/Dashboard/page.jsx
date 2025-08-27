@@ -15,16 +15,18 @@ export default function DashboardAdmin() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const resStatus = await fetch("http://localhost:3000/api/chamados/status-admin");
+                const fetchOptions = { credentials: 'include' };
+
+                const resStatus = await fetch("http://localhost:8080/api/chamados/status-admin", fetchOptions);
                 setStatus(await resStatus.json());
 
-                const resRanking = await fetch("http://localhost:3000/api/chamados/ranking-tecnicos");
+                const resRanking = await fetch("http://localhost:8080/api/chamados/ranking-tecnicos", fetchOptions);
                 setRanking(await resRanking.json());
 
-                const resCategorias = await fetch("http://localhost:3000/api/chamados/categorias");
+                const resCategorias = await fetch("http://localhost:8080/api/chamados/categorias", fetchOptions);
                 setCategorias(await resCategorias.json());
 
-                const resAllReports = await fetch("http://localhost:3000/api/chamados/reports");
+                const resAllReports = await fetch("http://localhost:8080/api/chamados/reports", fetchOptions);
                 const fetchedReports = await resAllReports.json();
                 setAllReports(fetchedReports);
 
@@ -35,18 +37,28 @@ export default function DashboardAdmin() {
         fetchData();
 
         async function fetchUser() {
-        try {
-            const resUser = await fetch("http://localhost:3000/api/auth/user");
-            const userData = await resUser.json();
-            setUserName(userData.nome);
-        } catch (error) {
-            console.error("Erro ao buscar dados do usuário:", error);
+            try {
+                // Corrigir a URL e adicionar a opção de credenciais
+                const resUser = await fetch("http://localhost:8080/auth/check-auth", { credentials: 'include' });
+                const userData = await resUser.json();
+
+                if (resUser.ok && userData.authenticated && userData.user?.nome) {
+                    setUserName(userData.user.nome);
+                } else {
+                    console.error("Falha ao autenticar ou obter nome de usuário:", userData);
+                    setUserName("Visitante"); // Fallback
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+                setUserName("Visitante"); // Fallback em caso de erro na requisição
+            }
         }
-    }
 
-    fetchUser();
+        fetchData();
+        fetchUser();
 
-    }, []); 
+    }, []);
+
 
     const progressoAndamento = (status.emAndamento / status.total) * 100 || 0;
     const progressoAberto = (status.aberto / status.total) * 100 || 0;
@@ -54,11 +66,11 @@ export default function DashboardAdmin() {
 
     const recentReportsToDisplay = allReports
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 4); 
+        .slice(0, 4);
 
     return (
         <div className={styles.page}>
-            <HeaderAdmin/>
+            <HeaderAdmin />
             <div className={styles.dashboardContainer}>
                 <h2 className={styles.welcome}>Olá, {userName || "visitante"}!</h2>
 
@@ -66,7 +78,7 @@ export default function DashboardAdmin() {
                     <div className={styles.cardStatusChamados}>
                         <h3>Status de todos os chamados da rede:</h3>
                         <p className={styles.numeroChamados}>
-                            {status.total} 
+                            {status.total}
                         </p>
                         <div className={styles.barraProgresso}>
                             <div className={styles.progresso}
@@ -104,7 +116,7 @@ export default function DashboardAdmin() {
                                 <div key={i} className={styles.tecnicoBar}>
                                     <span className={styles.nomeTecnico}>{tec.nome}</span>
                                     <div className={styles.preenchimento}
-                                            style={{ width: `${tec.percentual}%` }}>
+                                        style={{ width: `${tec.percentual}%` }}>
                                         {tec.percentual}%
                                     </div>
                                 </div>
@@ -114,7 +126,7 @@ export default function DashboardAdmin() {
                         <div className={styles.estatistica}>
                             <h4>Categorias mais recorrentes de chamados</h4>
                             <div className={styles.graficoObjetos}>
-                                <CategoriasChamados data={categorias}/>
+                                <CategoriasChamados data={categorias} />
                             </div>
                         </div>
                     </div>

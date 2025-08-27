@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Card from '@/components/Card/Card';
 import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
