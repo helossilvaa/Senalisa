@@ -105,7 +105,7 @@ const listarUsuariosController = async (req, res) => {
 
 const obterUsuarioIdController = async (req, res) => {
   try {
-    const usuario = await obterUsuario(req.params.id);
+    const usuario = await obterUsuario(req.usuarioId);
     res.status(200).json(usuario);
   } catch (error) {
     console.error('Erro ao obter usuário por id:', error);

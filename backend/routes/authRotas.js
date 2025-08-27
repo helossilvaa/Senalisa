@@ -39,6 +39,7 @@ const USE_FAKE_AUTH = true;
 
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
+  console.log('Login recebido:', req.body);
 
   if (USE_FAKE_AUTH) {
     const usuarioFake = fakeUsers.find(

@@ -9,19 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.3.1",
-=======
-<<<<<<< HEAD
     "@emotion/css": "^11.13.5",
-    "@mui/icons-material": "^7.3.1",
-=======
->>>>>>> 2932e1593b4f67c56fa1774e28c4498cd9d03857
     "add": "^2.0.6",
->>>>>>> 9ece5a66abc0aae98e5d14cad2dbfce5ed9fa664
     "axios": "^1.11.0",
     "bootstrap": "^5.3.7",
     "bootstrap-icons": "^1.13.1",

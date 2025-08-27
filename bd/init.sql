@@ -150,6 +150,12 @@ CREATE INDEX idx_chamados_status ON chamados(status);
 CREATE INDEX idx_relatorios_comeco_fim ON relatorios(comeco, fim);
 
 
+INSERT INTO pool (titulo, descricao, status) VALUES
+('externo', 'Atendimento externo a empresas parceiras', 'ativo'),
+('manutencao', 'Manutenção preventiva e corretiva em equipamentos', 'ativo'),
+('apoio_tecnico', 'Suporte técnico em sala de aula', 'ativo'),
+('limpeza', 'Serviço de limpeza dos laboratórios e áreas comuns', 'inativo');
+
 
 
 INSERT INTO salas (nome_sala) VALUES

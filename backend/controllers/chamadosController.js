@@ -3,7 +3,6 @@ import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarA
 
 const criarChamadoController = async (req, res) => {
     try {
-
         const {
             titulo,
             descricao,
@@ -23,6 +22,7 @@ const criarChamadoController = async (req, res) => {
             status: 'pendente'   
         };
         
+        // Verifica se já existe um chamado ativo para o equipamento
         const chamadosExistentes = await listarChamado();
         const jaExiste = chamadosExistentes.some(c => 
             c.equipamento_id === equipamento_id && c.status !== 'encerrado'
@@ -31,6 +31,8 @@ const criarChamadoController = async (req, res) => {
         if (jaExiste) {
             return res.status(400).json({ mensagem: 'Já existe um chamado ativo para este equipamento.' });
         }
+
+        // Se não existir, cria o chamado
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso', chamadoId });
 
@@ -39,6 +41,7 @@ const criarChamadoController = async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao criar chamado.' });
     }
 };
+
 
 
 const listarChamadosController = async (req, res) => {
@@ -141,7 +144,7 @@ const criarApontamentoController = async (req, res) => {
 const assumirChamadoController = async (req, res) => {
     try {
         const { chamado_id } = req.body;
-        const tecnico_id = req.user.id; 
+        const tecnico_id = req.usuarioId; 
 
         const resultado = await assumirChamado(chamado_id, tecnico_id);
 
@@ -153,17 +156,17 @@ const assumirChamadoController = async (req, res) => {
 };
 
 const listarChamadosParaTecnicoController = async (req, res) => {
-    try {
-        const tecnico_id = req.usuarioId;
-        const chamados = await readAll(
-            'chamados',
-            `status != 'encerrado' AND (tecnico_id IS NULL OR tecnico_id = ${tecnico_id})`
-        );
-        res.status(200).json(chamados);
-    } catch (error) {
-        console.error('Erro ao listar chamados para técnico:', error);
-        res.status(500).json({ mensagem: 'Erro ao listar chamados' });
-    }
+  try {
+    const tecnico_id = req.usuarioId;
+    const todosChamados = await listarChamado(); 
+    const chamados = todosChamados.filter(
+      c => c.status === 'pendente' && (!c.tecnico_id || c.tecnico_id === tecnico_id)
+    );
+    res.status(200).json(chamados);
+  } catch (error) {
+    console.error('Erro ao listar chamados para técnico:', error);
+    res.status(500).json({ mensagem: 'Erro ao listar chamados' });
+  }
 };
 
 
