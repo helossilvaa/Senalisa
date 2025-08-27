@@ -1,13 +1,9 @@
-import { create, readAll, update } from "../config/database.js";
+import { create, readAll, update, deleteRecord } from "../config/database.js";
 
-const criarNotificacao = async () => {
+const criarNotificacao = async (notificacoesData) => {
+
     try {
-        return await create('notificacoes', {
-            usuario_id: usuario_id,
-            tecnico_id: tecnico_id,
-            mensagem,
-            status: 'nao_vista'
-        })
+        return await create('notificacoes', notificacoesData);
         
     } catch (error) {
         console.error('Erro ao criar notificações: ', error);
@@ -45,4 +41,15 @@ const marcarComoVista = async (id) => {
     }
 }
 
-export {criarNotificacao, listarNotificacoesPorTecnico, listarNotificacoesPorUsuario, marcarComoVista};
+const deletarNotificacao = async (id) => {
+    try {
+        return await deleteRecord('notificacoes', `id = ${id}`);
+        
+    } catch (error) {
+        console.error('Erro ao deletar notificação:', error);
+        throw error;
+    }
+}
+
+
+export {criarNotificacao, listarNotificacoesPorTecnico, listarNotificacoesPorUsuario, marcarComoVista, deletarNotificacao};

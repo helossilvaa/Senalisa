@@ -2,8 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import dotenv from 'dotenv';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
+import { initWebSocket } from './websocket.js';
 
 import authRotas from './routes/authRotas.js';
 import passport from './config/ldap.js';
@@ -14,30 +13,44 @@ import EquipamentoRotas from './routes/equipamento.js';
 import PoolRotas from './routes/poolRotas.js';
 import chatMensagensRotas from './routes/chatMensagensRotas.js';
 import chatRotas from './routes/chatRotas.js';
+import notificacoesRotas from './routes/notificacoesRotas.js'
 
-// 1. Variáveis de ambiente
+
+// 1. Carrega variáveis de ambiente PRIMEIRO
 dotenv.config();
 
-// 2. Express + middlewares
+// 2. Configuração básica do Express
 const app = express();
+const porta = process.env.PORT || 8080;
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
-app.use(express.json());
+// 3. Middlewares essenciais com tratamento de erros
+try {
+  app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+  }));
+  app.use(express.json());
+  
+  app.use(session({
+    secret: 'sJYMmuCB2Z187XneUuaOVYTVUlxEOb2K94tFZy370HjOY7T7aiCKvwhNQpQBYL9e',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+  }));
 
-app.use(session({
-  secret: 'sJYMmuCB2Z187XneUuaOVYTVUlxEOb2K94tFZy370HjOY7T7aiCKvwhNQpQBYL9e',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false }
-}));
+  // 4. Inicialização segura do Passport
+  if (!passport) {
+    throw new Error('Passport não foi importado corretamente');
+  }
+  app.use(passport.initialize());
+  app.use(passport.session());
 
-app.use(passport.initialize());
-app.use(passport.session());
+} catch (err) {
+  console.error('Erro na configuração inicial:', err);
+  process.exit(1);
+}
 
-// 3. Rotas REST normais
+// 5. Rotas
 app.use('/auth', authRotas);
 app.use('/usuarios', usuarioRotas);
 app.use('/chamados', chamadoRotas);
@@ -46,44 +59,37 @@ app.use('/equipamentos', EquipamentoRotas);
 app.use('/pools', PoolRotas);
 app.use('/chats', chatRotas);
 app.use('/mensagem', chatMensagensRotas)
+app.use('/notificacoes', notificacoesRotas);
 
-app.get('/health', (req, res) => res.json({ status: 'online' }));
-app.get('/', (req, res) => res.send('Backend funcionando!'));
-
-// 4. Cria servidor HTTP e socket.io
-const PORT = process.env.PORT || 8080;
-const server = createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ["GET", "POST"]
-  }
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'online' });
 });
 
-// 5. Eventos do chat em tempo real
-io.on('connection', (socket) => {
-  console.log('🟢 Usuário conectado!', socket.id);
+// 6. Tratamento de erros robusto
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Rejeição não tratada em:', promise, 'motivo:', reason);
+});
 
-  socket.on('disconnect', () => {
-    console.log('🔴 Usuário desconectado!', socket.id);
-  });
+process.on('uncaughtException', (err) => {
+  console.error('Exceção não capturada:', err);
+  process.exit(1);
+});
 
-  socket.on('set_username', (username) => {
-    socket.data.username = username;
-    socket.emit('user_info', { author: username });
-  });
+// 7. Inicialização do servidor com verificação
+const server = app.listen(porta, () => {
+  console.log(`Servidor rodando na porta ${porta}`);
+}).on('error', (err) => {
+  console.error('Erro ao iniciar:', err);
+});
+initWebSocket(server);
 
-  socket.on('message', (text) => {
-    io.emit('receive_message', {
-      text,
-      authorId: socket.id,
-      author: socket.data.username
-    });
+// 8. Encerramento elegante
+process.on('SIGTERM', () => {
+  server.close(() => {
+    console.log('Servidor encerrado');
   });
 });
 
-// 6. Inicializa servidor
-server.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+app.get('/', (req, res) => {
+  res.send('Backend funcionando!');
 });
