@@ -15,6 +15,7 @@ export default function Chamadas() {
   const API_URL = "http://localhost:8080";
 
   useEffect(() => {
+
     const fetchChamados = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -33,8 +34,8 @@ export default function Chamadas() {
           return;
         }
 
-        // Para técnicos: buscar chamados pendentes
-        const res = await fetch(`${API_URL}/chamados/meuschamados`, {
+
+        const res = await fetch(`${API_URL}/chamados/gerais`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -65,7 +66,7 @@ export default function Chamadas() {
 
       if (!res.ok) throw new Error("Erro ao assumir chamado");
 
-      // Atualiza a lista removendo o chamado que foi assumido
+
       setChamados((prev) => prev.filter((c) => c.id !== chamadoId));
     } catch (err) {
       console.error(err);

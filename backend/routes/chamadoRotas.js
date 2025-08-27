@@ -1,7 +1,6 @@
 import express from 'express';
-import { criarChamadoController, listarChamadosController, listarChamadosParaTecnicoController, obterChamadoPorIdController, atualizarChamadoController, assumirChamadoController, criarApontamentoController, listarChamadosDoUsuarioController} from '../controllers/chamadosController.js';
+import { criarChamadoController, listarChamadosController, listarChamadosDoTecnicoController, obterChamadoPorIdController, atualizarChamadoController, assumirChamadoController, criarApontamentoController, listarChamadosDoUsuarioController, listarChamadosGeraisController} from '../controllers/chamadosController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import verifyRole from '../middlewares/authVerifyRole.js';
 
 const router = express.Router();
 
@@ -16,7 +15,8 @@ router.put('/chamados/:id', atualizarChamadoController);
 router.get('/chamados/:id', obterChamadoPorIdController);
 
 //se for tecnico 
-router.get('/meuschamados', listarChamadosParaTecnicoController); 
+router.get('/meuschamados', listarChamadosDoTecnicoController); 
+router.get('/gerais', listarChamadosGeraisController);
 router.put('/assumirChamado/:id', assumirChamadoController);
 router.put('/meuschamados/:id/status', atualizarChamadoController);
 

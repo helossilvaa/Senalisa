@@ -155,22 +155,32 @@ const assumirChamadoController = async (req, res) => {
     }
 };
 
-const listarChamadosParaTecnicoController = async (req, res) => {
+
+const listarChamadosGeraisController = async (req, res) => {
+  try {
+    const todosChamados = await listarChamado();
+    const chamadosGerais = todosChamados.filter(c => c.status === 'pendente' && !c.tecnico_id);
+    res.status(200).json(chamadosGerais);
+  } catch (error) {
+    res.status(500).json({ mensagem: 'Erro ao listar chamados gerais' });
+  }
+};
+
+
+const listarChamadosDoTecnicoController = async (req, res) => {
   try {
     const tecnico_id = req.usuarioId;
-    const todosChamados = await listarChamado(); 
-    const chamados = todosChamados.filter(
-      c => c.status === 'pendente' && (!c.tecnico_id || c.tecnico_id === tecnico_id)
-    );
-    res.status(200).json(chamados);
+    const todosChamados = await listarChamado();
+    const chamadosDoTecnico = todosChamados.filter(c => c.status === 'pendente' && c.tecnico_id === tecnico_id);
+    res.status(200).json(chamadosDoTecnico);
   } catch (error) {
-    console.error('Erro ao listar chamados para técnico:', error);
-    res.status(500).json({ mensagem: 'Erro ao listar chamados' });
+    res.status(500).json({ mensagem: 'Erro ao listar chamados do técnico' });
   }
 };
 
 
 
-export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosParaTecnicoController};
+
+export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosGeraisController, listarChamadosDoTecnicoController};
 
 
