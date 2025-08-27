@@ -15,7 +15,7 @@ export default function Chamados() {
   const [salas, setSalas] = useState([]);
   const [equipamentos, setEquipamentos] = useState([]);
   const [pools, setPools] = useState([]);
-  const [chamados, setChamados] = useState([]); // Novo estado para todos os chamados
+  const [chamados, setChamados] = useState([]); 
   const [chamadoCriado, setChamadoCriado] = useState(null);
   const [error, setError] = useState('');
   const [equipamentosFiltrados, setEquipamentosFiltrados] = useState([]);

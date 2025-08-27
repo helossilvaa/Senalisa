@@ -48,4 +48,13 @@ const obterUsuarioPorEmail = async (email) => {
     
   };
 
-export {criarUsuario, listarUsuarios, obterUsuario, obterUsuarioPorEmail, obterUsuarioId};
+const verificarPrimeiroLogin = async (id) => {
+    const usuario = await read('usuarios', `id = ${id}`);
+    return usuario.primeiro_login === 1; // 1 = true, 0 = false
+};
+
+const marcarLoginFeito = async (id) => {
+    await update('usuarios', { primeiro_login: 0 }, `id = ${id}`);
+};
+
+export {criarUsuario, listarUsuarios, obterUsuario, obterUsuarioPorEmail, obterUsuarioId, verificarPrimeiroLogin, marcarLoginFeito};

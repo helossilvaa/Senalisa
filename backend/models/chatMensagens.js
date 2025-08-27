@@ -27,4 +27,17 @@ const obterMensagemPorId = async (id) => {
   }
 };
 
-export { criarMensagens, listarMensagens, obterMensagemPorId };
+const obterParticipantesDoChat = async (id) => {
+  try {
+      // Suponha que você tenha uma tabela 'chats' que conecta chamados aos usuários
+      const chat = await read('chats', `id = ${id}`);
+      if (!chat) return null;
+      // Retorne o ID do usuário e do técnico do chamado
+      return [chat.usuario_id, chat.tecnico_id]; 
+  } catch (error) {
+      console.error('Erro ao obter participantes do chat:', error);
+      throw error;
+  }
+};
+
+export { criarMensagens, listarMensagens, obterMensagemPorId, obterParticipantesDoChat };

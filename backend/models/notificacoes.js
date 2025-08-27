@@ -51,4 +51,5 @@ const deletarNotificacao = async (id) => {
     }
 }
 
+
 export {criarNotificacao, listarNotificacoesPorTecnico, listarNotificacoesPorUsuario, marcarComoVista, deletarNotificacao};

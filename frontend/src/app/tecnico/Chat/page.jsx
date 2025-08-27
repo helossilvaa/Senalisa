@@ -3,54 +3,23 @@ import { useState, useEffect } from 'react';
 import './chat.css';
 import Join from '@/components/Join/Join';
 import Conversas from '@/components/Coversas/Conversas';
-import Header from '@/components/Header/header';
+import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
 import NoticacaoesChat from '@/components/NotificacoesChat/ConversationsList';
 import loading from '@/components/loading/loading'
 
 function App() {
   const [chatVisibility, setChatVisibility] = useState(false);
   const [socket, setSocket] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [usuarioId, setUsuariosId] = useState("");
-  const [tecnicoId, setTecnicoId] = useState("");
+  const [loading, setLoading] = useState(false); 
 
 
-  const API_URL = 'http://localhost:8080';
-
-  useEffect(() => {
-    const fetchUsuario = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-      try {
-        const decoded = jwtDecode(token);
-
-        if (decoded.exp < Date.now() / 1000) {
-          localStorage.removeItem("token");
-          alert('Seu Login expirou.');
-          router.push("/login");
-          return;
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsuario();
-  }, []);
   useEffect(() => {
     if (socket) {
       setLoading(true);
-
-      setTimeout(() => setLoading(false), 1500);
+   
+      setTimeout(() => setLoading(false), 1500); 
     }
   }, [socket]);
-
-
 
   const renderView = () => {
     if (!chatVisibility) {
@@ -59,7 +28,7 @@ function App() {
 
     return (
       <div className="layout-geral">
-        <Header />
+        <HeaderTecnico />
         <div className="chat-wrapper">
           <div className="notificacoes-container">
             <NoticacaoesChat />

@@ -1,4 +1,6 @@
-import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado} from "../models/chamado.js";
+import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, atualizarStatusChamado} from "../models/chamado.js";
+import { criarNotificacao } from "../models/notificacoes.js";
+import notificacaoTextos from '../utils/notificacoesTextos.js';
 
 
 const criarChamadoController = async (req, res) => {
@@ -90,6 +92,7 @@ const obterChamadoPorIdController = async (req, res) => {
 };
 
 const atualizarChamadoController = async (req, res) => {
+
     try {
         const {
             chamado_id,
@@ -158,6 +161,40 @@ const assumirChamadoController = async (req, res) => {
     }
 };
 
+const atualizarStatusChamadoController = async (req, res) => {
+
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+  
+      const chamadoExistente = await obterChamadoPorId(id);
+      if (!chamadoExistente) {
+        return res.status(404).json({ mensagem: 'Chamado não encontrado.' });
+      }
+  
+      await atualizarStatusChamado(id, status);
+  
+      let mensagem;
+      if (status === 'em_andamento') {
+        mensagem = notificacaoTextos.CHAMADO_EM_ANDAMENTO(id);
+      } else if (status === 'concluido') {
+        mensagem = notificacaoTextos.CHAMADO_CONCLUIDO(id);
+      }
+  
+      const notificacoesData = {
+        usuario_id: chamadoExistente.usuario_id, 
+        mensagem,
+        visualizado: 'nao_vista'
+      };
+  
+      await criarNotificacao(notificacoesData);
+  
+      return res.status(200).json({ mensagem: `Status do chamado ${id} atualizado para ${status}.` });
+    } catch (error) {
+      console.error('Erro ao atualizar status do chamado:', error);
+      return res.status(500).json({ mensagem: 'Erro interno ao atualizar status.' });
+    }
+  };
 
 const listarChamadosGeraisController = async (req, res) => {
   try {
@@ -184,6 +221,6 @@ const listarChamadosDoTecnicoController = async (req, res) => {
 
 
 
-export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosGeraisController, listarChamadosDoTecnicoController};
+export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosGeraisController, listarChamadosDoTecnicoController, atualizarStatusChamadoController};
 
 

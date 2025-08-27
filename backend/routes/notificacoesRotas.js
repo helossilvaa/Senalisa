@@ -1,6 +1,6 @@
-import express, { Router } from 'express';
-import authMiddleware from '../middlewares/authMiddleware';
-import { criarNotificacaoController, deletarNotificacaoController, marcarComoVistaController, listarNotificacoesController } from '../controllers/notificacoesController';
+import express from 'express';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import { criarNotificacaoController, deletarNotificacaoController, marcarComoVistaController, listarNotificacoesController } from '../controllers/notificacoesController.js';
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.options('/:id', (req, res) => {
     res.status(204).send();
 });
 
-router.options('/:id/marcarVista', (req, res)=> {
+router.options('/:id/marcarvista', (req, res)=> {
     res.setHeader('Allow', 'PUT, OPTIONS');
     res.status(204).send();
 });
