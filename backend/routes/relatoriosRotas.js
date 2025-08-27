@@ -16,4 +16,10 @@ router.get('/chamados/buscar', buscarRelatoriosController);
 
 router.get('/chamados/pdf', gerarRelatoriosPdfController);
 
+router.get('/reports', listarRelatoriosController);
+
+router.get('/reports/buscar', buscarRelatoriosController);
+
+router.get('/reports/pdf', gerarRelatoriosPdfController);
+
 export default router;

@@ -107,7 +107,6 @@
 .progresso {
   width: 70%;
   height: 100%;
-  background: var(--bola);
   border-radius: 6px;
 }
 
@@ -158,61 +157,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #eee;
   padding: 0.7rem;
   border-radius: 8px;
   margin-top: 0.6rem;
-}
-
-.chamadoItem h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.chamadoItem p {
-  font-size: 0.85rem;
-  color: var(--cordata);
-  margin: 0;
-}
-
-.btnVerMais {
-  background: transparent;
-  border: 1px solid var(--vermelhoEscuro);
-  color: var(--vermelhoEscuro);
-  padding: 0.2rem 0.4rem;
-  border-radius: 6px;
-  margin-right: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  transition: color 0.3s ease;
-}
-
-.btnVerMais:hover{
-  background-color: var(--vermelhoEscuro);
-  color: var(--branco);
-}
-
-.btnAceitar {
-  background: var(--bola);
-  border: none;
-  color: white;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-  width: 75px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.btnAceitar:hover{
-  background-color: var(--vermelhoEscuro);
-}
-
-.cardSmallBottom h3 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 22px;
 }
 
 .add {
@@ -220,17 +167,6 @@
   font-size: 1.2rem;
   font-weight: bold;
   color: var(--vermelhoEscuro);
-}
-
-.tarefas {
-  list-style: none;
-  padding: 0;
-  margin-top: 1rem;
-}
-
-.tarefas li {
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
 }
 
 @media (max-width: 1024px) {
@@ -317,14 +253,6 @@
   .legenda {
     flex-direction: column;
     gap: 0.3rem;
-  }
-
-  .btnAceitar {
-    width: 100%;
-  }
-
-  .btnVerMais {
-    flex: 1;
   }
 
   .chamadoItem {

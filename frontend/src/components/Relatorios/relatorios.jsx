@@ -1,6 +1,10 @@
 import styles from "@/components/Relatorios/relatorios.module.css";
 
 export default function Relatorios({ relatorio }) {
+  if (!relatorio) {
+    return null; 
+  }
+
   return (
     <div className={styles.documentos}>
       <div className={styles.icon}>
