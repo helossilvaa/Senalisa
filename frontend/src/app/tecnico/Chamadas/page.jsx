@@ -34,7 +34,6 @@ export default function Chamadas() {
           return;
         }
 
-
         const res = await fetch(`${API_URL}/chamados/gerais`, {
           headers: { Authorization: `Bearer ${token}` },
         });

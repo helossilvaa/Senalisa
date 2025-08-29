@@ -1,7 +1,7 @@
 import styles from "@/components/Calendario/page.module.css";
 
-export default function initCalendar(styles) {
-    console.log(styles.calendario)
+// Adicione onDateSelect como um parâmetro
+export default function initCalendar(styles, onDateSelect) { 
     const monthYear = document.getElementById('month-year');
     const daysContainer = document.getElementById('days');
     const prevButton = document.getElementById('prev');
@@ -47,6 +47,14 @@ export default function initCalendar(styles) {
                 });
 
                 dayDiv.classList.add(styles.active); 
+                
+                // Formate a data para o formato brasileiro
+                const selectedDate = new Date(year, month, i).toLocaleDateString('pt-BR');
+                
+                // Chame o callback passando a data formatada
+                if (onDateSelect) {
+                    onDateSelect(selectedDate);
+                }
             });
         }
 

@@ -74,7 +74,14 @@
   display: flex;
   gap: 0.5rem;
   margin-top: 2.2rem;
-  float: right;
+}
+
+.botoes p{
+  display: flex; 
+  margin-right: 60%;
+  font-family: var(--fonte);
+  font-weight: bold;
+  color: #640d14;
 }
 
 .emProgresso {
@@ -104,7 +111,7 @@
 .concluido:hover {
   background: var(--bola);
 }
-
+ 
 .linhaTempo{
   margin-top: 5px;
   margin-left: 40px;

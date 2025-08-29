@@ -3,13 +3,16 @@
 import { useEffect } from "react";
 import styles from "@/components/Calendario/page.module.css";
 
-export default function CalendarPage() {
+export default function CalendarPage({ onDateSelect }) {
   useEffect(() => {
     (async () => {
       const calendarModule = await import("./Calendar.js");
-      if (calendarModule.default) { calendarModule.default(styles); }
+      if (calendarModule.default) {
+        // Passa a função para o script de inicialização do calendário
+        calendarModule.default(styles, onDateSelect); 
+      }
     })();
-  }, []);
+  }, [onDateSelect]); // A dependência garante que o useEffect rode se o callback mudar
 
   return (
     <>
@@ -35,5 +38,6 @@ export default function CalendarPage() {
         <div className={styles.days} id="days">
         </div>
       </div>
-    </>);
+    </>
+  );
 }

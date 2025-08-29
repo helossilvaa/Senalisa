@@ -236,8 +236,8 @@ export default function Chamados() {
 >
     <option value="">Selecione</option>
     {equipamentosFiltrados.map(eq => (
-        <option key={eq.id} 
-                value={eq.id}
+        <option key={eq.patrimonio} 
+                value={eq.patrimonio}
                 disabled={eq.temChamado}> {/* Desabilita se já houver um chamado ativo */}
             {eq.equipamento} (Patrimônio {eq.patrimonio})
         </option>
