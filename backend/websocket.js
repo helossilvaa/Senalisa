@@ -1,13 +1,12 @@
-// websocket.js
 import { Server } from 'socket.io';
 
-const usuariosOnline = {}; 
+const usuariosOnline = {};
 let io; 
 
 const initWebSocket = (httpServer) => {
     io = new Server(httpServer, {
         cors: {
-            origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+            origin: 'http://localhost:3000',
             methods: ["GET", "POST"]
         }
     });
@@ -20,7 +19,7 @@ const initWebSocket = (httpServer) => {
             console.log(`Usuário ${usuarioId} entrou no chat.`);
         });
         
-        socket.on('disconnect', () => {
+        connection.on('disconnect', () => {
             for (const id in usuariosOnline) {
                 if (usuariosOnline[id] === socket.id) {
                     delete usuariosOnline[id];

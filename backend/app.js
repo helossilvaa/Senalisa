@@ -15,7 +15,6 @@ import chatMensagensRotas from './routes/chatMensagensRotas.js';
 import chatRotas from './routes/chatRotas.js';
 import notificacoesRotas from './routes/notificacoesRotas.js'
 
-
 // 1. Carrega variáveis de ambiente PRIMEIRO
 dotenv.config();
 

@@ -10,16 +10,17 @@ export default function ConversationsList({ onSelectConversation }) {
   const [activeTab, setActiveTab] = useState("all");
   const router = useRouter(); 
 
-  const api_url = "https://localhost:8080";
+  const api_url = "http://localhost:8080";
 
   useEffect(() => {
 
-    const fetchChat = async () => {
+    const fetchChats = async () => {
       try {
+
+        const token = localStorage.getItem("token");
 
         const decoded = jwtDecode(token);
 
-        const token = localStorage.getItem("token");
 
         if (!token) {
           router.push("/login");
@@ -32,8 +33,8 @@ export default function ConversationsList({ onSelectConversation }) {
           router.push("/login");
           return;
         }
-
-        const response = await fetch(`${api_url}/chat`, {
+        
+        const response = await fetch (`${api_url}/chats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,7 +51,7 @@ export default function ConversationsList({ onSelectConversation }) {
       }
     };
 
-    fetchChat();
+    fetchChats();
   }, [router]);
 
   const conversasFiltradas =
