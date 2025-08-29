@@ -1,55 +1,47 @@
+"use client";
+import { useEffect, useState } from "react";
 import Card from '@/components/Card/Card';
 import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
 import styles from '@/app/tecnico/meusChamados/page.module.css';
 
-export default function meusChamados() {
+export default function MeusChamados() {
+    const [chamadas, setChamadas] = useState([]);
 
-    const infoChamadas = [
-        {
-            id: 1,
-            titulo: 'Mouse Quebrado na sala de DEV',
-            autor: 'Isabella Nunes',
-            data: '14 de Fevereiro',
-            descricao: 'The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.',
-        },
-        {
-            id: 2,
-            titulo: 'Mouse Quebrado',
-            autor: 'Isabella Nunes',
-            data: '14 de Fevereiro',
-            descricao: 'The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.',
-        },
-        {
-            id: 3,
-            titulo: 'Mouse Quebrado na sala de DEV',
-            autor: 'Isabella Nunes',
-            data: '14 de Fevereiro',
-            descricao: 'The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.',
-        },
-        {
-            id: 4,
-            titulo: 'Mouse Quebrado',
-            autor: 'Isabella Nunes',
-            data: '14 de Fevereiro',
-            descricao: 'The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.',
+    useEffect(() => {
+        async function fetchChamados() {
+            try {
+                const res = await fetch("http://localhost:3000/api/chamados/meuschamados", {
+                    credentials: "include",
+                    headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+                });
+                const data = await res.json();
+                setChamadas(data);
+            } catch (err) {
+                console.error("Erro ao buscar chamados:", err);
+            }
         }
-    ]
-    return (
-        <>
-            <div className={styles.container}>
-                <HeaderTecnico />
-                <div className={styles.chamadas}>
-                    <div className={styles.titulo}>
-                        <h1>Meus Chamados</h1>
-                    </div>
+        fetchChamados();
+    }, []);
 
-                    <div className={styles.card}>
-                        {infoChamadas.map((chamada) => (
-                            <Card key={chamada.id} titulo={chamada.titulo} data={chamada.data} id={chamada.id} />
-                        ))}
-                    </div>
+    return (
+        <div className={styles.container}>
+            <HeaderTecnico />
+            <div className={styles.chamadas}>
+                <div className={styles.titulo}>
+                    <h1>Meus Chamados</h1>
+                </div>
+
+                <div className={styles.card}>
+                    {chamadas.map((chamada) => (
+                        <Card 
+                            key={chamada.id} 
+                            titulo={chamada.titulo} 
+                            data={new Date(chamada.criado_em).toLocaleDateString()} 
+                            id={chamada.id} 
+                        />
+                    ))}
                 </div>
             </div>
-        </>
+        </div>
     );
 }

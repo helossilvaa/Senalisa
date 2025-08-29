@@ -5,6 +5,9 @@ import { read } from '../config/database.js';
  * Controller para listar todos os relatórios (só admin)
  */
 export const listarRelatoriosController = async (req, res) => {
+  console.log("Usuário autenticado:", req.user);
+  console.log("Função do usuário:", req.user?.funcao);
+  
   try {
     // Verifica se o usuário é admin
     if (req.user.funcao !== 'administrador') {

@@ -1,6 +1,10 @@
 import styles from "@/components/Relatorios/relatorios.module.css";
 
 export default function Relatorios({ relatorio }) {
+  if (!relatorio) {
+    return null; 
+  }
+
   return (
     <div className={styles.documentos}>
       <div className={styles.icon}>
@@ -15,7 +19,7 @@ export default function Relatorios({ relatorio }) {
         </div>
       </div>
       <div className={styles.download}>
-        <a href={`http://localhost:3000/chamados/pdf`} target="_blank">
+      <a href={`http://localhost:8080/relatorios/chamados/pdf`} target="_blank">
           <div className={styles.baixar}>
             <i className="bi bi-arrow-down-circle-fill" />
           </div>

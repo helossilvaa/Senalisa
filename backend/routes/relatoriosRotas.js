@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarRelatoriosController, buscarRelatoriosController } from '../controllers/relatoriosController.js';
+import { listarRelatoriosController, buscarRelatoriosController } from '../controllers/relatorioController.js';
 import { gerarRelatoriosPdfController } from '../controllers/relatorioPDFcontroller.js';
 import authMiddleware from '../middlewares/authMiddleware.js'; 
 

@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwt.js'; 
+import { read } from '../config/database.js'; 
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -12,9 +13,19 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    
+    const user = await read('usuarios', `id = ${decoded.id}`);
+    
+    if (!user) {
+      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
+    }
+    
+    req.user = user;
     req.usuarioId = decoded.id;
+    
     next();
   } catch (error) {
+    console.error('Erro no middleware de autenticação:', error);
     return res.status(403).json({ mensagem: 'Não autorizado: Token inválido' });
   }
 };

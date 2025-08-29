@@ -1,58 +1,55 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Relatorios from "@/components/Relatorios/relatorios";
 import HeaderAdmin from "@/components/HeaderAdmin/headerAdmin";
 import styles from "./page.module.css";
 
-export default function () {
-  const [active, setActive] = useState(0);
-  const [lineStyle, setLineStyle] = useState({});
-  const refs = [useRef(null), useRef(null), useRef(null)];
-
+export default function PageRelatorios() {
   const [relatorios, setRelatorios] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [abaAtiva, setAbaAtiva] = useState("chamados"); 
 
-  
-  const API_URL = 'http://localhost:8080';
-
-  useEffect(() => {
-    const current = refs[active].current;
-    if (current) {
-      setLineStyle({
-        width: current.offsetWidth + "px",
-        left: current.offsetLeft + "px",
-      });
-    }
-  }, [active]);
-
-  // Busca relatórios conforme a aba ativa
   useEffect(() => {
     const fetchRelatorios = async () => {
       try {
-        let url = "http://localhost:3000/chamados/relatorios"; 
-
-        if (active === 1) {
-          url = "http://localhost:3000/chamados/buscar?tecnico_id=1"; 
-        }
-        if (active === 2) {
-          url = "http://localhost:3000/chamados/buscar?objeto_id=1"; 
+        const token = localStorage.getItem('token'); 
+        if (!token) {
+          console.error('Nenhum token de autenticação encontrado.');
+          setLoading(false);
+          return;
         }
 
-        const res = await fetch(url, {
+        const res = await fetch("http://localhost:8080/relatorios/chamados/relatorios", {
+          method: 'GET',
           headers: {
-            Authorization: "",
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
+          credentials: "include", 
         });
 
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.mensagem || 'Erro na requisição da API.');
+        }
+
         const data = await res.json();
-        console.log(data);
-        setRelatorios(data);
+        if (Array.isArray(data)) {
+          setRelatorios(data);
+        } else {
+          console.error("A API retornou um formato inesperado:", data);
+          setRelatorios([]);
+        }
       } catch (err) {
-        console.error("Erro ao buscar relatórios:", err);
+        console.error("Erro ao buscar relatórios:", err.message);
+        setRelatorios([]); 
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRelatorios();
-  }, [active]);
+  }, []);
 
   return (
     <div className={styles.page}>
@@ -64,27 +61,22 @@ export default function () {
 
         <div className={styles.conteudoPrincipal}>
           <div className={styles.tabs}>
-            <button ref={refs[0]} onClick={() => setActive(0)}>Chamados</button>
-            <button ref={refs[1]} onClick={() => setActive(1)}>Técnicos</button>
-            <button ref={refs[2]} onClick={() => setActive(2)}>Objetos Quebrados</button>
-            <span className={styles.line} style={lineStyle}></span>
+            <button onClick={() => setAbaAtiva("chamados")}>Chamados</button>
+            <button onClick={() => setAbaAtiva("tecnicos")}>Técnicos</button>
+            <button onClick={() => setAbaAtiva("equipamentos")}>Equipamentos</button>
           </div>
         </div>
 
         <div className={styles.todos}>
-          <div className={styles.selecao}>
-            <h3>
-              {active === 0 && "Listando Relatórios dos Chamados..."}
-              {active === 1 && "Listando Relatórios dos Técnicos..."}
-              {active === 2 && "Listando Relatórios dos Objetos Quebrados..."}
-            </h3>
-
-            {relatorios.length > 0 ? (
-              relatorios.map((r) => <Relatorios key={r.id} relatorio={r} />)
-            ) : (
-              <p>Nenhum relatório encontrado.</p>
-            )}
-          </div>
+          {loading ? (
+            <p>Carregando relatórios...</p>
+          ) : relatorios.length === 0 ? (
+            <p>Nenhum relatório encontrado</p>
+          ) : (
+            relatorios.map((relatorio) => (
+              <Relatorios key={relatorio.id} relatorio={relatorio} />
+            ))
+          )}
         </div>
       </div>
     </div>
