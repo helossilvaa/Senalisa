@@ -1,7 +1,7 @@
 import express from 'express';
+
 import { criarChamadoController, listarChamadosController, listarChamadosParaTecnicoController, obterChamadoPorIdController, atualizarChamadoController, assumirChamadoController, criarApontamentoController, listarChamadosDoUsuarioController, finalizarChamadoController} from '../controllers/chamadosController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import verifyRole from '../middlewares/authVerifyRole.js';
 
 const router = express.Router();
 
@@ -21,6 +21,7 @@ router.put('/assumirChamado/:id', verifyRole(['tecnico']), assumirChamadoControl
 router.put('/meuschamados/:id/status', verifyRole(['tecnico']), atualizarChamadoController);
 router.put('/finalizar/:id', verifyRole(['tecnico']), finalizarChamadoController);
 
-router.post('/:id/apontamentos', verifyRole(['admin','tecnico']), criarApontamentoController);
+
+router.post('/:id/apontamentos', criarApontamentoController);
 
 export default router;

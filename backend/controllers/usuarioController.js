@@ -2,6 +2,7 @@ import {
   criarUsuario,
   listarUsuarios,
   obterUsuario,
+  obterUsuarioId,
   obterUsuarioPorEmail,
 } from '../models/usuario.js';
 
@@ -105,7 +106,7 @@ const listarUsuariosController = async (req, res) => {
 
 const obterUsuarioIdController = async (req, res) => {
   try {
-    const usuario = await obterUsuario(req.params.id);
+    const usuario = await obterUsuarioId(req.params.id);
     res.status(200).json(usuario);
   } catch (error) {
     console.error('Erro ao obter usuário por id:', error);
@@ -115,8 +116,21 @@ const obterUsuarioIdController = async (req, res) => {
   }
 };
 
+const obterUsuarioLogadoController = async (req, res) => {
+  try {
+    const usuario = await obterUsuario(req.usuarioId); 
+    if (!usuario) return res.status(404).json(null);
+    res.status(200).json(usuario);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensagem: 'Erro ao obter usuário' });
+  }
+};
+
+
 export {
   criarUsuarioController,
   listarUsuariosController,
   obterUsuarioIdController,
+  obterUsuarioLogadoController
 };

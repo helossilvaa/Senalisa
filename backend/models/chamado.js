@@ -11,7 +11,7 @@ const criarChamado = async (chamadoData) => {
 
 const listarChamado = async () => {
   try {
-    return await readAll('chamados', 'tecnico_id IS NULL');
+    return await readAll('chamados');
   } catch (error) {
     console.error('Erro ao listar chamados: ', error);
     throw error;
@@ -27,14 +27,26 @@ const obterChamadoPorId = async (id) => {
   }
 }
 
-const atualizarChamado = async (id, chamadoData) => {
+const atualizarChamado = async (req, res) => {
   try {
     await update('chamados', chamadoData, `id = ${id}`);
+      const { id } = req.params; 
+      const { descricao } = req.body;
+
+      const chamadoExistente = await obterChamadoPorId(id); 
+      if (!chamadoExistente) {
+          return res.status(404).json({ mensagem: 'Chamado não encontrado' });
+      }
+
+      const descricaoAtualizada = `${chamadoExistente.descricao}\n\n${descricao}`;
+      
+      await atualizarChamado(id, { descricao: descricaoAtualizada });
+      res.status(200).json({ mensagem: 'Chamado atualizado com sucesso' });
   } catch (error) {
-    console.error('Erro ao atualizar chamado: ', error);
-    throw error;
+      console.error('Erro ao atualizar chamado: ', error);
+      res.status(500).json({ mensagem: 'Erro ao atualizar chamado.' });
   }
-}
+};
 
 const criarApontamentos = async (id, apontamentosData) => {
   try{
@@ -45,17 +57,16 @@ const criarApontamentos = async (id, apontamentosData) => {
   }
 }
 
-const assumirChamado = async (id, tecnicoId) => {
-    try {
-        const chamado = await read('chamados', `id = ${id}`);
-        if (!chamado) throw new Error('Chamado não encontrado');
-        if (chamado.tecnico_id) throw new Error('Chamado já foi assumido');
-
-        return await update('chamados', { tecnico_id: tecnicoId, status: 'em andamento' }, `id = ${id}`);
-    } catch (error) {
-        console.error('Erro ao assumir chamado: ', error);
-        throw error;
-    }
+const assumirChamado = async (req, res) => {
+  try {
+      const { id } = req.params; 
+      const tecnico_id = req.user.id; 
+      const resultado = await assumirChamado(id, tecnico_id);
+      res.status(200).json({ mensagem: 'Chamado assumido com sucesso', chamado: resultado });
+  } catch (error) {
+      console.error('Erro ao assumir chamado:', error);
+      res.status(400).json({ mensagem: error.message });
+  }
 };
 
 const getChamadosStatus = async (tecnicoId) => {

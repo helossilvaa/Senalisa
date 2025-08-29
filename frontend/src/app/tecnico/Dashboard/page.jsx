@@ -15,6 +15,7 @@ export default function DashboardTecnico() {
         async function fetchData() {
             const tecnicoId = "ID_DO_TECNICO";
             const res = await fetch(`http://localhost:3000/api/chamados/status/${tecnicoId}`);
+
             const data = await res.json();
             setStatus(data);
         }
@@ -33,7 +34,8 @@ export default function DashboardTecnico() {
 
         async function fetchChamados() {
             try {
-                const resChamados = await fetch("http://localhost:3000/api/chamados/meuschamados", {
+
+                const resChamados = await fetch("http://localhost:3000/api/chamados/gerais", {
                     headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
                 });
                 const data = await resChamados.json();

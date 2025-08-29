@@ -1,73 +1,89 @@
 import { listarRelatorios, buscarRelatorios } from '../models/relatorio.js';
-import { read } from '../config/database.js';
+import { read, readAll } from '../config/database.js';
 
-/**
- * Controller para listar todos os relatórios (só admin)
- */
-export const listarRelatoriosController = async (req, res) => {
-  console.log("Usuário autenticado:", req.user);
-  console.log("Função do usuário:", req.user?.funcao);
-  
-  try {
-    // Verifica se o usuário é admin
-    if (req.user.funcao !== 'administrador') {
-      return res.status(403).json({ mensagem: 'Acesso negado' });
-    }
 
-    // Busca todos os relatórios
-    const relatorios = await listarRelatorios();
+const getFullRelatorioData = async (relatorios) => {
+    return Promise.all(
+        relatorios.map(async (r) => {
+            const chamado = await read('chamados', `id = ${r.chamado_id}`);
+            const tecnico = r.tecnico_id ? await read('usuarios', `id = ${r.tecnico_id}`) : null;
+            const usuario = chamado?.usuario_id ? await read('usuarios', `id = ${chamado.usuario_id}`) : null;
+            const equipamento = chamado?.equipamento_id ? await read('equipamentos', `patrimonio = ${chamado.equipamento_id}`) : null;
+            const sala = chamado?.sala_id ? await read('salas', `id = ${chamado.sala_id}`) : null;
 
-    // Para cada relatório, adiciona dados do chamado e do técnico
-    const relatoriosComDados = await Promise.all(
-      relatorios.map(async (r) => {
-        const chamado = await read('chamados', `id = ${r.chamado_id}`);
-        const tecnico = await read('usuarios', `id = ${r.tecnico_id}`);
-        return {
-          ...r,
-          chamado,
-          tecnico: tecnico ? { id: tecnico.id, nome: tecnico.nome, email: tecnico.email } : null
-        };
-      })
+            return {
+                ...r,
+                chamado: chamado ? {
+                    id: chamado.id,
+                    titulo: chamado.titulo,
+                    descricao: chamado.descricao,
+                    status: chamado.status,
+                } : null,
+            };
+        })
     );
-
-    res.status(200).json(relatoriosComDados);
-  } catch (error) {
-    console.error('Erro ao listar relatórios:', error);
-    res.status(500).json({ mensagem: 'Erro ao listar relatórios' });
-  }
 };
 
-/**
- * Controller para buscar relatórios filtrados (por técnico ou chamado)
- * @param {Object} req.query - Pode conter tecnico_id ou chamado_id
- */
 export const buscarRelatoriosController = async (req, res) => {
-  try {
-    if (req.user.funcao !== 'administrador') {
-      return res.status(403).json({ mensagem: 'Acesso negado' });
+    try {
+        if (req.user.funcao !== 'admin') {
+            return res.status(403).json({ mensagem: 'Acesso negado' });
+        }
+        const filtros = req.query;
+
+        const relatorios = await buscarRelatorios(filtros);
+        const relatoriosComDados = await getFullRelatorioData(relatorios);
+
+        res.status(200).json(relatoriosComDados);
+    } catch (error) {
+        console.error('Erro ao buscar relatórios com filtros:', error);
+        res.status(500).json({ mensagem: 'Erro ao buscar relatórios' });
     }
+};
 
-    const filtro = {};
-    if (req.query.tecnico_id) filtro.tecnico_id = Number(req.query.tecnico_id);
-    if (req.query.chamado_id) filtro.chamado_id = Number(req.query.chamado_id);
+export const listarRelatoriosController = async (req, res) => {
+    console.log("Usuário autenticado:", req.user);
+  console.log("Função do usuário:", req.user?.funcao);
 
-    const relatorios = await buscarRelatorios(filtro);
+    try {
+        if (req.user.funcao !== 'administrador') {
+            return res.status(403).json({ mensagem: 'Acesso negado' });
+        }
+        const relatorios = await listarRelatorios();
+        const relatoriosComDados = await getFullRelatorioData(relatorios);
+        res.status(200).json(relatoriosComDados);
+    } catch (error) {
+        console.error('Erro ao listar relatórios:', error);
+        res.status(500).json({ mensagem: 'Erro ao listar relatórios' });
+    }
+};
 
-    const relatoriosComDados = await Promise.all(
-      relatorios.map(async (r) => {
-        const chamado = await read('chamados', `id = ${r.chamado_id}`);
-        const tecnico = await read('usuarios', `id = ${r.tecnico_id}`);
-        return {
-          ...r,
-          chamado,
-          tecnico: tecnico ? { id: tecnico.id, nome: tecnico.nome, email: tecnico.email } : null
-        };
-      })
-    );
+// Novo controlador para listar por técnicos
+export const listarRelatoriosPorTecnicoController = async (req, res) => {
+    try {
+        if (req.user.funcao !== 'admin') {
+            return res.status(403).json({ mensagem: 'Acesso negado' });
+        }
+        const relatorios = await listarRelatorios();
+        const relatoriosComDados = await getFullRelatorioData(relatorios);
+        res.status(200).json(relatoriosComDados);
+    } catch (error) {
+        console.error('Erro ao listar relatórios por técnico:', error);
+        res.status(500).json({ mensagem: 'Erro ao listar relatórios por técnico' });
+    }
+};
 
-    res.status(200).json(relatoriosComDados);
-  } catch (error) {
-    console.error('Erro ao buscar relatórios:', error);
-    res.status(500).json({ mensagem: 'Erro ao buscar relatórios' });
-  }
+// Novo controlador para listar por equipamentos
+export const listarRelatoriosPorEquipamentoController = async (req, res) => {
+    try {
+        if (req.user.funcao !== 'admin') {
+            return res.status(403).json({ mensagem: 'Acesso negado' });
+        }
+        const relatorios = await listarRelatorios();
+        const relatoriosComDados = await getFullRelatorioData(relatorios);
+        res.status(200).json(relatoriosComDados);
+    } catch (error) {
+        console.error('Erro ao listar relatórios por equipamento:', error);
+        res.status(500).json({ mensagem: 'Erro ao listar relatórios por equipamento' });
+    }
 };

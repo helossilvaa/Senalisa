@@ -1,7 +1,8 @@
 import Link from "next/link";
 import styles from "./Card.module.css";
 
-export default function Card({ titulo, id, data }) {
+export default function Card({ titulo, id, data, onAceitar}) {
+    
     return (
         <div className={styles.card}>
             <div className={styles.conteiner}>
@@ -16,7 +17,7 @@ export default function Card({ titulo, id, data }) {
                         Ver mais
                     </Link>
                     <div className={styles.botaoAceitar}>
-                        <button>
+                        <button onClick={() => onAceitar(id)}>
                             <p>Aceitar</p>
                         </button>
                     </div>

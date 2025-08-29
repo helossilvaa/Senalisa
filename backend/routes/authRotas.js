@@ -31,7 +31,7 @@ const fakeUsers = [
     nome: 'Arioci',
     senha: '12345',
     email: '11223344@educ123.sp.senai.br',
-    funcao: 'admin',
+    funcao: 'administrador',
   },
 ];
 
@@ -39,6 +39,7 @@ const USE_FAKE_AUTH = true;
 
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
+  console.log('Login recebido:', req.body);
 
   if (USE_FAKE_AUTH) {
     const usuarioFake = fakeUsers.find(
@@ -117,21 +118,32 @@ router.post('/logout', (req, res) => {
 });
 
 // Verificação de autenticação
-router.get('/check-auth', (req, res) => {
+router.get('/check-auth', async (req, res) => {
   if (req.isAuthenticated()) {
-    return res.json({
-      authenticated: true,
-      user: {
-        username: req.user.username,
-        displayName: req.user.displayName,
-      },
-    });
-  }
+    try {
+      const userFromDB = await read('usuarios', `registro = '${req.user.username}'`);
 
-  res.status(401).json({ authenticated: false });
+      if (userFromDB) {
+        return res.json({
+          authenticated: true,
+          user: {
+            nome: userFromDB.nome,
+            funcao: userFromDB.funcao,
+          },
+        });
+      } else {
+        req.logout(() => { });
+        res.status(401).json({ authenticated: false });
+      }
+    } catch (error) {
+      console.error('Erro ao buscar usuário no DB:', error);
+      res.status(500).json({ error: 'Erro interno ao verificar autenticação' });
+    }
+  } else {
+    res.status(401).json({ authenticated: false });
+  }
 });
 
 export default router;
 
 
-  

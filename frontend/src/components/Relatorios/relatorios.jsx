@@ -1,9 +1,13 @@
+// components/Relatorios/relatorios.jsx
+
 import styles from "@/components/Relatorios/relatorios.module.css";
 
-export default function Relatorios({ relatorio }) {
+export default function Relatorios({ relatorio, activeTab }) {
   if (!relatorio) {
-    return null; 
+    return null;
   }
+
+  const displayInfo = getInfoByTab();
 
   return (
     <div className={styles.documentos}>
@@ -12,18 +16,19 @@ export default function Relatorios({ relatorio }) {
       </div>
       <div className={styles.info}>
         <div className={styles.titulo}>
-          <p>{relatorio.chamado?.titulo || "Sem título"}</p>
+          <p>{displayInfo.titulo}</p>
         </div>
         <div className={styles.link}>
-          <p>{relatorio.descricao}</p>
+          <p>{displayInfo.info}</p>
         </div>
       </div>
       <div className={styles.download}>
-      <a href={`http://localhost:8080/relatorios/chamados/pdf`} target="_blank">
+
+      <a href={`http://localhost:8080/relatorios/chamados/pdf`} target="_blank"/>
+        
           <div className={styles.baixar}>
             <i className="bi bi-arrow-down-circle-fill" />
           </div>
-        </a>
       </div>
     </div>
   );

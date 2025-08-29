@@ -10,6 +10,7 @@ import salasRotas from './routes/salasRotas.js';
 import EquipamentoRotas from './routes/equipamento.js';
 import PoolRotas from './routes/poolRotas.js';
 import relatoriosRotas from './routes/relatoriosRotas.js';
+import TarefaRotas from './routes/tarefasRotas.js';
 
 dotenv.config();
 
@@ -74,9 +75,13 @@ app.get('/', (req, res) => {
   res.send('Backend funcionando!');
 });
 
+app.use('/auth', authRotas);
+app.use("/api/chamados", chamadoRotas);
 app.use('/usuarios', usuarioRotas);
 app.use('/chamados', chamadoRotas);
 app.use('/salas', salasRotas);
+app.use('/relatorios', relatoriosRotas);
 app.use('/equipamentos', EquipamentoRotas);
 app.use('/pools', PoolRotas);
 app.use('/relatorios', relatoriosRotas);
+app.use('/tarefas', TarefaRotas);

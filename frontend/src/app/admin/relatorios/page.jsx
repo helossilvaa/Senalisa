@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Relatorios from "@/components/Relatorios/relatorios";
 import HeaderAdmin from "@/components/HeaderAdmin/headerAdmin";
 import styles from "./page.module.css";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 export default function PageRelatorios() {
   const [relatorios, setRelatorios] = useState([]);
@@ -43,6 +45,7 @@ export default function PageRelatorios() {
       } catch (err) {
         console.error("Erro ao buscar relatórios:", err.message);
         setRelatorios([]); 
+
       } finally {
         setLoading(false);
       }
@@ -64,6 +67,7 @@ export default function PageRelatorios() {
             <button onClick={() => setAbaAtiva("chamados")}>Chamados</button>
             <button onClick={() => setAbaAtiva("tecnicos")}>Técnicos</button>
             <button onClick={() => setAbaAtiva("equipamentos")}>Equipamentos</button>
+
           </div>
         </div>
 
