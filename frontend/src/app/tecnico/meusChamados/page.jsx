@@ -1,10 +1,54 @@
+"use client";
+import { useEffect, useState } from 'react';
 import Card from '@/components/Card/Card';
 import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
 import styles from './page.module.css';
+import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 
-export default async function MeusChamadosPage() {
-  const tecnicoId = 1; // Substitua aqui pelo ID do técnico logado
-  const chamados = await getChamadosDoTecnico(tecnicoId);
+
+export default function MeusChamadosPage() {
+  const [chamados, setChamados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const API_URL = "http://localhost:8080";
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+console.log("Token encontrado:", token);
+
+    const fetchChamados = async () => {
+      setLoading(true); 
+      try {
+        const decoded = jwtDecode(token);
+
+        if (decoded.exp < Date.now() / 1000) {
+          localStorage.removeItem("token");
+          alert("Seu login expirou.");
+          router.push("/login");
+          return;
+        }
+
+        const res = await fetch(`${API_URL}/chamados/chamadostecnico`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Erro ao buscar chamados");
+        const data = await res.json();
+        setChamados(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false); 
+      }
+    };
+    fetchChamados();
+  }, []);
+  
 
   return (
     <div className={styles.container}>
@@ -24,7 +68,7 @@ export default async function MeusChamadosPage() {
                 titulo={chamada.titulo}
                 data={new Date(chamada.atualizado_em).toLocaleDateString()}
                 id={chamada.id}
-                mostrarBotaoAceitar={false} // não mostrar botão aceitar, pois já está aceito
+                mostrarBotaoAceitar={false}
               />
             ))
           )}

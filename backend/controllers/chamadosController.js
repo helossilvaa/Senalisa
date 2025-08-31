@@ -174,7 +174,7 @@ const atualizarStatusChamadoController = async (req, res) => {
       await atualizarStatusChamado(id, status);
   
       let mensagem;
-      if (status === 'em_andamento') {
+      if (status === 'em andamento') {
         mensagem = notificacaoTextos.CHAMADO_EM_ANDAMENTO(id);
       } else if (status === 'concluido') {
         mensagem = notificacaoTextos.CHAMADO_CONCLUIDO(id);
@@ -209,7 +209,7 @@ const listarChamadosDoTecnicoController = async (req, res) => {
   try {
     const tecnico_id = req.usuarioId;
     const todosChamados = await listarChamado();
-    const chamadosDoTecnico = todosChamados.filter(c => c.status === 'pendente' && c.tecnico_id === tecnico_id);
+    const chamadosDoTecnico = todosChamados.filter(c => c.status === 'em andamento' && c.tecnico_id === tecnico_id);
     res.status(200).json(chamadosDoTecnico);
   } catch (error) {
     res.status(500).json({ mensagem: 'Erro ao listar chamados do técnico' });

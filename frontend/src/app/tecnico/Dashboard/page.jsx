@@ -16,14 +16,15 @@ export default function DashboardTecnico() {
   const router = useRouter();
   const API_URL = "http://localhost:8080";
 
-  const token = localStorage.getItem("token");
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-
-  // Buscar chamados e usuário
   useEffect(() => {
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
     const fetchChamados = async () => {
-      if (!token) { router.push("/login"); return; }
-
+      
       try {
         const decoded = jwtDecode(token);
         if (decoded.exp < Date.now() / 1000) {
@@ -33,10 +34,12 @@ export default function DashboardTecnico() {
           return;
         }
 
-        const id = decoded.id;
-        const resUser = await fetch(`${API_URL}/usuarios/${id}`, config);
-        const dataUser = await resUser.json();
-        setNomeUsuario(dataUser?.nome || 'Usuário não encontrado');
+        setNomeUsuario(decoded.nome || 'Usuário não encontrado');
+
+        // Configuração para as requisições
+        const config = {
+          headers: { Authorization: `Bearer ${token}` }
+        };
 
         const resChamados = await fetch(`${API_URL}/chamados/pendentes`, config);
         const dataChamados = await resChamados.json();
@@ -53,10 +56,14 @@ export default function DashboardTecnico() {
 
   // Aceitar chamado
   const aceitarChamado = async (idChamado) => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+    };
     try {
-      const res = await fetch(`${API_URL}/chamados/assumirChamado/${idChamado}`, {
+      const res = await fetch(`${API_URL}/chamados/assumir/${idChamado}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        ...config
       });
       if (!res.ok) throw new Error("Erro ao assumir chamado");
       setChamados(prev => prev.filter(c => c.id !== idChamado));
@@ -65,6 +72,10 @@ export default function DashboardTecnico() {
 
   // Adicionar nova tarefa
   const adicionarTarefa = async () => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+    };
     if (!novaTarefa.trim()) return;
     try {
       const res = await axios.post(`${API_URL}/tarefas`, { descricao: novaTarefa }, config);
@@ -76,6 +87,10 @@ export default function DashboardTecnico() {
 
   // Deletar tarefa
   const deletarTarefa = async (id) => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+    };
     try {
       await axios.delete(`${API_URL}/tarefas/${id}`, config);
       setTarefas(prev => prev.filter(t => t.id !== id));
@@ -84,6 +99,10 @@ export default function DashboardTecnico() {
 
   // Marcar tarefa concluída
   const toggleConcluida = async (id, concluida) => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+    };
     try {
       await axios.put(`${API_URL}/tarefas/${id}`, { concluida: !concluida }, config);
       setTarefas(prev => prev.map(t => t.id === id ? { ...t, concluida: !concluida } : t));
@@ -186,19 +205,19 @@ export default function DashboardTecnico() {
             )}
 
             <ul className={styles.tarefas}>
-              {tarefas.map(t => (
-                <li key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={t.concluida}
-                      onChange={() => toggleConcluida(t.id, t.concluida)}
-                    /> {t.descricao}
-                  </label>
-                  <button onClick={() => deletarTarefa(t.id)} style={{ marginLeft: '10px' }}>🗑️</button>
-                </li>
-              ))}
-            </ul>
+              {tarefas.map(t => (
+                <li key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={t.concluida}
+                      onChange={() => toggleConcluida(t.id, t.concluida)}
+                    /> {t.descricao}
+                  </label>
+                  <button onClick={() => deletarTarefa(t.id)} style={{ marginLeft: '10px' }}>🗑️</button>
+                </li>
+              ))}
+            </ul>
           </div>
 
         </div>

@@ -8,16 +8,16 @@ router.get('/', authMiddleware, listarChamadosController);
 router.post('/', authMiddleware, criarChamadoController);
 router.get('/chamados', authMiddleware, listarChamadosDoUsuarioController);
 
-router.get('/meuschamados', listarChamadosDoTecnicoController); 
+router.get('/chamadostecnico', authMiddleware, listarChamadosDoTecnicoController); 
 
 router.get('/pendentes', authMiddleware, listarChamadosPendentesController);
 router.put('/assumir/:id', authMiddleware, assumirChamadoController);
 router.put('/:id/status', authMiddleware, atualizarStatusChamadoController);
 
-router.post('/:id/apontamentos', criarApontamentoController);
+router.post('/:id/apontamentos', authMiddleware, criarApontamentoController);
 
-router.put('/:id', atualizarChamadoController); 
-router.get('/:id', obterChamadoPorIdController);
+router.put('/:id',authMiddleware, atualizarChamadoController); 
+router.get('/:id', authMiddleware, obterChamadoPorIdController);
 
 
 export default router;
