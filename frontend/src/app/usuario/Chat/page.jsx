@@ -1,101 +1,123 @@
-'use client';
-import { useState, useEffect } from 'react';
-import './chat.css';
-import Join from '@/components/Join/Join';
-import Conversas from '@/components/Coversas/Conversas';
-import Header from '@/components/Header/header';
-import NoticacaoesChat from '@/components/NotificacoesChat/ConversationsList';
-import Loading from '@/components/loading/loading';
-import { useRouter } from 'next/navigation';
-import { SidebarProvider } from '@/components/Header/sidebarContext'
-// import jwtDecode from 'jwt-decode';
+import React, { useRef, useState, useEffect } from "react";
+import { Input } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import style from "./Conversas.module.css";
 
-function App() {
-  const [chatVisibility, setChatVisibility] = useState(false);
-  const [socket, setSocket] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [selectedChat, setSelectedChat] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [error, setError] = useState(null);
+export default function Chat({ socket, selectedChat, currentUser }) {
+  const bottomRef = useRef();
+  const messageRef = useRef();
+  const [messageList, setMessageList] = useState([]);
 
-  const router = useRouter();
-
+  // Buscar mensagens do banco
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/login');
-        return;
-      }
+    const fetchMensagens = async () => {
+      if (!selectedChat) return;
 
       try {
-        const decoded = jwtDecode(token);
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:8080/mensagem/${selectedChat.id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        if (decoded.exp < Date.now() / 1000) {
-          localStorage.removeItem('token');
-          alert('Seu login expirou.');
-          router.push('/login');
-          return;
-        }
-        setCurrentUser(decoded);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        if (!response.ok) throw new Error("Erro ao buscar mensagens");
+
+        const data = await response.json();
+        setMessageList(data);
+
+        if (socket) socket.emit("join_room", selectedChat.id);
+      } catch (error) {
+        console.error("Erro ao buscar mensagens:", error);
       }
     };
 
-    fetchCurrentUser();
-  }, [router]);
+    fetchMensagens();
+  }, [selectedChat, socket]);
 
+  // Receber mensagem em tempo real
   useEffect(() => {
-    if (socket) {
-      setLoading(true);
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 1500);
+    if (!socket || !selectedChat?.id) return; // 🔹 garante que os dois existem
+  
+    const handleReceiveMessage = (data) => {
+      if (data.Chat_id === selectedChat.id) {
+        setMessageList((prev) => [...prev, data]);
+      }
+    };
+  
+    socket.on("receive_message", handleReceiveMessage);
+  
+    return () => {
+      socket.off("receive_message", handleReceiveMessage);
+    };
+  }, [socket, selectedChat?.id]); 
 
-      return () => clearTimeout(timer);
+  // Scroll automático
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messageList]);
+
+  // Enviar mensagem
+  const handleSubmit = async () => {
+    if (!messageRef.current || !selectedChat || !currentUser) return;
+
+    const message = messageRef.current.value;
+    if (!message.trim()) return;
+
+    const mensageData = {
+      Chat_id: selectedChat.id,
+      remetente_id: currentUser.id,
+      mensagem: message,
+    };
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await fetch(`http://localhost:8080/mensagem`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(mensageData),
+      });
+
+      socket.emit("message", mensageData); // 🔹 Confirme se no backend o evento é "message" ou "receive_message"
+
+      messageRef.current.value = "";
+    } catch (err) {
+      console.error("Erro ao enviar mensagem", err);
     }
-  }, [socket]);
-
-  const handleSelectConversation = (chat) => {
-    setSelectedChat(chat);
   };
 
-  const renderView = () => {
-    if (!chatVisibility) {
-      return <Join setSocket={setSocket} setChatVisibility={setChatVisibility} />;
-    }
-
-    return (
-      <SidebarProvider>
-      <div className="layout-geral">
-        <Header />
-        <div className="chat-wrapper">
-          <div className="notificacoes-container">
-            <NoticacaoesChat onSelectConversation={handleSelectConversation} />
+  return (
+    <div className={style["chat-container"]}>
+      {/* BODY */}
+      <div className={style["chat-body"]}>
+        {messageList.map((msg, i) => (
+          <div
+            key={i}
+            className={`${style["message-container"]} ${
+              msg.remetente_id === currentUser?.id && style["message-mine"]
+            }`}
+          >
+            <div className={style["message-text"]}>{msg.mensagem}</div>
           </div>
-          <div className="chat-container">
-            {selectedChat ? (
-              <Conversas
-                socket={socket}
-                selectedChat={selectedChat}
-                currentUser={currentUser}
-              />
-            ) : (
-              <div className="text-center p-5">
-                <h3>Selecione uma conversa para começar</h3>
-              </div>
-            )}
-          </div>
-        </div>
+        ))}
+        <div ref={bottomRef} />
       </div>
-      </SidebarProvider>
-    );
-  };
 
-  return <div className="caixa-fundo">{loading ? <Loading /> : renderView()}</div>;
+      {/* FOOTER */}
+      <div className={style["chat-footer"]}>
+        <Input
+          inputRef={messageRef}
+          placeholder="Digite algo..."
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+          fullWidth
+        />
+        <SendIcon sx={{ m: 1, cursor: "pointer" }} onClick={handleSubmit} />
+      </div>
+    </div>
+  );
 }
-
-export default App;

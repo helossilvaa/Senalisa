@@ -16,6 +16,8 @@ const listarChatsController = async (req, res) => {
   try {
     const usuarioId = req.user.id; 
     const chats = await listarChats(usuarioId);
+    console.log(chats);
+    
     res.status(200).json(chats);
   } catch (error) {
     console.error("Erro ao listar chats:", error);

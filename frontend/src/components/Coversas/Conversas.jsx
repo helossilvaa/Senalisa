@@ -2,55 +2,63 @@ import React, { useRef, useState, useEffect } from "react";
 import { Input } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import style from "./Conversas.module.css";
-import { Token } from "@mui/icons-material";
 
 export default function Chat({ socket, selectedChat, currentUser }) {
   const bottomRef = useRef();
   const messageRef = useRef();
   const [messageList, setMessageList] = useState([]);
 
-
+  // Buscar mensagens ao trocar de chat
   useEffect(() => {
     const fetchMensagens = async () => {
-      if (selectedChat) {
-        try {
-          const response = await fetch(
-            `https://localhost:8080/mensagem/${selectedChat.id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+      if (!selectedChat) return;
 
-          const data = await response.json();
-          setMessageList(data);
-        } catch (error) {
-          console.error("Erro ao buscar mensagens", error);
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          `http://localhost:8080/mensagem/${selectedChat.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error("Erro ao buscar mensagens");
+
+        const data = await response.json();
+        setMessageList(data);
+
+        if (socket) {
+          const handleReceiveMessage = (msg) => {
+            if (msg.Chat_id === selectedChat.id) {
+              setMessageList((current) => [...current, msg]);
+            }
+          };
+
+          socket.on("receive_message", handleReceiveMessage);
+
+          return () => {
+            socket.off("receive_message", handleReceiveMessage);
+          };
         }
+      } catch (error) {
+        console.error("Erro ao buscar mensagens", error);
       }
     };
 
     fetchMensagens();
-
-    if (socket) {
-      const handleReceiveMessage = (data) => {
-        if (data.Chat_id === selectedChat.id) {
-          setMessageList((current) => [...current, data]);
-        }
-      };
-      socket.on("receive_message", handleReceiveMessage);
-
-      return () => {
-        socket.off("receive_message", handleReceiveMessage);
-      };
-    }
   }, [socket, selectedChat]);
 
+  // Sempre rolar para a última mensagem
   useEffect(() => {
-    scrollDown();
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messageList]);
 
+  // Enviar mensagem
   const handleSubmit = async () => {
     const message = messageRef.current.value;
     if (!message.trim() || !socket || !selectedChat || !currentUser) return;
@@ -62,15 +70,11 @@ export default function Chat({ socket, selectedChat, currentUser }) {
     };
 
     try {
-      const response = await fetch(`http://localhost:8080/mensagem`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer Token",
-        },
-        body: JSON.stringify(mensageData),
-      });
-
+      const token = localStorage.getItem("token");
+const response = await fetch(`http://localhost:8080/mensagem/${selectedChat.id}`, {
+  headers: { Authorization: `Bearer ${token}` }
+});
+       
       if (!response.ok) {
         throw new Error("Erro ao salvar mensagem");
       }
@@ -98,12 +102,6 @@ export default function Chat({ socket, selectedChat, currentUser }) {
 
   const getEnterKey = (e) => {
     if (e.key === "Enter") handleSubmit();
-  };
-
-  const scrollDown = () => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
   };
 
   return (
