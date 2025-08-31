@@ -38,7 +38,7 @@ export default function DashboardTecnico() {
         const dataUser = await resUser.json();
         setNomeUsuario(dataUser?.nome || 'Usuário não encontrado');
 
-        const resChamados = await fetch(`${API_URL}/chamados/gerais`, config);
+        const resChamados = await fetch(`${API_URL}/chamados/pendentes`, config);
         const dataChamados = await resChamados.json();
         setChamados(dataChamados);
 

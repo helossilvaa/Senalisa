@@ -4,10 +4,10 @@ import { read } from '../config/database.js';
 /**
  * Controller para listar todos os relatórios (só admin)
  */
-export const listarRelatoriosController = async (req, res) => {
+const listarRelatoriosController = async (req, res) => {
   try {
     // Verifica se o usuário é admin
-    if (req.user.funcao !== 'administrador') {
+    if (req.user.funcao !== 'admin') {
       return res.status(403).json({ mensagem: 'Acesso negado' });
     }
 
@@ -38,9 +38,9 @@ export const listarRelatoriosController = async (req, res) => {
  * Controller para buscar relatórios filtrados (por técnico ou chamado)
  * @param {Object} req.query - Pode conter tecnico_id ou chamado_id
  */
-export const buscarRelatoriosController = async (req, res) => {
+const buscarRelatoriosController = async (req, res) => {
   try {
-    if (req.user.funcao !== 'administrador') {
+    if (req.user.funcao !== 'admin') {
       return res.status(403).json({ mensagem: 'Acesso negado' });
     }
 
@@ -68,3 +68,5 @@ export const buscarRelatoriosController = async (req, res) => {
     res.status(500).json({ mensagem: 'Erro ao buscar relatórios' });
   }
 };
+
+export { listarRelatoriosController, buscarRelatoriosController };

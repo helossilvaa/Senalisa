@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 
 export default function InfoPage({ params }) {
 
-    const id = params.id;
+    const { id } = React.use(params);
     const [chamado, setChamado] = useState(null);
     const [loading, setLoading] = useState(true);
     const [mostrarForm, setMostrarForm] = useState(false);
@@ -36,7 +36,7 @@ export default function InfoPage({ params }) {
 
         const fetchChamado = async () => {
             try {
-                const res = await fetch(`${API_URL}/chamados`, {
+                const res = await fetch(`${API_URL}/chamados/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!res.ok) throw new Error("Erro ao buscar chamado");

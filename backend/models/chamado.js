@@ -12,12 +12,21 @@ const criarChamado = async (chamadoData) => {
 
 const listarChamado = async () => {
   try {
-    return await readAll('chamados', 'tecnico_id IS NULL');
+    return await readAll('chamados');
   } catch (error) {
     console.error('Erro ao listar chamados: ', error);
     throw error;
   }
 }
+
+const listarChamadosPendentes = async () => {
+  try {
+    return await readAll('chamados', 'status = "pendente" AND tecnico_id IS NULL');
+  } catch (error) {
+    console.error('Erro ao listar chamados pendentes: ', error);
+    throw error;
+  }
+};
 
 const obterChamadoPorId = async (id) => {
   try {
@@ -72,5 +81,4 @@ const assumirChamado = async (id, tecnicoId) => {
 };
 
 
-export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado,
-  atualizarStatusChamado};
+export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, listarChamadosPendentes, atualizarStatusChamado};

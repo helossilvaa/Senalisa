@@ -1,4 +1,4 @@
-import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, atualizarStatusChamado} from "../models/chamado.js";
+import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, atualizarStatusChamado, listarChamadosPendentes} from "../models/chamado.js";
 import { criarNotificacao } from "../models/notificacoes.js";
 import notificacaoTextos from '../utils/notificacoesTextos.js';
 
@@ -149,10 +149,9 @@ const criarApontamentoController = async (req, res) => {
 
 const assumirChamadoController = async (req, res) => {
     try {
-        const { chamado_id } = req.body;
+        const { id } = req.params;
         const tecnico_id = req.usuarioId; 
-
-        const resultado = await assumirChamado(chamado_id, tecnico_id);
+        const resultado = await assumirChamado(id, tecnico_id);
 
         res.status(200).json({ mensagem: 'Chamado assumido com sucesso', chamado: resultado });
     } catch (error) {
@@ -196,11 +195,10 @@ const atualizarStatusChamadoController = async (req, res) => {
     }
   };
 
-const listarChamadosGeraisController = async (req, res) => {
+const listarChamadosPendentesController = async (req, res) => {
   try {
-    const todosChamados = await listarChamado();
-    const chamadosGerais = todosChamados.filter(c => c.status === 'pendente' && !c.tecnico_id);
-    res.status(200).json(chamadosGerais);
+    const chamadosPendentes = await listarChamadosPendentes();
+    res.status(200).json(chamadosPendentes);
   } catch (error) {
     res.status(500).json({ mensagem: 'Erro ao listar chamados gerais' });
   }
@@ -221,6 +219,6 @@ const listarChamadosDoTecnicoController = async (req, res) => {
 
 
 
-export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosGeraisController, listarChamadosDoTecnicoController, atualizarStatusChamadoController};
+export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosPendentesController, listarChamadosDoTecnicoController, atualizarStatusChamadoController};
 
 

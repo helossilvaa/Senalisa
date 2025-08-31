@@ -3,9 +3,9 @@ import { listarRelatorios } from '../models/relatorio.js';
 import { read } from '../config/database.js';
 
 
-export const gerarRelatoriosPdfController = async (req, res) => {
+const gerarRelatoriosPdfController = async (req, res) => {
   try {
-    if (req.user.funcao !== 'administrador') {
+    if (req.user.funcao !== 'admin') {
       return res.status(403).json({ mensagem: 'Acesso negado' });
     }
 
@@ -55,3 +55,5 @@ export const gerarRelatoriosPdfController = async (req, res) => {
     res.status(500).json({ mensagem: 'Erro ao gerar PDF de relatórios' });
   }
 };
+
+export { gerarRelatoriosPdfController };
