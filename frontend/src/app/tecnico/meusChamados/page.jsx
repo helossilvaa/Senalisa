@@ -47,6 +47,7 @@ console.log("Token encontrado:", token);
       }
     };
     fetchChamados();
+
   }, []);
   
 

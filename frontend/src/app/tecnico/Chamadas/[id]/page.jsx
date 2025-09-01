@@ -14,13 +14,14 @@ export default function InfoPage({ params }) {
     const { id } = React.use(params);
     const [chamado, setChamado] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isFinalizando, setIsFinalizando] = useState(false);
     const [mostrarForm, setMostrarForm] = useState(false);
     const router = useRouter();
-    const token = localStorage.getItem("token");
 
     const API_URL = "http://localhost:8080";
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
         if (!token) {
             router.push("/login");
             return;
@@ -50,7 +51,38 @@ export default function InfoPage({ params }) {
         };
 
         fetchChamado();
-    }, [id, router, token]);
+    }, [id, router]);
+
+    // Função para finalizar o chamado, agora usando o novo endpoint do backend
+    const finalizarChamado = async () => {
+        setIsFinalizando(true);
+        const token = localStorage.getItem("token");
+        if (!token) {
+             router.push("/login");
+             return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/chamados/${id}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ status: 'concluido' }),
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Erro ao finalizar chamado');
+            }
+            router.push("/tecnico/dashboard");
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsFinalizando(false);
+        }
+    };
+
 
     if (loading) {
         return <p>Carregando...</p>;
@@ -79,7 +111,14 @@ export default function InfoPage({ params }) {
                             <Relatorios/>
                             <div className={styles.botoes}>
                                 <button className={styles.emProgresso}>Em Andamento</button>
-                                <button className={styles.concluido}>Finalizado</button>
+                                {/* Botão "Finalizado" com a nova função `onClick` */}
+                                <button 
+                                    className={styles.concluido}
+                                    onClick={finalizarChamado}
+                                    disabled={isFinalizando}
+                                >
+                                    {isFinalizando ? 'Finalizando...' : 'Finalizado'}
+                                </button>
                             </div>
                         </div>
                     </div>

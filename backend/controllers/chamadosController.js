@@ -161,39 +161,40 @@ const assumirChamadoController = async (req, res) => {
 };
 
 const atualizarStatusChamadoController = async (req, res) => {
-
     try {
       const { id } = req.params;
       const { status } = req.body;
-  
+      const tecnicoId = req.usuarioId; 
+
       const chamadoExistente = await obterChamadoPorId(id);
       if (!chamadoExistente) {
         return res.status(404).json({ mensagem: 'Chamado não encontrado.' });
       }
-  
+
       await atualizarStatusChamado(id, status);
-  
+
       let mensagem;
       if (status === 'em andamento') {
         mensagem = notificacaoTextos.CHAMADO_EM_ANDAMENTO(id);
       } else if (status === 'concluido') {
         mensagem = notificacaoTextos.CHAMADO_CONCLUIDO(id);
       }
-  
+
       const notificacoesData = {
-        usuario_id: chamadoExistente.usuario_id, 
+        usuario_id: chamadoExistente.usuario_id,
+        tecnico_id: tecnicoId,
         mensagem,
-        visualizado: 'nao_vista'
+        visualizado: 0,
       };
-  
+
       await criarNotificacao(notificacoesData);
-  
+
       return res.status(200).json({ mensagem: `Status do chamado ${id} atualizado para ${status}.` });
     } catch (error) {
       console.error('Erro ao atualizar status do chamado:', error);
       return res.status(500).json({ mensagem: 'Erro interno ao atualizar status.' });
     }
-  };
+};
 
 const listarChamadosPendentesController = async (req, res) => {
   try {
@@ -217,8 +218,19 @@ const listarChamadosDoTecnicoController = async (req, res) => {
 };
 
 
+const listarHistoricoChamadosController = async (req, res) => {
+    try {
+        const todosChamados = await listarChamado();
+        const historico = todosChamados.filter(chamado => chamado.status === 'concluido');
+        res.status(200).json(historico);
+    } catch (error) {
+        console.error('Erro ao listar histórico de chamados:', error);
+        res.status(500).json({ mensagem: 'Erro ao obter histórico.' });
+    }
+};
 
 
-export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosPendentesController, listarChamadosDoTecnicoController, atualizarStatusChamadoController};
+
+export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosPendentesController, listarChamadosDoTecnicoController, atualizarStatusChamadoController, listarHistoricoChamadosController};
 
 
