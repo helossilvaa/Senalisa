@@ -44,26 +44,26 @@ export default function HeaderAdmin () {
                     {/* <hr /> */}
                     <ul id="side_items">
                         <li className="side-item active mt-4">
-                            <a href="#">
+                            <a href="/admin/dashboard">
                                 <i className="bi bi-speedometer2 me-2" />
                                 <span className="item-description">Dashboard</span>
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/admin/notificacoes">
                                 <i className="bi bi-bell me-2" />
                                 <span className="item-description">Notificações</span>
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/admin/chat">
                                 <i className="bi bi-chat-left-text me-2" />
                                 <span className="item-description">Conversas</span>
                             </a>
                         </li>
                         <li className="side-item">
 
-                            <a href="#">
+                            <a href="/admin/relatorios">
                                 <i className="bi bi-file-bar-graph"/>
                                 <span className="item-description">Relatórios</span>
                             </a>
@@ -81,8 +81,10 @@ export default function HeaderAdmin () {
                 </div>
                 <div id="logout" className='d-flex p-2 align-items-center mt-2'>
                     <button id="logout_btn">
+                        <a href="/admin/perfil">
                         <i className="bi bi-person-fill" />
                         <span className="item-description">Perfil</span>
+                        </a>
                     </button>
                     <button id="logout_btn">
                         <i className="text-danger bi bi-box-arrow-right" />

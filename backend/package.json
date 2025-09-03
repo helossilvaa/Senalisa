@@ -24,6 +24,7 @@
     "mysql2": "^3.14.1",
     "passport": "^0.7.0",
     "passport-ldapauth": "^3.0.1",
-    "pdfkit": "^0.17.1"
+    "pdfkit": "^0.17.1",
+    "socket.io": "^4.8.1"
   }
 }

@@ -50,13 +50,13 @@ export default function HeaderTecnico() {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/tecnico/notificacoes">
                                 <i className="bi bi-bell me-2" />
                                 <span className="item-description">Notificações</span>
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/tecnico/chat">
                                 <i className="bi bi-chat-left-text me-2" />
                                 <span className="item-description">Conversas</span>
                             </a>
@@ -74,7 +74,7 @@ export default function HeaderTecnico() {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="/tecnico/Historico">
+                            <a href="/tecnico/historico">
                                 <i className="bi bi-clock me-2" />
                                 <span className="item-description">Histórico</span>
                             </a>
@@ -86,8 +86,11 @@ export default function HeaderTecnico() {
                 </div>
                 <div id="logout" className='d-flex p-2 align-items-center mt-2'>
                     <button id="logout_btn">
-                        <i className="bi bi-person-fill" />
-                        <span className="item-description">Perfil</span>
+                        <a href='/tecnico/perfil'>
+                       <i className="bi bi-person-fill" />
+                        <span className="item-description">Perfil</span> 
+                    </a>
+                        
                     </button>
                     <button id="logout_btn">
                         <i className="text-danger bi bi-box-arrow-right" />

@@ -37,6 +37,18 @@ const atualizarChamado = async (id, chamadoData) => {
   }
 }
 
+const atualizarStatusChamado = async (chamadoId, novoStatus) => {
+  try {
+      const dadosParaAtualizar = { status: novoStatus };
+      const id = `id = ${chamadoId}`;
+
+      return await update('chamados', dadosParaAtualizar, id);
+  } catch (error) {
+      console.error('Erro ao atualizar o status do chamado:', error);
+      throw error;
+  }
+};
+
 const criarApontamentos = async (id, apontamentosData) => {
   try{
     await create('apontamentos', {...apontamentosData, chamado_id: id});
@@ -59,4 +71,6 @@ const assumirChamado = async (id, tecnicoId) => {
     }
 };
 
-export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado};
+
+export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado,
+  atualizarStatusChamado};

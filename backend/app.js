@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import { initWebSocket } from './websocket.js';
+
 import authRotas from './routes/authRotas.js';
 import passport from './config/ldap.js';
 import usuarioRotas from './routes/usuarioRotas.js';
@@ -9,7 +11,10 @@ import chamadoRotas from './routes/chamadoRotas.js';
 import salasRotas from './routes/salasRotas.js';
 import EquipamentoRotas from './routes/equipamento.js';
 import PoolRotas from './routes/poolRotas.js';
-import TarefaRotas from './routes/tarefasRotas.js';
+import chatMensagensRotas from './routes/chatMensagensRotas.js';
+import chatRotas from './routes/chatRotas.js';
+import notificacoesRotas from './routes/notificacoesRotas.js'
+
 
 // 1. Carrega variáveis de ambiente PRIMEIRO
 dotenv.config();
@@ -47,6 +52,14 @@ try {
 
 // 5. Rotas
 app.use('/auth', authRotas);
+app.use('/usuarios', usuarioRotas);
+app.use('/chamados', chamadoRotas);
+app.use('/salas', salasRotas);
+app.use('/equipamentos', EquipamentoRotas);
+app.use('/pools', PoolRotas);
+app.use('/chats', chatRotas);
+app.use('/mensagem', chatMensagensRotas)
+app.use('/notificacoes', notificacoesRotas);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'online' });
@@ -68,6 +81,7 @@ const server = app.listen(porta, () => {
 }).on('error', (err) => {
   console.error('Erro ao iniciar:', err);
 });
+initWebSocket(server);
 
 // 8. Encerramento elegante
 process.on('SIGTERM', () => {
@@ -79,10 +93,3 @@ process.on('SIGTERM', () => {
 app.get('/', (req, res) => {
   res.send('Backend funcionando!');
 });
-
-app.use('/usuarios', usuarioRotas);
-app.use('/chamados', chamadoRotas);
-app.use('/salas', salasRotas);
-app.use('/equipamentos', EquipamentoRotas);
-app.use('/pools', PoolRotas);
-app.use('/tarefas', TarefaRotas);

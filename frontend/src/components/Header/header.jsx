@@ -1,29 +1,31 @@
 'use client';
-import { useEffect } from 'react';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import './header.css';
+import { useSidebar } from '@/components/Header/sidebarContext';
  
-export default function Home() {
+export default function Sidebar() {
  
-    useEffect(() => {
+    // useEffect(() => {
  
-        const button = document.getElementById('open_btn');
-        const sidebar = document.getElementById('sidebar');
+    //     const button = document.getElementById('open_btn');
+    //     const sidebar = document.getElementById('sidebar');
  
-        const handleClick = () => {
-            sidebar.classList.toggle('open-sidebar');
-        };
+    //     const handleClick = () => {
+    //         sidebar.classList.toggle('open-sidebar');
+    //     };
  
-        if (button) {
-            button.addEventListener('click', handleClick);
-        }
-        return () => {
-            if (button) {
-                button.removeEventListener('click', handleClick);
-            }
-        };
+    //     if (button) {
+    //         button.addEventListener('click', handleClick);
+    //     }
+    //     return () => {
+    //         if (button) {
+    //             button.removeEventListener('click', handleClick);
+    //         }
+    //     };
  
-    }, []);
+    // }, []);
+ 
+    const { isExpanded, toggleSidebar } = useSidebar();
  
     return (
         <>
@@ -34,14 +36,13 @@ export default function Home() {
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
             />
-            
-            <nav id="sidebar">
+ 
+            <nav id="sidebar" className={isExpanded ? 'open-sidebar': ''}>
                 <div id="sidebar_content">
                     <div className="senaiLogo">
                         <img src="/Senalisa.png" className="logo logoExpandida" alt="Logo" />
                         <img src="/logoMenor.png" className="logo logoColapsada" alt="Simples Logo" />
                     </div>
-                    {/* <hr /> */}
                     <ul id="side_items">
                         <li className="side-item active mt-4">
                             <a href="#">
@@ -80,22 +81,24 @@ export default function Home() {
                             </a>
                         </li>
                     </ul>
-                    <button id="open_btn">
+                    <button id="open_btn" onClick={toggleSidebar}>
                         <i id="open_btn_icon" className="fa-solid fa-chevron-right" />
                     </button>
-                </div>
-                <div id="logout" className='d-flex p-2 align-items-center mt-2'>
-                    <button id="logout_btn">
-                        <i className="bi bi-person-fill" />
-                        <span className="item-description">Perfil</span>
-                    </button>
-                    <button id="logout_btn">
-                        <i className="text-danger bi bi-box-arrow-right" />
-                        <span className="text-danger item-description">Logout</span>
-                    </button>
+ 
+                    <div id="logout" className='d-flex p-2 align-items-center mt-2'>
+                        <button id="logout_btn">
+                            <i className="bi bi-person-fill" />
+                            <span className="item-description">Perfil</span>
+                        </button>
+                        <button id="logout_btn">
+                            <i className="text-danger bi bi-box-arrow-right" />
+                            <span className="text-danger item-description">Logout</span>
+                        </button>
+                    </div>
                 </div>
             </nav>
-            
+ 
         </>
     );
 }
+ 

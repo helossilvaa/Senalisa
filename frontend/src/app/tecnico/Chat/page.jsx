@@ -7,7 +7,6 @@ import Header from '@/components/Header/header';
 import NoticacaoesChat from '@/components/NotificacoesChat/ConversationsList';
 import Loading from '@/components/loading/loading';
 import { useRouter } from 'next/navigation';
-import { SidebarProvider } from '@/components/Header/sidebarContext'
 // import jwtDecode from 'jwt-decode';
 
 function App() {
@@ -69,7 +68,6 @@ function App() {
     }
 
     return (
-      <SidebarProvider>
       <div className="layout-geral">
         <Header />
         <div className="chat-wrapper">
@@ -91,7 +89,6 @@ function App() {
           </div>
         </div>
       </div>
-      </SidebarProvider>
     );
   };
 

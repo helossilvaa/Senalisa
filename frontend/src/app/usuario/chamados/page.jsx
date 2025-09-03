@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header/header';
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+import { SidebarProvider } from '@/components/Header/sidebarContext'
 
 export default function Chamados() {
   const [filtro, setFiltro] = useState("Todas");
@@ -68,6 +69,7 @@ export default function Chamados() {
   });
 
   return (
+    <SidebarProvider>
     <div className="d-flex">
       <Header />
 
@@ -133,5 +135,6 @@ export default function Chamados() {
         )}
       </div>
     </div>
+    </SidebarProvider>
   );
 }
