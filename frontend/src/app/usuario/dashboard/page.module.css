@@ -8,6 +8,7 @@
   --vermelhoEscuro: #640d14;
 }
  
+
 .page {
   display: flex;
   height: 100vh;
@@ -38,12 +39,8 @@
 .cardsContainer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 160px 300px;
+  grid-template-rows:max-content;
   gap: 1.5rem;
-  /* display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  justify-content: center; */
 }
  
 .cardStatusChamados {
@@ -65,15 +62,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 1rem;
   text-align: center;
+  height: auto;
 }
  
 .cardStatusChamados,
 .cardNotificacoes {
   flex-grow: 1;
   flex-basis: 400px;
-  /* Largura mínima desejada para os cards */
   min-height: 190px;
-  /* Altura mínima para o card, se necessário */
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -95,12 +91,9 @@
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  padding: 1rem;
+  padding: 2rem;
 }
  
-.cardLarge h3 {
-  font-size: 22px;
-}
  
 .cardSmallBottom {
   margin-top: 30px;
@@ -234,10 +227,12 @@
 }
  
 .cardSmallBottom h3 {
-  display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 22px;
+}
+.cards{
+  width: auto;
 }
  
 .add {
@@ -259,8 +254,11 @@
 }
  
 @media (max-width: 768px) {
-  .welcome {
-    text-align: center;
+  .cardsContainer {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows:max-content;
+    gap: 1.5rem;
   }
  
   .chamadoItem {
@@ -272,6 +270,29 @@
     margin-top: 0.5rem;
     display: flex;
     gap: 0.5rem;
+  }
+ 
+  .cardsContainer {
+    gap: 1rem;
+  }
+}
+@media (max-width: 425px){
+  .cardsContainer {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows:max-content;
+    gap: 1.5rem;
+  }
+  
+  .chamadoItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+ 
+  .chamadoItem div:last-child {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.6rem;
   }
  
   .cardsContainer {

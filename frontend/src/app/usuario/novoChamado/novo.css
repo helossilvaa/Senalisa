@@ -1,36 +1,85 @@
-*{
+* {
     font-family: 'Poppins', sans-serif;
 }
 
 .container {
-    margin-top: 20px;
+    padding: 30px;
+    flex: 1;
+    padding: 2rem;
+    background-color: #ffffff;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease;
+    justify-content: center;
+
+
 }
 
-h2{
-    color: #54575a;
-  }
+.cardChamados {
+    background-color: #fbfafa;
+    border: 1px solid #817e7e00;
+    border-radius: 15px;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.116);
+}
 
-.enviar button{
+.title {
+    border-left: 3px solid #d80000;
+    height: 32px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+
+}
+
+h2 {
+    color: #434547;
+    padding-left: 4px;
+}
+
+.form-chamados {
+    padding-top: 20px;
+}
+
+.enviar {
     background-color: #ad2831;
-    color: aliceblue;
+    color: rgb(235, 229, 229);
     margin-top: 10px;
-    
+
 }
 
-.form-check-input:checked{
+.form-check-input:checked {
     background-color: #d80000;
     border-color: #d80000b0;
 }
-.form-check-input:focus{
+
+.form-check-input:focus {
     border-color: #ef5252;
     box-shadow: 0 0 0 .25rem rgba(255, 57, 57, 0.25);
 }
-.form-control:focus{
-    
+
+.form-control:focus {
+
     box-shadow: 0 0 0 .25rem #e2e2e2;
 }
-.btn:hover {
-    color: #ffffff ;
-    background-color: #000000;
+
+.enviar:hover {
+    color: #ffffff;
+    background-color: #6a0e14;
     border-color: none;
+}
+
+.titulo-input {
+    font-weight: bolder;
+    color: #454546;
+}
+
+.inputText{
+    margin-top: 2px;
+    border: 1px solid #4d4a4a2b;
+}
+.inputText:focus{
+    outline: none; /* remove o destaque padrão */
+    border-color: #8f343400; /* muda a cor da borda para um laranja */
+  
 }

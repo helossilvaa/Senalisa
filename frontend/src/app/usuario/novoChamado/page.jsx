@@ -16,7 +16,7 @@ export default function Chamados() {
   const [salas, setSalas] = useState([]);
   const [equipamentos, setEquipamentos] = useState([]);
   const [pools, setPools] = useState([]);
-  const [chamados, setChamados] = useState([]); 
+  const [chamados, setChamados] = useState([]);
   const [chamadoCriado, setChamadoCriado] = useState(null);
   const [error, setError] = useState('');
   const [equipamentosFiltrados, setEquipamentosFiltrados] = useState([]);
@@ -65,7 +65,7 @@ export default function Chamados() {
       router.push("/login");
     }
 
-  
+
     fetch(`${API_URL}/salas`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -97,8 +97,8 @@ export default function Chamados() {
       })
       .then(data => setPools(data))
       .catch(err => console.error("Erro /pools:", err));
-      
-    
+
+
     fetch(`${API_URL}/chamados`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -114,7 +114,7 @@ export default function Chamados() {
 
 
   useEffect(() => {
-    
+
     if (!salaId) {
       setEquipamentosFiltrados([]);
       return;
@@ -124,7 +124,7 @@ export default function Chamados() {
       .filter(eq => eq?.sala_id != null && eq?.patrimonio != null && eq.sala_id.toString() === salaId)
       .map(eq => {
         const temChamado = chamados.some(
-        
+
           c => c.equipamento_id?.toString() === eq.patrimonio?.toString() && c.status !== 'concluído'
         );
         return { ...eq, temChamado };
@@ -186,103 +186,104 @@ export default function Chamados() {
 
   return (
     <SidebarProvider>
-    <div className="d-flex">
-      <Header />
-      <div className="container">
-        <div className="container space-2">
-          <h2 className="fw-bold">Novo chamado</h2>
-          <form className="js-validate" onSubmit={handleSubmit}>
-            <div className="row">
+      <div className="d-flex pageNC">
+        <Header />
+        <div className="container">
+          <div className="container space-2 cardChamados">
+            <div className="title">
+              <h2 className="fw-bold tituloo">Novo chamado</h2>
+            </div>
+            <form className="js-validate form-chamados" onSubmit={handleSubmit}>
+              <div className="row">
+                {/* Título */}
+                <div className="col-sm-6 mb-4">
+                  <label className="input-label titulo-input">Título</label>
+                  <input
+                    type="text"
+                    className="form-control inputText"
+                    placeholder="Título do chamado"
+                    value={titulo}
+                    onChange={(e) => setTitulo(e.target.value)}
+                    required
+                  />
+                </div>
 
-              {/* Título */}
-              <div className="col-sm-6 mb-4">
-                <label className="input-label">Título</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Título do chamado"
-                  value={titulo}
-                  onChange={(e) => setTitulo(e.target.value)}
+                {/* Tipo de assistência */}
+                <div className="col-sm-6 mb-4">
+                  <label className="input-label titulo-input">Tipo de assistência</label>
+                  <select
+                    className="form-select inputText"
+                    value={tipoId}
+                    onChange={(e) => setTipoId(e.target.value)}
+                    required
+                  >
+                    <option value="">Selecione</option>
+                    {pools.map(p => (
+                      <option key={p.id} value={p.id}>{p.titulo}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Sala */}
+                <div className="col-sm-6 mb-4">
+                  <label className="input-label titulo-input">Sala</label>
+                  <select
+                    className="form-select inputText"
+                    value={salaId}
+                    onChange={(e) => setSalaId(e.target.value)}
+                    required
+                  >
+                    <option value="">Selecione</option>
+                    {salas.map(s => (
+                      <option key={s.id} value={s.id}>{s.nome_sala}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Equipamento */}
+                <div className="col-sm-6 mb-4">
+                  <label className="input-label titulo-input">Equipamento</label>
+                  <select
+                    className="form-select inputText"
+                    value={equipamentoId}
+                    onChange={(e) => setEquipamentoId(e.target.value)}
+                    required
+                    disabled={!salaId} // desabilita se nenhuma sala estiver selecionada
+                  >
+                    <option value="">Selecione</option>
+                    {equipamentosFiltrados.map(eq => (
+                      <option key={eq.id}
+                        value={eq.id}
+                        disabled={eq.temChamado}> {/* Desabilita se já houver um chamado ativo */}
+                        {eq.equipamento} (Patrimônio {eq.patrimonio})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+              </div>
+
+              {/* Descrição */}
+              <div className="js-form-message mb-6">
+                <label className="input-label titulo-input">Descrição</label>
+                <textarea
+                  className="form-control inputText"
+                  rows={4}
+                  placeholder="Descreva aqui o problema"
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
                   required
                 />
               </div>
 
-              {/* Tipo de assistência */}
-              <div className="col-sm-6 mb-4">
-                <label className="input-label">Tipo de assistência</label>
-                <select
-                  className="form-select"
-                  value={tipoId}
-                  onChange={(e) => setTipoId(e.target.value)}
-                  required
-                >
-                  <option value="">Selecione</option>
-                  {pools.map(p => (
-                    <option key={p.id} value={p.id}>{p.titulo}</option>
-                  ))}
-                </select>
-              </div>
+              {error && <p className="text-danger">{error}</p>}
+              {chamadoCriado && <p className="text-success">Chamado criado com sucesso! ID: {chamadoCriado}</p>}
 
-              {/* Sala */}
-              <div className="col-sm-6 mb-4">
-                <label className="input-label">Sala</label>
-                <select
-                  className="form-select"
-                  value={salaId}
-                  onChange={(e) => setSalaId(e.target.value)}
-                  required
-                >
-                  <option value="">Selecione</option>
-                  {salas.map(s => (
-                    <option key={s.id} value={s.id}>{s.nome_sala}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Equipamento */}
-              <div className="col-sm-6 mb-4">
-                <label className="input-label">Equipamento</label>
-                <select
-    className="form-select"
-    value={equipamentoId}
-    onChange={(e) => setEquipamentoId(e.target.value)}
-    required
-    disabled={!salaId} // desabilita se nenhuma sala estiver selecionada
->
-    <option value="">Selecione</option>
-    {equipamentosFiltrados.map(eq => (
-        <option key={eq.id} 
-                value={eq.id}
-                disabled={eq.temChamado}> {/* Desabilita se já houver um chamado ativo */}
-            {eq.equipamento} (Patrimônio {eq.patrimonio})
-        </option>
-    ))}
-</select>
-              </div>
-
-            </div>
-
-            {/* Descrição */}
-            <div className="js-form-message mb-6">
-              <label className="input-label">Descrição</label>
-              <textarea
-                className="form-control"
-                rows={4}
-                placeholder="Descreva aqui o problema"
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-                required
-              />
-            </div>
-
-            {error && <p className="text-danger">{error}</p>}
-            {chamadoCriado && <p className="text-success">Chamado criado com sucesso! ID: {chamadoCriado}</p>}
-
-            <button type="submit" className="btn btn-wide mb-4">Enviar</button>
-          </form>
+              <button type="submit" className="btn btn-wide mb-4 enviar">Enviar</button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
     </SidebarProvider>
   );
 }
