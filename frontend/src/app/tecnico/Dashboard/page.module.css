@@ -248,3 +248,21 @@
   }
 }
 
+/* Garante que a lista de tarefas não ultrapasse o card */
+.listaTarefasContainer {
+  max-height: 200px; /* altura limite do card */
+  overflow-y: auto;  /* ativa rolagem quando passar de 4+ itens */
+  padding-right: 8px; /* espaço pro scroll não ficar em cima do texto */
+}
+
+/* Opcional: estilizar a barra de rolagem */
+.listaTarefasContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.listaTarefasContainer::-webkit-scrollbar-thumb {
+  background-color: #c00000;
+  border-radius: 8px;
+}
+
+
