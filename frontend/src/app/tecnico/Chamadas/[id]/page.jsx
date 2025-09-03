@@ -7,7 +7,7 @@ import CalendarPage from "@/components/Calendario/page";
 import Relatorios from "@/components/Relatorios/relatorios";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function InfoPage({ params }) {
     const { id } = React.use(params);
@@ -28,7 +28,7 @@ export default function InfoPage({ params }) {
     const [isFinalizando, setIsFinalizando] = useState(false);
     const [mostrarForm, setMostrarForm] = useState(false);
 
-    const API_URL = "http://localhost:8080";
+  const [timelineItems, setTimelineItems] = useState([]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -268,14 +268,36 @@ export default function InfoPage({ params }) {
         }
     };
 
-    if (loading) {
-        return <p>Carregando...</p>;
+    const newData = dataInputRef.current.value;
+    const newTitulo = tituloTextareaRef.current.value;
+
+    if (newData && newTitulo) {
+      const newTimelineItem = {
+        titulo: newTitulo,
+        data: newData,
+      };
+
+      setTimelineItems((prevItems) => [...prevItems, newTimelineItem]);
+
+      dataInputRef.current.value = '';
+      tituloTextareaRef.current.value = '';
+    }
+  };
+
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+      return;
     }
 
-    if (!chamado) {
-        return <p>Chamado não encontrado.</p>;
+    const decoded = jwtDecode(token);
+    if (decoded.exp < Date.now() / 1000) {
+      localStorage.removeItem("token");
+      alert("Seu login expirou.");
+      router.push("/login");
+      return;
     }
-
+  })
     const isChamadoPendente = chamado.status === 'pendente';
     const isChamadoAssumido = chamado.status === 'em andamento' && chamado.tecnico_id === usuarioLogado.id;
 
@@ -510,4 +532,3 @@ export default function InfoPage({ params }) {
             {showSolucaoModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
-}

@@ -1,6 +1,9 @@
 import express from "express";
 import mysql from "mysql2/promise";
 import cors from "cors"; // Importa o pacote CORS
+import chamadosRoutes from './routes/chamadosRoutes.js';
+
+app.use('/chamados', chamadosRoutes);
 
 const app = express();
 app.use(express.json());

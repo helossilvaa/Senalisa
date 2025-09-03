@@ -9,7 +9,6 @@ export default function CalendarPage({ onDateSelect, markedDate }) {
     (async () => {
       const calendarModule = await import("./Calendar.js");
       if (calendarModule.default) {
-       
         calendarModule.default(styles, onDateSelect, markedDate);
       }
     })();

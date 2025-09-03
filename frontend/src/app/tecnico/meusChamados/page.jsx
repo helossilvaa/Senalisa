@@ -50,20 +50,16 @@ console.log("Token encontrado:", token);
 
   }, []);
   
-
   return (
     <div className={styles.container}>
       <HeaderTecnico />
       <div className={styles.chamadas}>
-        <div className={styles.titulo}>
-          <h1>Meus Chamados</h1>
-        </div>
-
+        <h1>Meus Chamados</h1>
         <div className={styles.card}>
           {chamados.length === 0 ? (
             <p>Nenhum chamado aceito ainda.</p>
           ) : (
-            chamados.map((chamada) => (
+            chamados.map(chamado => (
               <Card
                 key={chamada.id}
                 titulo={chamada.titulo}

@@ -243,23 +243,21 @@ export default function Chamados() {
               <div className="col-sm-6 mb-4">
                 <label className="input-label">Equipamento</label>
                 <select
-                  className="form-select"
-                  value={equipamentoId}
-                  onChange={(e) => setEquipamentoId(e.target.value)}
-                  required
-                  disabled={!salaId}
-                >
-                  <option value="">Selecione</option>
-                  {equipamentosFiltrados.map(eq => (
-                    <option 
-                      key={eq.patrimonio}
-                      value={eq.patrimonio}
-                      disabled={eq.temChamado}
-                    >
-                      {eq.equipamento} (Patrimônio {eq.patrimonio}) {eq.temChamado ? '(já aberto)' : ''}
-                    </option>
-                  ))}
-                </select>
+    className="form-select"
+    value={equipamentoId}
+    onChange={(e) => setEquipamentoId(e.target.value)}
+    required
+    disabled={!salaId} // desabilita se nenhuma sala estiver selecionada
+>
+    <option value="">Selecione</option>
+    {equipamentosFiltrados.map(eq => (
+        <option key={eq.id} 
+                value={eq.id}
+                disabled={eq.temChamado}> {/* Desabilita se já houver um chamado ativo */}
+            {eq.equipamento} (Patrimônio {eq.patrimonio})
+        </option>
+    ))}
+</select>
               </div>
 
             </div>
