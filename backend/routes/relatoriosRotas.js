@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import { listarRelatoriosController, buscarRelatoriosController, listarPdfsGeradosController } from '../controllers/relatorioController.js';
+import { listarRelatoriosController, buscarRelatoriosController, listarPdfsGeradosController, listarRelatoriosRecentesController } from '../controllers/relatorioController.js';
 import { gerarRelatorioPdfPorIdController } from '../controllers/relatorioPDFcontroller.js';
 import authMiddleware from '../middlewares/authMiddleware.js'; 
 
@@ -19,5 +19,7 @@ router.get('/pdfs/:nomeDoArquivo', (req, res) => {
 });
 
 router.get('/pdf/:id', authMiddleware, gerarRelatorioPdfPorIdController);
+
+router.get('/recentes', authMiddleware, listarRelatoriosRecentesController);
 
 export default router;

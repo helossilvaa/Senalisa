@@ -4,7 +4,7 @@ import HeaderAdmin from "@/components/HeaderAdmin/headerAdmin";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import Relatorios from "@/components/Relatorios/relatorios";
+import Relatorios from "@/components/Relatorios/page";
 
 export default function RelatoriosPage() {
   const [active, setActive] = useState(0);
@@ -14,7 +14,7 @@ export default function RelatoriosPage() {
   const [chamadosConcluidos, setChamadosConcluidos] = useState([]);
   const [selectedChamado, setSelectedChamado] = useState('');
   const [loading, setLoading] = useState(false);
-  const [generatedRelatorio, setGeneratedRelatorio] = useState(null); // Novo estado
+  const [generatedRelatorio, setGeneratedRelatorio] = useState(null); 
 
   const API_URL = 'http://localhost:8080';
 

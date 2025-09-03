@@ -1,86 +1,120 @@
 :root {
-    --fundo: #f8f8fa;
-    --bola: #b10000;
-    --fonte: 'Poppins', sans-serif;
-    --cordata: #535355;
-    --botao: #640d14;
+  --fundo: #f8f8fa;
+  --bola: #b10000;
+  --fonte: 'Poppins', sans-serif;
+  --cordata: #535355;
+  --botao: #640d14;
+  --botao-hover: #7a121e;
+  --cinza-claro: #e6e6e6;
+  --cinza-escuro: #444444;
 }
 
 .page {
   min-height: 100vh;
   background-color: var(--fundo);
   display: flex;
+  font-family: var(--fonte);
+  color: var(--cordata);
 }
-
 
 .tituloPrincipal {
   margin-bottom: 20px;
+  padding-left: 10px;
 }
 
 .tituloPrincipal h1 {
   font-family: var(--fonte);
   font-size: 28px;
-  font-weight: bold;
-  color: black;
+  font-weight: 700;
+  color: #000000;
+  margin-left: 10px;
 }
 
-.tabs {
-  position: relative;
-  display: flex;
-  gap: 20px;
-  border-bottom: 2px solid #ddd;
-  margin-bottom: 20px;
+.conteudoPrincipal {
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 700px;
+  width: 100%;
 }
 
-.tabs button {
-  background: none;
-  border: none;
-  padding: 12px 18px;
-  cursor: pointer;
+.gerarPdfContainer {
+  margin-bottom: 30px;
+}
+
+.gerarPdfContainer h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: var(--botao);
+}
+
+.chamadoSelect {
+  width: 100%;
+  padding: 10px 14px;
   font-size: 16px;
-  font-weight: 500;
-  color: #444;
-  transition: color 0.2s ease;
+  border-radius: 6px;
+  border: 1.8px solid var(--cinza-claro);
+  background-color: white;
+  outline: none;
+  transition: border-color 0.2s ease;
+  margin-bottom: 15px;
+  appearance: none;
+  cursor: pointer;
 }
 
-.tabs button:hover {
-  color: #000;
+.chamadoSelect:focus {
+  border-color: var(--botao);
 }
 
-.line {
-  position: absolute;
-  bottom: -2px;
-  height: 3px;
-  background-color: #640d14;
-  transition: all 0.3s ease;
+.gerarPdfButton {
+  background-color: var(--botao);
+  color: white;
+  font-size: 17px;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  user-select: none;
 }
 
-.todos {
+.gerarPdfButton:disabled {
+  background-color: #a88c8c;
+  cursor: not-allowed;
+}
+
+.gerarPdfButton:not(:disabled):hover {
+  background-color: var(--botao-hover);
+}
+
+.relatorioGerado {
   margin-top: 30px;
+  padding: 15px 20px;
+  border: 1.5px solid var(--cinza-claro);
+  border-radius: 8px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.selecao h3 {
-  font-family: 'Poppins', sans-serif;
+.relatorioGerado h4 {
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: var(--botao);
   font-size: 20px;
-  color: #555;
 }
 
 @media (max-width: 768px) {
   .tituloPrincipal h1 {
-    font-size: 22px;
+    font-size: 24px;
   }
 
-  .tabs {
-    gap: 10px;
+  .gerarPdfContainer h3 {
+    font-size: 20px;
   }
 
-  .tabs button {
-    font-size: 14px;
-    padding: 10px 12px;
-  }
-
-  .selecao h3 {
-    font-size: 18px;
+  .gerarPdfButton {
+    width: 100%;
   }
 }
 
@@ -89,31 +123,12 @@
     font-size: 20px;
   }
 
-  .tabs {
-    justify-content: space-between;
-    border-bottom: 2px solid #ddd;
-    padding: 0 5px;
-  }
-
-  .tabs button {
-    flex: 1;
-    justify-content: center;
-    font-size: 12px;
-    padding: 8px 6px;
-    color: #444;
-    flex-direction: column; 
-    gap: 2px;
-  }
-
-  .tabs button i {
+  .gerarPdfContainer h3 {
     font-size: 18px;
   }
 
-  .line {
-    height: 2px;
-  }
-
-  .selecao h3 {
-    font-size: 15px;
+  .gerarPdfButton {
+    font-size: 16px;
+    padding: 10px 20px;
   }
 }

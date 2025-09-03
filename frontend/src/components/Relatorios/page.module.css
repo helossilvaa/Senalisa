@@ -29,6 +29,7 @@
     font-family: var(--fonte);
     margin: 0;
     font-weight: bold;
+    margin-right: 100px;
 }
 
 .link p{

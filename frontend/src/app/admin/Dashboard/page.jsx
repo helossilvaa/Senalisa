@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import styles from "@/app/admin/Dashboard/page.module.css";
 import HeaderAdmin from "@/components/HeaderAdmin/headerAdmin";
-import Relatorios from "@/components/Relatorios/relatorios";
+import Relatorios from "@/components/Relatorios/page";
 import CategoriasChamados from "@/components/Grafico/page";
 
 export default function DashboardAdmin() {
@@ -14,6 +14,7 @@ export default function DashboardAdmin() {
     const [chamados, setChamados] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [tecnicos, setTecnicos] = useState([]);
+    const [relatoriosRecentes, setRelatoriosRecentes] = useState([]);
     const router = useRouter();
 
     const API_URL = "http://localhost:8080";
@@ -96,7 +97,6 @@ export default function DashboardAdmin() {
                 if (!res.ok) throw new Error("Erro ao buscar ranking de técnicos");
                 const dados = await res.json();
 
-                // Transformar dados para incluir porcentagem
                 if (Array.isArray(dados) && dados.length > 0) {
                     const total = dados.reduce((acc, item) => acc + item.chamadosConcluidos, 0);
                     const dadosComPorcentagem = dados.map(item => ({
@@ -113,9 +113,25 @@ export default function DashboardAdmin() {
             }
         };
 
+        const fetchRelatoriosRecentes = async () => {
+            const limite = 3;
+            try {
+                const res = await fetch(`${API_URL}/relatorios/recentes?limite=${limite}`, config);
+                if (!res.ok) throw new Error("Erro ao buscar relatórios recentes");
+                const data = await res.json();
+
+                console.log("Relatórios recebidos:", data);
+
+                setRelatoriosRecentes(data);
+            } catch (err) {
+                console.error("Erro ao buscar relatórios recentes:", err);
+            }
+        };
+
         fetchChamados();
         fetchCategorias();
         fetchRankingTecnicos();
+        fetchRelatoriosRecentes();
     }, [router]);
 
     const totalChamados = chamados.length;
@@ -138,7 +154,6 @@ export default function DashboardAdmin() {
                 <h2 className={styles.welcome}>Olá, {nomeUsuario}!</h2>
 
                 <div className={styles.cardsContainer}>
-                    {/* Barra de status geral dos chamados */}
                     <div className={styles.cardStatusChamados}>
                         <h3>Status de todos os chamados da rede:</h3>
                         <p className={styles.numeroChamados}>{totalChamados}</p>
@@ -186,13 +201,17 @@ export default function DashboardAdmin() {
                         </ul>
                     </div>
 
-                    {/* Relatórios */}
                     <div className={styles.cardRelatorios}>
                         <h3>Relatórios recentes</h3>
-                        <Relatorios />
+                        {relatoriosRecentes.length > 0 ? (
+                            relatoriosRecentes.map((relatorio, index) => (
+                                <Relatorios key={index} relatorio={relatorio} />
+                            ))
+                        ) : (
+                            <p>Nenhum relatório recente encontrado.</p>
+                        )}
                     </div>
 
-                    {/* Gráficos e estatísticas extras */}
                     <div className={styles.cardLarge}>
                         <div className={styles.graficoTecnicos}>
                             <h4>Técnicos que mais resolvem chamados</h4>

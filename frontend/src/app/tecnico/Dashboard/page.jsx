@@ -14,6 +14,9 @@ export default function DashboardTecnico() {
   const router = useRouter();
   const API_URL = "http://localhost:8080";
 
+  const normalizar = (s) =>
+    s?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -24,72 +27,52 @@ export default function DashboardTecnico() {
     const fetchDados = async () => {
       try {
         const decoded = jwtDecode(token);
-        console.log("Decoded token:", decoded);
         if (decoded.exp < Date.now() / 1000) {
           localStorage.removeItem("token");
           alert("Seu login expirou.");
           router.push("/login");
           return;
         }
-        fetchData();
 
         setNomeUsuario(decoded.nome || 'Usuário não encontrado');
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
-        const resTecnico = await fetch(`${API_URL}/chamados/chamadostecnico`, config);
+        const resTecnico = await fetch(`${API_URL}/chamados/chamadoseutecnico`, config);
         const chamadosTecnico = resTecnico.ok ? await resTecnico.json() : [];
 
         const resPendentes = await fetch(`${API_URL}/chamados/pendentes`, config);
         const chamadosPendentes = resPendentes.ok ? await resPendentes.json() : [];
 
-        // Combine e dedupe
+        const resConcluidos = await fetch(`${API_URL}/chamados/concluidos`, config);
+        const chamadosConcluidos = resConcluidos.ok ? await resConcluidos.json() : [];
+
+        console.log("Tecnico:", chamadosTecnico.length);
+        console.log("Pendentes:", chamadosPendentes.length);
+        console.log("Concluídos:", chamadosConcluidos.length);
+
         const mapChamados = new Map();
-        [...chamadosTecnico, ...chamadosPendentes].forEach(c => {
+        [...chamadosTecnico, ...chamadosPendentes, ...chamadosConcluidos].forEach(c => {
           if (c && c.id != null && !mapChamados.has(c.id)) {
             mapChamados.set(c.id, c);
           }
         });
         const todosChamados = Array.from(mapChamados.values());
-
-        console.log("Todos chamados combinados:", todosChamados);
         setChamados(todosChamados);
 
-        // Notificações
         const resNotificacoes = await fetch(`${API_URL}/notificacoes`, config);
-
-        console.log("Status da resposta de notificações:", resNotificacoes.status);
-
         if (!resNotificacoes.ok) {
-          const textoErro = await resNotificacoes.text();
-          console.error("Erro ao buscar notificações:", textoErro);
           setNotificacoes([]);
           return;
         }
-
-        let dadosNotificacoes;
-        try {
-          dadosNotificacoes = await resNotificacoes.json();
-        } catch (err) {
-          console.error("Erro ao parsear JSON de notificações:", err);
-          dadosNotificacoes = null;
-        }
-
-        console.log("Resposta /notificacoes:", dadosNotificacoes);
-
-        let notificArray = [];
-        if (Array.isArray(dadosNotificacoes)) {
-          notificArray = dadosNotificacoes;
-        } else if (dadosNotificacoes && typeof dadosNotificacoes === 'object') {
-          notificArray = dadosNotificacoes.notificacoes ||
+        let dadosNotificacoes = await resNotificacoes.json();
+        let notificArray = Array.isArray(dadosNotificacoes)
+          ? dadosNotificacoes
+          : (dadosNotificacoes.notificacoes ||
             dadosNotificacoes.data ||
             dadosNotificacoes.result ||
-            [];
-        }
-
-        // Filtra notificações não vistas, considerando '0' ou 0
+            []);
         const novas = notificArray.filter(n => n && Number(n.visualizado) === 0);
         setNotificacoes(novas);
-
       } catch (err) {
         console.error("Erro ao buscar dados:", err);
       }
@@ -98,18 +81,15 @@ export default function DashboardTecnico() {
     fetchDados();
   }, [router]);
 
-  // Filtra os 3 chamados pendentes mais recentes
   const chamadosRecentes = chamados
-    .filter(c => c.status?.trim().toLowerCase() === "pendente")
+    .filter(c => normalizar(c.status) === "pendente")
     .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
     .slice(0, 3);
 
-  console.log("Chamados recentes (pendentes):", chamadosRecentes);
-
   const totalChamados = chamados.length;
   const statusCounts = {
-    'em andamento': chamados.filter(c => c.status?.toLowerCase().includes("andamento")).length,
-    'concluído': chamados.filter(c => c.status?.toLowerCase().includes("concluído")).length,
+    "em andamento": chamados.filter(c => normalizar(c.status) === "em andamento").length,
+    "concluído": chamados.filter(c => normalizar(c.status) === "concluído").length,
   };
 
   const aceitarChamado = async (idChamado) => {
@@ -139,25 +119,25 @@ export default function DashboardTecnico() {
         <h2 className={styles.welcome}>Olá, {nomeUsuario}!</h2>
         <div className={styles.cardsContainer}>
           <div className={styles.cardStatusChamados}>
-            <h3>Status dos chamados da rede:</h3>
+            <h3>Status dos seus chamados:</h3>
             <p className={styles.numeroChamados}>{totalChamados}</p>
             <div className={styles.barraProgresso}>
-              {totalChamados > 0 && statusCounts['em andamento'] > 0 && (
+              {totalChamados > 0 && statusCounts["em andamento"] > 0 && (
                 <div
                   className={styles.progressoEmAndamento}
-                  style={{ width: `${(statusCounts['em andamento'] / totalChamados) * 100}%` }}
+                  style={{ width: `${(statusCounts["em andamento"] / totalChamados) * 100}%` }}
                 />
               )}
-              {totalChamados > 0 && statusCounts['concluído'] > 0 && (
+              {totalChamados > 0 && statusCounts["concluído"] > 0 && (
                 <div
                   className={styles.progressoFinalizado}
-                  style={{ width: `${(statusCounts['concluído'] / totalChamados) * 100}%` }}
+                  style={{ width: `${(statusCounts["concluído"] / totalChamados) * 100}%` }}
                 />
               )}
             </div>
             <ul className={styles.legenda}>
-              <li><span className={styles.bolinhaAndamento}></span> Em andamento ({statusCounts['em andamento']})</li>
-              <li><span className={styles.bolinhaFinalizado}></span> Concluído ({statusCounts['concluído']})</li>
+              <li><span className={styles.bolinhaAndamento}></span> Em andamento ({statusCounts["em andamento"]})</li>
+              <li><span className={styles.bolinhaFinalizado}></span> Concluído ({statusCounts["concluído"]})</li>
             </ul>
           </div>
           <div className={styles.cardNotificacoes}>
