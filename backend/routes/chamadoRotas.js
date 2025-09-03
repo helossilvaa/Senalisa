@@ -1,6 +1,6 @@
 import express from 'express';
 import { criarChamadoController, listarChamadosController, listarChamadosDoTecnicoController, obterChamadoPorIdController, atualizarChamadoController, assumirChamadoController, criarApontamentoController, listarChamadosDoUsuarioController, listarChamadosPendentesController, atualizarStatusChamadoController, listarHistoricoChamadosController, estipularPrazoController,
-listarRankingTecnicosController, listarChamadosPorCategoriaController} from '../controllers/chamadosController.js';
+listarRankingTecnicosController, listarChamadosPorCategoriaController, atribuirChamadoController} from '../controllers/chamadosController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -21,6 +21,8 @@ router.get('/categorias', listarChamadosPorCategoriaController);
 router.get('/ranking-tecnicos', authMiddleware, listarRankingTecnicosController);
 
 router.post('/:id/apontamentos', authMiddleware, criarApontamentoController);
+
+router.put('/:id/atribuir', authMiddleware, atribuirChamadoController);
 
 router.put('/:id',authMiddleware, atualizarChamadoController); 
 router.get('/:id', authMiddleware, obterChamadoPorIdController);

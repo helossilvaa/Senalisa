@@ -7,50 +7,60 @@ export default function Login() {
   const [loginParams, setLoginParams] = useState({ username: "", password: "" });
   const [retorno, setRetorno] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [checkingToken, setCheckingToken] = useState(true); 
 
   const router = useRouter();
   const API_URL = "http://localhost:8080";
 
+ 
   useEffect(() => {
     const checkToken = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      
+      if (!token) {
+        setCheckingToken(false); 
+        return;
+      }
 
       try {
         const res = await fetch(`${API_URL}/auth/validate`, {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!res.ok) {
+        const data = await res.json();
+
+        if (!res.ok || !data.usuario) {
           localStorage.removeItem("token");
+          setCheckingToken(false);
           return;
         }
 
-        const data = await res.json();
-        const funcao = data?.usuario?.funcao;
-
-        if (funcao === "usuario") {
-          router.push("/usuario/dashboard");
-        } else if (funcao === "tecnico") {
-          router.push("/tecnico/dashboard");
-        } else if (funcao === "admin") {
-          router.push("/admin/dashboard");
-        } else {
-          console.warn("Função desconhecida:", funcao);
-          localStorage.removeItem("token");
+        switch (data.usuario.funcao) {
+          case "usuario":
+            router.replace("/usuario/dashboard");
+            break;
+          case "tecnico":
+            router.replace("/tecnico/dashboard");
+            break;
+          case "admin":
+            router.replace("/admin/dashboard");
+            break;
+          default:
+            router.replace("/");
+            break;
         }
       } catch (err) {
         console.error("Erro ao validar token:", err);
         localStorage.removeItem("token");
+        setCheckingToken(false);
       }
     };
 
     checkToken();
   }, [router]);
 
+ 
   const login = async (e) => {
     e.preventDefault();
     setRetorno(null);
@@ -59,9 +69,7 @@ export default function Login() {
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginParams),
       });
 
@@ -77,13 +85,20 @@ export default function Login() {
           mensagem: "Login realizado com sucesso!",
         });
 
-        
-        if (data.usuario.funcao === "usuario") {
-          router.push("/usuario/dashboard");
-        } else if (data.usuario.funcao === "tecnico") {
-          router.push("/tecnico/dashboard");
-        } else {
-          router.push("/admin/dashboard");
+        // Redireciona para o dashboard correto
+        switch (data.usuario.funcao) {
+          case "usuario":
+            router.replace("/usuario/dashboard");
+            break;
+          case "tecnico":
+            router.replace("/tecnico/dashboard");
+            break;
+          case "admin":
+            router.replace("/admin/dashboard");
+            break;
+          default:
+            router.replace("/");
+            break;
         }
       } else {
         setRetorno({ status: "error", mensagem: data.error || "Credenciais inválidas" });
@@ -95,6 +110,8 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+ 
 
   return (
     <main className={styles.page}>
@@ -112,7 +129,9 @@ export default function Login() {
               className="form-control"
               id="floatingInput"
               value={loginParams.username}
-              onChange={(e) => setLoginParams({ ...loginParams, username: e.target.value })}
+              onChange={(e) =>
+                setLoginParams({ ...loginParams, username: e.target.value })
+              }
             />
           </div>
 
@@ -123,16 +142,22 @@ export default function Login() {
               className="form-control"
               id="floatingPassword"
               value={loginParams.password}
-              onChange={(e) => setLoginParams({ ...loginParams, password: e.target.value })}
+              onChange={(e) =>
+                setLoginParams({ ...loginParams, password: e.target.value })
+              }
             />
           </div>
 
           <button type="submit" disabled={loading} className={styles.botao}>
-            Entrar
+            {loading ? "Entrando..." : "Entrar"}
           </button>
 
           {retorno && (
-            <div className={`alert alert-${retorno.status === "success" ? "success" : "danger"}`}>
+            <div
+              className={`alert alert-${
+                retorno.status === "success" ? "success" : "danger"
+              }`}
+            >
               {retorno.mensagem}
             </div>
           )}

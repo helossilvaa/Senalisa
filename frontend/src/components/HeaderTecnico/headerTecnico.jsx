@@ -25,6 +25,12 @@ export default function HeaderTecnico() {
 
     }, []);
 
+    const handleLogout = () => {
+
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    };
+
     return (
         <>
             <link
@@ -92,10 +98,10 @@ export default function HeaderTecnico() {
                     </a>
                         
                     </button>
-                    <button id="logout_btn">
-                        <i className="text-danger bi bi-box-arrow-right" />
-                        <span className="text-danger item-description">Logout</span>
-                    </button>
+                    <button id="logout_btn" onClick={handleLogout}>
+                            <i className="text-danger bi bi-box-arrow-right" />
+                            <span className="text-danger item-description">Logout</span>
+                        </button>
                 </div>
             </nav>
 
