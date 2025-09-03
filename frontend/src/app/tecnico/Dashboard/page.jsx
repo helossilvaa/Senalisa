@@ -1,32 +1,30 @@
 "use client";
+
 import styles from '@/app/tecnico/Dashboard/page.module.css';
 import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
+import ListaTarefa from '@/components/listaTarefa/listaTarefa';
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 export default function DashboardTecnico() {
   const [chamados, setChamados] = useState([]);
   const [nomeUsuario, setNomeUsuario] = useState('');
-  const [tarefas, setTarefas] = useState([]);
-  const [novaTarefa, setNovaTarefa] = useState('');
-  const [showInput, setShowInput] = useState(false);
-
+  const [notificacoes, setNotificacoes] = useState([]);
   const router = useRouter();
   const API_URL = "http://localhost:8080";
 
   useEffect(() => {
-    
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
       return;
     }
-    const fetchChamados = async () => {
-      
+
+    const fetchDados = async () => {
       try {
         const decoded = jwtDecode(token);
+        console.log("Decoded token:", decoded);
         if (decoded.exp < Date.now() / 1000) {
           localStorage.removeItem("token");
           alert("Seu login expirou.");
@@ -35,85 +33,102 @@ export default function DashboardTecnico() {
         }
 
         setNomeUsuario(decoded.nome || 'Usuário não encontrado');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
 
-        // Configuração para as requisições
-        const config = {
-          headers: { Authorization: `Bearer ${token}` }
-        };
+        const resTecnico = await fetch(`${API_URL}/chamados/chamadostecnico`, config);
+        const chamadosTecnico = resTecnico.ok ? await resTecnico.json() : [];
 
-        const resChamados = await fetch(`${API_URL}/chamados/pendentes`, config);
-        const dataChamados = await resChamados.json();
-        setChamados(dataChamados);
+        const resPendentes = await fetch(`${API_URL}/chamados/pendentes`, config);
+        const chamadosPendentes = resPendentes.ok ? await resPendentes.json() : [];
 
-        const resTarefas = await fetch(`${API_URL}/tarefas`, config);
-        const dataTarefas = await resTarefas.json();
-        setTarefas(dataTarefas);
+        // Combine e dedupe
+        const mapChamados = new Map();
+        [...chamadosTecnico, ...chamadosPendentes].forEach(c => {
+          if (c && c.id != null && !mapChamados.has(c.id)) {
+            mapChamados.set(c.id, c);
+          }
+        });
+        const todosChamados = Array.from(mapChamados.values());
 
-      } catch (err) { console.error(err); }
+        console.log("Todos chamados combinados:", todosChamados);
+        setChamados(todosChamados);
+
+        // Notificações
+        const resNotificacoes = await fetch(`${API_URL}/notificacoes`, config);
+
+        console.log("Status da resposta de notificações:", resNotificacoes.status);
+
+        if (!resNotificacoes.ok) {
+          const textoErro = await resNotificacoes.text();
+          console.error("Erro ao buscar notificações:", textoErro);
+          setNotificacoes([]);
+          return;
+        }
+
+        let dadosNotificacoes;
+        try {
+          dadosNotificacoes = await resNotificacoes.json();
+        } catch (err) {
+          console.error("Erro ao parsear JSON de notificações:", err);
+          dadosNotificacoes = null;
+        }
+
+        console.log("Resposta /notificacoes:", dadosNotificacoes);
+
+        let notificArray = [];
+        if (Array.isArray(dadosNotificacoes)) {
+          notificArray = dadosNotificacoes;
+        } else if (dadosNotificacoes && typeof dadosNotificacoes === 'object') {
+          notificArray = dadosNotificacoes.notificacoes ||
+            dadosNotificacoes.data ||
+            dadosNotificacoes.result ||
+            [];
+        }
+
+        // Filtra notificações não vistas, considerando '0' ou 0
+        const novas = notificArray.filter(n => n && Number(n.visualizado) === 0);
+        setNotificacoes(novas);
+
+      } catch (err) {
+        console.error("Erro ao buscar dados:", err);
+      }
     };
-    fetchChamados();
+
+    fetchDados();
   }, [router]);
 
-  // Aceitar chamado
-  const aceitarChamado = async (idChamado) => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-    };
-    try {
-      const res = await fetch(`${API_URL}/chamados/assumir/${idChamado}`, {
-        method: "PUT",
-        ...config
-      });
-      if (!res.ok) throw new Error("Erro ao assumir chamado");
-      setChamados(prev => prev.filter(c => c.id !== idChamado));
-    } catch (err) { console.error(err); }
-  };
+  // Filtra os 3 chamados pendentes mais recentes
+  const chamadosRecentes = chamados
+    .filter(c => c.status?.trim().toLowerCase() === "pendente")
+    .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
+    .slice(0, 3);
 
-  // Adicionar nova tarefa
-  const adicionarTarefa = async () => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-    };
-    if (!novaTarefa.trim()) return;
-    try {
-      const res = await axios.post(`${API_URL}/tarefas`, { descricao: novaTarefa }, config);
-      setTarefas(prev => [res.data, ...prev]);
-      setNovaTarefa('');
-      setShowInput(false);
-    } catch (err) { console.error(err); }
-  };
-
-  // Deletar tarefa
-  const deletarTarefa = async (id) => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-    };
-    try {
-      await axios.delete(`${API_URL}/tarefas/${id}`, config);
-      setTarefas(prev => prev.filter(t => t.id !== id));
-    } catch (err) { console.error(err); }
-  };
-
-  // Marcar tarefa concluída
-  const toggleConcluida = async (id, concluida) => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-    };
-    try {
-      await axios.put(`${API_URL}/tarefas/${id}`, { concluida: !concluida }, config);
-      setTarefas(prev => prev.map(t => t.id === id ? { ...t, concluida: !concluida } : t));
-    } catch (err) { console.error(err); }
-  };
+  console.log("Chamados recentes (pendentes):", chamadosRecentes);
 
   const totalChamados = chamados.length;
   const statusCounts = {
-    'pendente': chamados.filter(c => c.status === "pendente").length,
-    'em andamento': chamados.filter(c => c.status === "em andamento").length,
-    'concluido': chamados.filter(c => c.status === "concluido").length,
+    'em andamento': chamados.filter(c => c.status?.toLowerCase().includes("andamento")).length,
+    'concluído': chamados.filter(c => c.status?.toLowerCase().includes("concluído")).length,
+  };
+
+  const aceitarChamado = async (idChamado) => {
+    const token = localStorage.getItem("token");
+    const config = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+    };
+    try {
+      const res = await fetch(`${API_URL}/chamados/assumir/${idChamado}`, config);
+      if (!res.ok) throw new Error("Erro ao assumir chamado");
+
+      setChamados(prev =>
+        prev.map(c =>
+          c.id === idChamado ? { ...c, status: "em andamento" } : c
+        )
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -121,55 +136,40 @@ export default function DashboardTecnico() {
       <HeaderTecnico />
       <div className={styles.dashboardContainer}>
         <h2 className={styles.welcome}>Olá, {nomeUsuario}!</h2>
-
         <div className={styles.cardsContainer}>
-          {/* Status dos chamados */}
           <div className={styles.cardStatusChamados}>
-            <h3>Status dos seus chamados:</h3>
-            <p className={styles.numeroChamados}>
-              {totalChamados} <span>(quantidade total de chamados)</span>
-            </p>
-
+            <h3>Status dos chamados da rede:</h3>
+            <p className={styles.numeroChamados}>{totalChamados}</p>
             <div className={styles.barraProgresso}>
-              {totalChamados > 0 && statusCounts['pendente'] > 0 && (
-                <div
-                  className={styles.progressoAberto}
-                  style={{ width: `${(statusCounts['pendente'] / totalChamados) * 100}%` }}
-                />
-              )}
               {totalChamados > 0 && statusCounts['em andamento'] > 0 && (
                 <div
                   className={styles.progressoEmAndamento}
                   style={{ width: `${(statusCounts['em andamento'] / totalChamados) * 100}%` }}
                 />
               )}
-              {totalChamados > 0 && statusCounts['concluido'] > 0 && (
+              {totalChamados > 0 && statusCounts['concluído'] > 0 && (
                 <div
                   className={styles.progressoFinalizado}
-                  style={{ width: `${(statusCounts['concluido'] / totalChamados) * 100}%` }}
+                  style={{ width: `${(statusCounts['concluído'] / totalChamados) * 100}%` }}
                 />
               )}
             </div>
-
             <ul className={styles.legenda}>
               <li><span className={styles.bolinhaAndamento}></span> Em andamento ({statusCounts['em andamento']})</li>
-              <li><span className={styles.bolinhaAberto}></span> Aberto ({statusCounts['pendente']})</li>
-              <li><span className={styles.bolinhaFinalizado}></span> Finalizado ({statusCounts['concluido']})</li>
+              <li><span className={styles.bolinhaFinalizado}></span> Concluído ({statusCounts['concluído']})</li>
             </ul>
           </div>
-
-          {/* Notificações */}
           <div className={styles.cardNotificacoes}>
             <h3>Você tem</h3>
-            <p className={styles.numeroNotificacoes}>5</p>
+            <p className={styles.numeroNotificacoes}>{notificacoes.length}</p>
             <p className={styles.textoNotificacoes}>notificações novas</p>
           </div>
-
-          {/* Chamados recentes */}
           <div className={styles.cardLarge}>
-            <h3>Chamados recentes</h3>
-            {chamados.length === 0 ? <p>Nenhum chamado disponível</p> :
-              chamados.slice(-3).reverse().map(c => (
+            <h3>Chamados pendentes mais recentes</h3>
+            {chamadosRecentes.length === 0 ? (
+              <p>Nenhum chamado pendente disponível</p>
+            ) : (
+              chamadosRecentes.map(c => (
                 <div key={c.id} className={styles.chamadoItem}>
                   <div>
                     <h4>{c.titulo}</h4>
@@ -177,49 +177,20 @@ export default function DashboardTecnico() {
                   </div>
                   <div>
                     <button className={styles.btnVerMais}>Ver mais</button>
-                    <button className={styles.btnAceitar} onClick={() => aceitarChamado(c.id)}>Aceitar</button>
+                    <button
+                      className={styles.btnAceitar}
+                      onClick={() => aceitarChamado(c.id)}
+                    >
+                      Aceitar
+                    </button>
                   </div>
                 </div>
               ))
-            }
-          </div>
-
-          {/* Lista de tarefas */}
-          <div className={styles.cardSmallBottom}>
-            <h3>
-              Lista de tarefas
-              <span className={styles.add} onClick={() => setShowInput(prev => !prev)}>+</span>
-            </h3>
-
-            {showInput && (
-              <div style={{ display: 'flex', gap: '5px', marginBottom: '10px' }}>
-                <input
-                  type="text"
-                  value={novaTarefa}
-                  onChange={(e) => setNovaTarefa(e.target.value)}
-                  placeholder="Nova tarefa"
-                  style={{ flex: 1, padding: '5px' }}
-                />
-                <button onClick={adicionarTarefa}>Adicionar</button>
-              </div>
             )}
-
-            <ul className={styles.tarefas}>
-              {tarefas.map(t => (
-                <li key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={t.concluida}
-                      onChange={() => toggleConcluida(t.id, t.concluida)}
-                    /> {t.descricao}
-                  </label>
-                  <button onClick={() => deletarTarefa(t.id)} style={{ marginLeft: '10px' }}>🗑️</button>
-                </li>
-              ))}
-            </ul>
           </div>
-
+          <div className={styles.cardSmallBottom}>
+            <ListaTarefa />
+          </div>
         </div>
       </div>
     </div>

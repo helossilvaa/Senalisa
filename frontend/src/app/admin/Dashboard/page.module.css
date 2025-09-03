@@ -80,33 +80,28 @@
   color: #333;
 }
 
-.numeroChamados span {
-  font-size: 0.9rem;
-  color: var(--cordata);
-}
-
 .barraProgresso {
+  display: flex;
   width: 100%;
-  height: 8px;
-  background: #e0e0e0;
+  height: 12px;
   border-radius: 6px;
-  margin: 8px 0 12px;
+  overflow: hidden;
+  background: #e0e0e0;
 }
 
-.progresso {
-  width: 70%;
-  height: 100%;
-  background: var(--bola);
-  border-radius: 6px;
-}
+.barraProgresso > div { height: 100%; }
+
+.progressoEmAndamento { background-color: var(--vermelhoEscuro); }
+.progressoConcluido { background-color: #b3b3b3; }
+.progressoPendente {background-color: #d52531;}
 
 .legenda {
   list-style: none;
-  padding: 0;
   display: flex;
   gap: 1rem;
   font-size: 0.9rem;
   color: var(--cordata);
+  margin-top: 1rem;
 }
 
 .bolinhaFinalizado {
@@ -189,45 +184,97 @@
 @media (max-width: 1024px) {
   .cardsContainer {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 1.5rem;
   }
 
   .cardStatusChamados {
-    width: 100%;
+    width: auto;
+    height: auto;
   }
 }
 
 @media (max-width: 768px) {
+  .page {
+    display: block;
+    height: auto;
+  }
+
   .welcome {
     font-size: 1.5rem;
-    text-align: center;
   }
 
   .cardsContainer {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     gap: 1rem;
+  }
+
+  .cardStatusChamados,
+  .cardRelatorios,
+  .cardLarge {
+    width: auto;
+    height: auto;
+    padding: 0.8rem;
+  }
+
+  .cardStatusChamados h3,
+  .cardRelatorios h3 {
+    font-size: 20px;
+  }
+
+  .cardLarge {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .graficoTecnicos,
+  .estatistica {
+    width: 100%;
+  }
+
+  .graficoObjetos {
+    margin-top: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .dashboardContainer {
-    padding: 1rem;
-  }
-
-  .cardStatusChamados {
-    height: 295px;
-  }
-
   .welcome {
     font-size: 1.2rem;
-    margin-top: 17px;
+    margin-bottom: 1rem;
   }
 
-  .cardNotificacoes {
-    margin-top: 130px;
+  .cardsContainer {
+    gap: 0.8rem;
+  }
+
+  .cardStatusChamados,
+  .cardRelatorios {
+    padding: 0.6rem;
+  }
+
+  .cardStatusChamados h3,
+  .cardRelatorios h3 {
+    font-size: 18px;
   }
 
   .legenda {
-    flex-direction: column;
-    gap: 0.3rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .numeroChamados {
+    font-size: 1.5rem;
+  }
+
+  .nomeTecnico {
+    font-size: 12px;
+  }
+
+  .preenchimento {
+    height: 20px;
+    font-size: 11px;
+    padding-right: 6px;
   }
 }

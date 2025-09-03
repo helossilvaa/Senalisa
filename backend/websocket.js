@@ -1,48 +1,50 @@
-import { Server } from 'socket.io';
+import { Server } from "socket.io";
 
-const usuariosOnline = {};
-let io; 
+let io;
 
-const initWebSocket = (httpServer) => {
-    io = new Server(httpServer, {
-        cors: {
-            origin: 'http://localhost:3000',
-            methods: ["GET", "POST"]
-        }
+export const initWebSocket = (server) => {
+  io = new Server(server, {
+    cors: {
+      origin: "http://localhost:3000", // frontend
+      methods: ["GET", "POST"],
+    },
+  });
+
+  io.on("connection", (socket) => {
+    console.log("Usuário conectado ao Socket.IO");
+
+    // 🔹 Entrar em uma sala de chat
+    socket.on("join_room", ({ chatId, userId }) => {
+      if (!chatId || !userId) return;
+
+      // Sala do chat
+      socket.join(`chat_${chatId}`);
+
+      // Sala do usuário (para notificações privadas)
+      socket.join(`user_${userId}`);
+
+      console.log(`Usuário ${userId} entrou na sala do chat ${chatId}`);
     });
 
-    io.on('connection', (socket) => {
-        console.log('🟢 Usuário conectado!', socket.id);
+    // 🔹 Recebe mensagem do frontend
+    socket.on("message", (data) => {
+      const { chat_id } = data;
+      if (!chat_id) return;
 
-        socket.on('entrar_chat', (usuarioId) => {
-            usuariosOnline[usuarioId] = socket.id;
-            console.log(`Usuário ${usuarioId} entrou no chat.`);
-        });
-        
-        connection.on('disconnect', () => {
-            for (const id in usuariosOnline) {
-                if (usuariosOnline[id] === socket.id) {
-                    delete usuariosOnline[id];
-                    console.log(`Usuário ${id} desconectado.`);
-                    break;
-                }
-            }
-        });
+      // Envia para todos na sala do chat, incluindo o remetente
+      io.to(`chat_${chat_id}`).emit("receive_message", data);
+
+      console.log("Mensagem enviada em tempo real:", data);
     });
+
+    socket.on("disconnect", () => {
+      console.log("Usuário desconectou");
+    });
+  });
 };
 
-const getOnlineUsers = () => {
-    return usuariosOnline;
+// 🔹 Função auxiliar para enviar para um usuário específico (ex.: notificações)
+export const emitirParaUsuario = (usuarioId, evento, data) => {
+  if (!io) return;
+  io.to(`user_${usuarioId}`).emit(evento, data);
 };
-
-
-const emitirParaUsuario = (usuarioId, evento, data) => {
-    const socketId = usuariosOnline[usuarioId];
-    if (socketId) {
-        
-        io.to(socketId).emit(evento, data);
-        console.log(`Notificação em tempo real enviada para o usuário ${usuarioId}`);
-    }
-};
-
-export { initWebSocket, getOnlineUsers, emitirParaUsuario };

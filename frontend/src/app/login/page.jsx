@@ -77,7 +77,7 @@ export default function Login() {
           mensagem: "Login realizado com sucesso!",
         });
 
-        // ✅ CORRIGIDO: Redireciona imediatamente após salvar o token
+        
         if (data.usuario.funcao === "usuario") {
           router.push("/usuario/dashboard");
         } else if (data.usuario.funcao === "tecnico") {

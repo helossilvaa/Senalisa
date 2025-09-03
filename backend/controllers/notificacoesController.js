@@ -10,7 +10,7 @@ const criarNotificacaoController = async (req, res) => {
     notificacoesData = {
       usuario_id: req.usuarioId,
       mensagem,
-      visualizado: 'nao_vista'
+      visualizado: 0
     };
 
     const notificacao = await criarNotificacao(notificacoesData);
@@ -27,13 +27,14 @@ const criarNotificacaoController = async (req, res) => {
 const listarNotificacoesController = async (req, res) => {
   try {
 
-    const { id, funcao } = req.usuarioId;
+    const id = req.usuarioId;
+    const funcao  = req.usuarioFuncao;
 
     let notificacoes;
 
     if (funcao === 'usuario') {
       notificacoes = await listarNotificacoesPorUsuario(id);
-    } else if (funcao === 'funcionario') {
+    } else if (funcao === 'tecnico') {
       notificacoes = await listarNotificacoesPorTecnico(id);
     } else {
       return res.status(403).json({ mensagem: 'Função não autorizada para visualizar notificações.' });
@@ -50,10 +51,12 @@ const listarNotificacoesController = async (req, res) => {
 
 const marcarComoVistaController = async (req, res) => {
 
-    const { idNotificacao } = req.params;
+    const { id } = req.params;
 
     try {
-        await marcarComoVista(idNotificacao);
+
+        await marcarComoVista(id);
+
         res.json({ mensagem: 'Notificação marcada como vista.' });
     } catch (error) {
         res.status(500).json({ mensagem: 'Erro ao atualizar notificação.' });
@@ -73,4 +76,3 @@ const deletarNotificacaoController = async (req, res) => {
 
 export { listarNotificacoesController, marcarComoVistaController, criarNotificacaoController, deletarNotificacaoController };
 
-//quais seriam as rotas de notificacoes e como implementa-las, ja q eu quero q de notificacoes de qnd mudar status do chamado para em andamento e concluido, de deixar uma avaliação, qnd entrar pela 1 vez (mensagem de bem vindo), qnd um tecnico estiver falando com a pessoa no chat tipo "juliano te enviou uma mensagem" se o chat n estiver aberto

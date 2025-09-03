@@ -11,7 +11,7 @@ const criarMensagens = async (mensagemData) => {
 
 const listarMensagens = async (chatId) => {
   try {
-    return await readAll('chat_mensagens', `chat_id = ${chatId}`);
+    return await readAll('chat_mensagens', 'chat_id = ? ORDER BY criado_em ASC', [chatId]);
   } catch (error) {
     console.error('Erro ao listar mensagens: ', error);
     throw error;

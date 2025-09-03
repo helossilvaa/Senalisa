@@ -1,20 +1,17 @@
 import { listarRelatorios, buscarRelatorios } from '../models/relatorio.js';
 import { read } from '../config/database.js';
+import fs from 'fs';
 
-/**
- * Controller para listar todos os relatórios (só admin)
- */
+
 const listarRelatoriosController = async (req, res) => {
   try {
-    // Verifica se o usuário é admin
-    if (req.user.funcao !== 'admin') {
+   
+    if (req.usuarioFuncao !== 'admin') {
       return res.status(403).json({ mensagem: 'Acesso negado' });
     }
 
-    // Busca todos os relatórios
     const relatorios = await listarRelatorios();
 
-    // Para cada relatório, adiciona dados do chamado e do técnico
     const relatoriosComDados = await Promise.all(
       relatorios.map(async (r) => {
         const chamado = await read('chamados', `id = ${r.chamado_id}`);
@@ -34,10 +31,7 @@ const listarRelatoriosController = async (req, res) => {
   }
 };
 
-/**
- * Controller para buscar relatórios filtrados (por técnico ou chamado)
- * @param {Object} req.query - Pode conter tecnico_id ou chamado_id
- */
+
 const buscarRelatoriosController = async (req, res) => {
   try {
     if (req.user.funcao !== 'admin') {
@@ -69,4 +63,19 @@ const buscarRelatoriosController = async (req, res) => {
   }
 };
 
-export { listarRelatoriosController, buscarRelatoriosController };
+const listarPdfsGeradosController = (req, res) => {
+  try {
+    const caminhoDaPasta = 'pdfs_gerados';
+    if (!fs.existsSync(caminhoDaPasta)) {
+      return res.status(200).json([]);
+    }
+    const arquivos = fs.readdirSync(caminhoDaPasta);
+    res.status(200).json(arquivos);
+  } catch (error) {
+    console.error('Erro ao listar PDFs:', error);
+    res.status(500).json({ mensagem: 'Erro ao listar PDFs' });
+  }
+};
+
+export { listarRelatoriosController, buscarRelatoriosController, listarPdfsGeradosController };
+

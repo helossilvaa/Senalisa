@@ -1,14 +1,5 @@
-import "./home.css"
-import Header from '@/components/Header/header';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
-  return (
-    <SidebarProvider>
-    <div className="d-flex">
-      <Header />
-      
-     
-    </div>
-    </SidebarProvider>
-  );
+export default function RootPage() {
+  redirect('/login');
 }

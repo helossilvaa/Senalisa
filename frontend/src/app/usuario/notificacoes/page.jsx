@@ -1,95 +1,133 @@
 'use client'
-import { useState } from "react";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Header from '@/components/Header/header';
+import { SidebarProvider } from '@/components/Header/sidebarContext';
 import "./notificacoes.css";
-import { SidebarProvider } from '@/components/Header/sidebarContext'
 
-export default function App() {
-    const [selected, setSelected] = useState(null);
+export default function Notificacoes() {
+  const [selected, setSelected] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-    const notifications = [
-        {
-            id: 1,
-            title: "Chamada 12345 aberta",
-            time: "10:55",
-            date: "10 de setembro",
-            details: "A chamada número 12345 foi aberta para o setor de TI."
-        },
-        {
-            id: 2,
-            title: "Junior enviou uma mensagem!",
-            time: "10:55",
-            date: "10 de setembro",
-            details: "O técnico Junior respondeu sua solicitação. Verifique a conversa."
-        },
-        {
-            id: 3,
-            title: "Avalie o atendimento!",
-            time: "10:55",
-            date: "10 de setembro",
-            details: "Por favor, avalie a qualidade do atendimento prestado."
-        },
-        {
-            id: 4,
-            title: "Chamada 12345 aberta",
-            time: "10:55",
-            date: "10 de setembro",
-            details: "A chamada número 12345 continua em aberto aguardando solução."
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          router.push("/"); 
+          return;
         }
-    ];
+
+        const res = await fetch(`${API_URL}/notificacoes`, {
+          method: "GET",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        });
+
+        if (!res.ok) throw new Error('Erro ao buscar notificações');
+
+        const data = await res.json();
+        setNotifications(data);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Erro:", err);
+        setError("Erro ao carregar notificações. Tente novamente mais tarde.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, [router]);
+
+  const handleNotificationClick = async (notification) => {
+    // Atualiza imediatamente o estado local
+    setSelected({ ...notification, visualizado: 1 });
+    setNotifications(prev =>
+      prev.map(n => n.id === notification.id ? { ...n, visualizado: 1 } : n)
+    );
+
+    // Se já estava vista, não precisa atualizar no backend
+    if (notification.visualizado === 1) return;
+
+    try {
+      const token = localStorage.getItem('token'); 
+      const response = await fetch(`${API_URL}/notificacoes/${notification.id}/marcarvista`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Erro ao marcar notificação como vista');
+    } catch (error) {
+      console.error("Erro ao marcar notificação como vista:", error);
+      // Reverte caso falhe
+      setNotifications(prev =>
+        prev.map(n => n.id === notification.id ? { ...n, visualizado: 0 } : n)
+      );
+      setSelected(notification);
+    }
+  };
+
 
     return (
         <SidebarProvider>
-        <div className="container-fluid vh-100">
-            <div className="row h-100">
-                <Header />
+            <div className="container-fluid vh-100">
+                <div className="row h-100">
+                    <Header />
+                    <main className="col p-4 d-flex flex-column flex-md-row gap-4" >
+                        <div className="card" >
+                            <div className="card-body" >
+                                <h1 className="card-title mb-3">Notificações</h1>
+                                <ul className="list-group list-group-flush">
+                                    {isLoading ? (
+                                        <p className="text-muted text-center mt-3">Carregando notificações...</p>
+                                    ) : notifications.length === 0 ? (
+                                        <p className="text-muted text-center mt-3">Nenhuma notificação por enquanto.</p>
+                                    ) : (
+                                        notifications.map((n) => (
+                                            <li
+                                                key={n.id}
+                                                className="list-group-item d-flex align-items-center justify-content-between notification-item" style={{ marginTop: '10px' }}
+                                                onClick={() => handleNotificationClick(n)}
+                                            >
+                                                <div>
+                                                    <p className="mb-1 fw-semibold">{n.mensagem}</p>
+                                                </div>
+                                                {n.visualizado === 'nao_vista' && <span className="badge bg-danger rounded-circle p-2"></span>}
+                                            </li>
+                                        ))
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
 
-
-                <main className="col p-4 d-flex flex-column flex-md-row gap-4" >
-
-
-                <div className="card" >
-                    <div className="card-body" >
-                        <h1 className="card-title mb-3"> Notificações</h1>
-                        <ul className="list-group list-group-flush">
-                            {notifications.map((n) => (
-                                <li
-                                    key={n.id}
-                                    className="list-group-item d-flex align-items-center justify-content-between notification-item" style={{ marginTop: '10px' }}
-                                    onClick={() => setSelected(n)}
-                                >
-                                    <div>
-                                        <p className="mb-1 fw-semibold">{n.title}</p>
-                                        <small className="text-muted">{n.time} | {n.date}</small>
-                                    </div>
-                                    <span className="badge bg-danger rounded-circle p-2"></span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                        {selected && (
+                            <div className="card shadow-sm flex-grow-1 rounded-4 animate__animated animate__fadeInRight drawer-card" >
+                                <div
+                                    className="card-header d-flex justify-content-between align-items-center text-white rounded-top-4"
+                                    style={{ backgroundColor: '#b10000', height: '60px' }}>
+                                    <h6 className="mb-0">Detalhes da Notificação</h6>
+                                    <button
+                                        className="btn-close btn-close-white"
+                                        onClick={() => setSelected(null)}>
+                                    </button>
+                                </div>
+                                <div className="card-body">
+                                    <p><b>Mensagem:</b> {selected.mensagem}</p>
+                                </div>
+                            </div>
+                        )}
+                    </main>
                 </div>
-
-
-                {selected && (
-                    <div className="card shadow-sm flex-grow-1 rounded-4 animate__animated animate__fadeInRight drawer-card" >
-                        <div className="card-header d-flex justify-content-between align-items-center text-white rounded-top-4"
-                            style={{ backgroundColor: '#b10000', height: '60px' }}>
-                            <h6 className="mb-0">{selected.title}</h6>
-                            <button
-                                className="btn-close btn-close-white"
-                                onClick={() => setSelected(null)}>
-                            </button>
-                        </div>
-                        <div className="card-body">
-                            <p><b>Data:</b> {selected.date} às {selected.time}</p>
-                            <p>{selected.details}</p>
-                        </div>
-                    </div>
-                )}
-            </main>
-        </div>
-    </div >
-    </SidebarProvider>
-  );
+            </div >
+        </SidebarProvider>
+    );
 }

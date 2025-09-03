@@ -21,6 +21,7 @@ export default function Chamadas() {
         router.push("/login");
         return;
       }
+      console.log(token);
 
     const fetchChamados = async () => {
       

@@ -55,25 +55,6 @@ export default function Chamadas() {
     fetchChamados();
   }, [router]);
 
-  const aceitarChamado = async (chamadoId) => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${API_URL}/chamados/assumir/${chamadoId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Erro ao assumir chamado");
-
-
-      setChamados((prev) => prev.filter((c) => c.id !== chamadoId));
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   if (loading) return <p>Carregando chamados...</p>;
 
@@ -81,7 +62,7 @@ export default function Chamadas() {
     <div className={styles.container}>
       <HeaderTecnico />
       <div className={styles.chamadas}>
-        <h1>Chamados Pendentes</h1>
+        <h1>Histórico</h1>
         <div className={styles.card}>
           {chamados.map((chamado) => (
             <Card
@@ -89,7 +70,7 @@ export default function Chamadas() {
               id={chamado.id}
               titulo={chamado.titulo}
               data={new Date(chamado.criado_em).toLocaleDateString()}
-              onAceitar={aceitarChamado}
+
             />
           ))}
           {chamados.length === 0 && <p>Sem chamados pendentes</p>}

@@ -15,6 +15,7 @@ import chatMensagensRotas from './routes/chatMensagensRotas.js';
 import chatRotas from './routes/chatRotas.js';
 import notificacoesRotas from './routes/notificacoesRotas.js';
 import tarefasRotas from './routes/tarefasRotas.js';
+import relatoriosRotas from './routes/relatoriosRotas.js';
 
 // 1. Carrega variáveis de ambiente PRIMEIRO
 dotenv.config();
@@ -61,6 +62,7 @@ app.use('/chats', chatRotas);
 app.use('/mensagem', chatMensagensRotas)
 app.use('/notificacoes', notificacoesRotas);
 app.use('/tarefas', tarefasRotas);
+app.use('/relatorios', relatoriosRotas);
 
 
 app.get('/health', (req, res) => {
