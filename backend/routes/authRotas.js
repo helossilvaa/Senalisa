@@ -21,6 +21,14 @@ const fakeUsers = [
     setor: 'externo'
   },
   {
+    registro: '12344321',
+    nome: 'Luizão martelinho de ouro',
+    senha: '12345',
+    email: 'martelinho@educ123.sp.senai.br',
+    funcao: 'tecnico',
+    setor: 'externo'
+  },
+  {
     registro: '87654321',
     nome: 'Rodrigo',
     senha: '12345',

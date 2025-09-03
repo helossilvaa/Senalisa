@@ -44,7 +44,7 @@ export default function HeaderTecnico() {
 
                     <ul id="side_items">
                         <li className="side-item active mt-4">
-                            <a href="/tecnico/Dashboard">
+                            <a href="/tecnico/dashboard">
                                 <i className="bi bi-speedometer2 me-2" />
                                 <span className="item-description">Dashboard</span>
                             </a>

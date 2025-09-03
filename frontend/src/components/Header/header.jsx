@@ -51,7 +51,7 @@ export default function Sidebar() {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/usuario/notificacoes">
                                 <i className="bi bi-bell me-2" />
                                 <span className="item-description">Notificações</span>
                             </a>
@@ -69,7 +69,7 @@ export default function Sidebar() {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/usuario/novoChamado">
                                 <i className="bi bi-person-fill me-2" />
                                 <span className="item-description">Novo chamado</span>
                             </a>
