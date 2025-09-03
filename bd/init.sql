@@ -10,7 +10,7 @@ CREATE TABLE usuarios (
     senha VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     funcao VARCHAR(100) NOT NULL,
-    setor VARCHAR(100) NOT NULL,
+    setor VARCHAR(100),
     status ENUM('ativo', 'inativo') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

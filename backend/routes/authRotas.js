@@ -62,7 +62,7 @@ router.post('/login', async (req, res, next) => {
       email: usuarioFake.email,
       password: usuarioFake.senha,
       funcao: usuarioFake.funcao,
-      setor: usuarioFake.setor,
+      setor: usuarioFake.setor || null,
     };
 
     return criarUsuarioController(req, res);

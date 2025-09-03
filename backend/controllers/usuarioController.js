@@ -22,7 +22,7 @@ const criarUsuarioController = async (req, res) => {
     const registro = isFake ? req.body.registro : req.user?.sAMAccountName;
     const password = req.body.password;
     const funcao = isFake ? (req.body.funcao || 'usuario') : (req.user?.funcao || 'usuario');
-    const setor = isFake ? req.body.setor : (req.user?.setor || null);
+    const setor = isFake ? req.body.setor || null : (req.user?.setor || null);
 
     if (!password || !email || !nome || !registro) {
       return res.status(400).json({ error: 'Campos obrigatórios ausentes!' });
