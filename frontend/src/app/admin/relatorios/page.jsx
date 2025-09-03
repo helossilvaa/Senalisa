@@ -1,17 +1,21 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import Relatorios from "@/components/Relatorios/relatorios";
 import HeaderAdmin from "@/components/HeaderAdmin/headerAdmin";
 import styles from "./page.module.css";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+import Relatorios from "@/components/Relatorios/relatorios";
 
-export default function () {
+export default function RelatoriosPage() {
   const [active, setActive] = useState(0);
   const [lineStyle, setLineStyle] = useState({});
+  const router = useRouter();
   const refs = [useRef(null), useRef(null), useRef(null)];
+  const [chamadosConcluidos, setChamadosConcluidos] = useState([]);
+  const [selectedChamado, setSelectedChamado] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [generatedRelatorio, setGeneratedRelatorio] = useState(null); // Novo estado
 
-  const [relatorios, setRelatorios] = useState([]);
-
-  
   const API_URL = 'http://localhost:8080';
 
   useEffect(() => {
@@ -24,35 +28,79 @@ export default function () {
     }
   }, [active]);
 
-  // Busca relatórios conforme a aba ativa
   useEffect(() => {
-    const fetchRelatorios = async () => {
+    const fetchChamadosConcluidos = async () => {
       try {
-        let url = "http://localhost:3000/chamados/relatorios"; 
-
-        if (active === 1) {
-          url = "http://localhost:3000/chamados/buscar?tecnico_id=1"; 
-        }
-        if (active === 2) {
-          url = "http://localhost:3000/chamados/buscar?objeto_id=1"; 
+        const token = localStorage.getItem("token");
+        if (!token) {
+          router.push("/login");
+          return;
         }
 
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "",
-          },
+        const decoded = jwtDecode(token);
+        if (decoded.exp < Date.now() / 1000) {
+          localStorage.removeItem("token");
+          alert("Seu login expirou.");
+          router.push("/login");
+          return;
+        }
+
+        const res = await fetch(`${API_URL}/chamados/historico`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
+        if (!res.ok) {
+          throw new Error("Erro ao buscar chamados concluídos");
+        }
+
         const data = await res.json();
-        console.log(data);
-        setRelatorios(data);
+        setChamadosConcluidos(data);
       } catch (err) {
-        console.error("Erro ao buscar relatórios:", err);
+        console.error(err);
       }
     };
+    fetchChamadosConcluidos();
+  }, [router]);
 
-    fetchRelatorios();
-  }, [active]);
+  const handleGerarPdf = async () => {
+    if (!selectedChamado) {
+      alert("Por favor, selecione um chamado.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/relatorios/pdf/${selectedChamado}`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao gerar PDF");
+      }
+
+      const data = await res.json();
+      const nomeDoArquivo = data.arquivo;
+
+      // Encontre o chamado correspondente e atualize o estado
+      const chamadoGerado = chamadosConcluidos.find(c => c.id === selectedChamado);
+      if (chamadoGerado) {
+        setGeneratedRelatorio({
+          ...data,
+          chamado: chamadoGerado,
+        });
+      }
+
+      window.open(`${API_URL}/relatorios/pdfs/${nomeDoArquivo}`, '_blank');
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao gerar PDF.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.page}>
@@ -61,30 +109,38 @@ export default function () {
         <div className={styles.tituloPrincipal}>
           <h1>Relatórios</h1>
         </div>
-
+        
         <div className={styles.conteudoPrincipal}>
-          <div className={styles.tabs}>
-            <button ref={refs[0]} onClick={() => setActive(0)}>Chamados</button>
-            <button ref={refs[1]} onClick={() => setActive(1)}>Técnicos</button>
-            <button ref={refs[2]} onClick={() => setActive(2)}>Objetos Quebrados</button>
-            <span className={styles.line} style={lineStyle}></span>
-          </div>
-        </div>
-
-        <div className={styles.todos}>
-          <div className={styles.selecao}>
-            <h3>
-              {active === 0 && "Listando Relatórios dos Chamados..."}
-              {active === 1 && "Listando Relatórios dos Técnicos..."}
-              {active === 2 && "Listando Relatórios dos Objetos Quebrados..."}
-            </h3>
-
-            {relatorios.length > 0 ? (
-              relatorios.map((r) => <Relatorios key={r.id} relatorio={r} />)
-            ) : (
-              <p>Nenhum relatório encontrado.</p>
+            <div className={styles.gerarPdfContainer}>
+              <h3>Gerar PDF de um chamado concluído</h3>
+              <select
+                className={styles.chamadoSelect}
+                value={selectedChamado}
+                onChange={(e) => setSelectedChamado(e.target.value)}
+              >
+                <option value="">Selecione um chamado</option>
+                {chamadosConcluidos.map((chamado) => (
+                  <option key={chamado.id} value={chamado.id}>
+                    {`#${chamado.id} - ${chamado.titulo}`}
+                  </option>
+                ))}
+              </select>
+              <button
+                className={styles.gerarPdfButton}
+                onClick={handleGerarPdf}
+                disabled={loading || !selectedChamado}
+              >
+                {loading ? 'Gerando...' : 'Gerar PDF'}
+              </button>
+            </div>
+            
+            {/* Renderização condicional do componente Relatorios */}
+            {generatedRelatorio && (
+              <div className={styles.relatorioGerado}>
+                <h4>Relatório Gerado:</h4>
+                <Relatorios relatorio={generatedRelatorio} />
+              </div>
             )}
-          </div>
         </div>
       </div>
     </div>

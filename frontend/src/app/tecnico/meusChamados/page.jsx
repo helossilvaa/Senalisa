@@ -1,47 +1,55 @@
-'use client';
+"use client";
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Card from '@/components/Card/Card';
 import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
 import styles from './page.module.css';
+import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
+
 
 export default function MeusChamadosPage() {
-  const [chamados, setChamados] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [chamados, setChamados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const API_URL = "http://localhost:8080";
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
 
-    const fetchChamados = async () => {
-      try {
-        const res = await fetch("http://localhost:8080/chamados/meuschamados", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+console.log("Token encontrado:", token);
 
-        if (!res.ok) throw new Error("Erro ao buscar chamados");
+    const fetchChamados = async () => {
+      setLoading(true); 
+      try {
+        const decoded = jwtDecode(token);
 
-        const data = await res.json();
-        setChamados(data);
-      } catch (err) {
-        console.error(err);
-        alert("Erro ao carregar chamados");
-      } finally {
-        setLoading(false);
-      }
-    };
+        if (decoded.exp < Date.now() / 1000) {
+          localStorage.removeItem("token");
+          alert("Seu login expirou.");
+          router.push("/login");
+          return;
+        }
 
-    fetchChamados();
-  }, [router]);
+        const res = await fetch(`${API_URL}/chamados/chamadostecnico`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Erro ao buscar chamados");
+        const data = await res.json();
+        setChamados(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false); 
+      }
+    };
+    fetchChamados();
 
-  if (loading) return <p>Carregando chamados...</p>;
-
+  }, []);
+  
   return (
     <div className={styles.container}>
       <HeaderTecnico />
@@ -53,10 +61,10 @@ export default function MeusChamadosPage() {
           ) : (
             chamados.map(chamado => (
               <Card
-                key={chamado.id}
-                id={chamado.id}
-                titulo={chamado.titulo}
-                data={new Date(chamado.atualizado_em).toLocaleDateString()}
+                key={chamada.id}
+                titulo={chamada.titulo}
+                data={new Date(chamada.atualizado_em).toLocaleDateString()}
+                id={chamada.id}
                 mostrarBotaoAceitar={false}
               />
             ))

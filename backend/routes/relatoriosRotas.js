@@ -1,19 +1,23 @@
 import express from 'express';
-import { listarRelatoriosController, buscarRelatoriosController } from '../controllers/relatoriosController.js';
-import { gerarRelatoriosPdfController } from '../controllers/relatorioPDFcontroller.js';
+import path from 'path';
+import { listarRelatoriosController, buscarRelatoriosController, listarPdfsGeradosController } from '../controllers/relatorioController.js';
+import { gerarRelatorioPdfPorIdController } from '../controllers/relatorioPDFcontroller.js';
 import authMiddleware from '../middlewares/authMiddleware.js'; 
 
 const router = express.Router();
 
-// Todas as rotas requerem autenticação
-router.use(authMiddleware);
+router.get('/', authMiddleware, listarRelatoriosController);
 
-// Listar todos os relatórios (admin)
-router.get('/chamados/relatorios', listarRelatoriosController);
+router.get('/buscar', authMiddleware, buscarRelatoriosController);
 
-// Buscar relatórios filtrados (admin)
-router.get('/chamados/buscar', buscarRelatoriosController);
+router.get('/pdfs', authMiddleware, listarPdfsGeradosController);
 
-router.get('/chamados/pdf', gerarRelatoriosPdfController);
+router.get('/pdfs/:nomeDoArquivo', (req, res) => {
+  const nomeDoArquivo = req.params.nomeDoArquivo;
+  const caminhoDoArquivo = path.join('pdfs_gerados', nomeDoArquivo);
+  res.sendFile(path.resolve(caminhoDoArquivo));
+});
+
+router.get('/pdf/:id', authMiddleware, gerarRelatorioPdfPorIdController);
 
 export default router;

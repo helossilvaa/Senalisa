@@ -21,7 +21,7 @@ const criarTarefasController = async (req, res) => {
 };
 const listarTarefasController = async (req, res) => {
     try {
-        const tarefas = await listarTarefas();
+        const tarefas = await listarTarefas(req.usuarioId);
         res.status(200).json(tarefas);
     } catch (error) {
         res.status(500).json({ error: 'Erro ao listar tarefas' });

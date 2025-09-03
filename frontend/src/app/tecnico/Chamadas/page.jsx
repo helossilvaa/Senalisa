@@ -15,13 +15,16 @@ export default function Chamadas() {
   const API_URL = "http://localhost:8080";
 
   useEffect(() => {
-
-    const fetchChamados = async () => {
-      const token = localStorage.getItem("token");
+    
+    const token = localStorage.getItem("token");
       if (!token) {
         router.push("/login");
         return;
       }
+      console.log(token);
+
+    const fetchChamados = async () => {
+      
 
       try {
         
@@ -34,7 +37,8 @@ export default function Chamadas() {
           return;
         }
 
-        const res = await fetch(`${API_URL}/chamados/gerais`, {
+
+        const res = await fetch(`${API_URL}/chamados/pendentes`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -55,7 +59,7 @@ export default function Chamadas() {
   const aceitarChamado = async (chamadoId) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${API_URL}/chamados/assumirChamado/${chamadoId}`, {
+      const res = await fetch(`${API_URL}/chamados/assumir/${chamadoId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

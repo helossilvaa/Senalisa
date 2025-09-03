@@ -41,9 +41,9 @@ const obterMensagemPorIdController = async (req, res) => {
   }
 };
 
-
 export {
   criarMensagemController,
   listarMensagensController,
   obterMensagemPorIdController,
 };
+

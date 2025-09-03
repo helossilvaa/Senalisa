@@ -1,4 +1,4 @@
-import {create, readAll, read, update} from '../config/database.js';
+import {create, readAll, read, update, query} from '../config/database.js';
 
 
 const criarChamado = async (chamadoData) => { 
@@ -12,12 +12,33 @@ const criarChamado = async (chamadoData) => {
 
 const listarChamado = async () => {
   try {
-    return await readAll('chamados', 'tecnico_id IS NULL');
+    return await readAll('chamados');
   } catch (error) {
     console.error('Erro ao listar chamados: ', error);
     throw error;
   }
 }
+
+const listarChamadosPendentes = async (poolsIds) => {
+    try {
+        if (!poolsIds || poolsIds.length === 0) {
+            return [];
+        }
+
+        const placeholders = poolsIds.map(() => '?').join(', ');
+        const sql = `
+            SELECT c.*
+            FROM chamados c
+            JOIN pool p ON c.tipo_id = p.id
+            WHERE c.status = 'pendente' AND p.id IN (${placeholders});
+        `;
+
+        return await query(sql, poolsIds);
+    } catch (error) {
+        console.error('Erro ao buscar chamados pendentes por setor:', error);
+        throw error;
+    }
+};
 
 const obterChamadoPorId = async (id) => {
   try {
@@ -49,9 +70,9 @@ const atualizarStatusChamado = async (chamadoId, novoStatus) => {
   }
 };
 
-const criarApontamentos = async (id, apontamentosData) => {
+const criarApontamentos = async (id, apontamentoData) => {
   try{
-    await create('apontamentos', {...apontamentosData, chamado_id: id});
+    await create('apontamentos', {...apontamentoData, chamado_id: id});
   } catch (error) {
     console.error('Erro ao criar apontamento: ', error);
     throw error;
@@ -64,13 +85,75 @@ const assumirChamado = async (id, tecnicoId) => {
         if (!chamado) throw new Error('Chamado não encontrado');
         if (chamado.tecnico_id) throw new Error('Chamado já foi assumido');
 
-        return await update('chamados', { tecnico_id: tecnicoId, status: 'em andamento' }, `id = ${id}`);
+        return await update('chamados', { tecnico_id: tecnicoId, status: 'em andamento'}, `id = ${id}`);
     } catch (error) {
         console.error('Erro ao assumir chamado: ', error);
         throw error;
     }
 };
 
+const atualizarPrazoChamado = async (id, prazo) => {
+    try {
+        const dadosParaAtualizar = { prazo: prazo };
+        return await update('chamados', dadosParaAtualizar, `id = ${id}`);
+    } catch (error) {
+        console.error('Erro ao atualizar o prazo do chamado:', error);
+        throw error;
+    }
+};
 
-export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado,
-  atualizarStatusChamado};
+const listarChamadosPorCategoria = async () => {
+  try {
+    const chamados = await readAll('chamados'); // pega todos os chamados
+
+    // agrupar por tipo_id
+    const agrupados = chamados.reduce((acc, chamado) => {
+      const key = chamado.tipo_id; 
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    // transformar em array [{ name: "tipo_id X", value: count }]
+    return Object.entries(agrupados).map(([tipo, count]) => ({
+      name: `Categoria ${tipo}`,
+      value: count
+    }));
+  } catch (error) {
+    console.error('Erro ao listar chamados por categoria:', error);
+    throw error;
+  }
+};
+
+
+const listarRankingTecnicos = async () => {
+  try {
+    const chamados = await readAll('chamados'); // pega todos os chamados
+
+    // filtra só concluídos
+    const concluidos = chamados.filter(c => c.status === 'concluído');
+
+    // agrupar por tecnico_id
+    const ranking = concluidos.reduce((acc, chamado) => {
+      const tecnico = chamado.tecnico_id || 'Sem técnico';
+      acc[tecnico] = (acc[tecnico] || 0) + 1;
+      return acc;
+    }, {});
+
+    // transformar em array [{ nomeTecnico: tecnico_id, chamadosConcluidos: count }]
+    const resultado = Object.entries(ranking).map(([tecnico, count]) => ({
+      nomeTecnico: `Técnico ${tecnico}`,
+      chamadosConcluidos: count
+    }));
+
+    // ordenar e pegar só os 3 primeiros
+    return resultado.sort((a, b) => b.chamadosConcluidos - a.chamadosConcluidos).slice(0, 3);
+  } catch (error) {
+    console.error('Erro ao listar ranking de técnicos:', error);
+    throw error;
+  }
+};
+
+
+
+
+export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, listarChamadosPendentes, atualizarStatusChamado, atualizarPrazoChamado, listarChamadosPorCategoria, listarRankingTecnicos };
