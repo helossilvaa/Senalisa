@@ -10,6 +10,7 @@ CREATE TABLE usuarios (
     senha VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     funcao VARCHAR(100) NOT NULL,
+    setor VARCHAR(100) NOT NULL,
     status ENUM('ativo', 'inativo') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -53,6 +54,7 @@ CREATE TABLE chamados (
     usuario_id INT,
     sala_id INT NOT NULL,
     equipamento_id INT NOT NULL,
+    prazo DATE,
     status ENUM('pendente', 'em andamento', 'concluído') DEFAULT 'pendente',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -104,7 +106,7 @@ CREATE TABLE avaliacoes (
     usuario_id INT NOT NULL,
     chamado_id INT NOT NULL,
     tecnico_id INT NOT NULL,
-    comentario TEXT NOT NULL,
+    comentario TEXT,
     pontuacao INT NOT NULL,
     data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chamado_id) REFERENCES chamados(id),
@@ -144,22 +146,10 @@ CREATE TABLE chat_mensagens (
   FOREIGN KEY (remetente_id) REFERENCES usuarios(id)
 );
 
-CREATE TABLE tarefas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    descricao VARCHAR(255) NOT NULL,
-    concluida BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-);
-
-
 -- Índices adicionais para otimização
 CREATE INDEX idx_usuarios_email ON usuarios(email);
 CREATE INDEX idx_chamados_status ON chamados(status);
 CREATE INDEX idx_relatorios_comeco_fim ON relatorios(comeco, fim);
-
 
 
 INSERT INTO pool (titulo, descricao, status) VALUES
@@ -168,6 +158,7 @@ INSERT INTO pool (titulo, descricao, status) VALUES
 ('apoio_tecnico', 'Suporte técnico em sala de aula', 'ativo'),
 ('limpeza', 'Serviço de limpeza dos laboratórios e áreas comuns', 'inativo');
 
+-- fazer select do pool_tecnico manualmente
 
 
 INSERT INTO salas (nome_sala) VALUES

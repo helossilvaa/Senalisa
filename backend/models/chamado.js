@@ -1,4 +1,4 @@
-import {create, readAll, read, update} from '../config/database.js';
+import {create, readAll, read, update, query} from '../config/database.js';
 
 const criarChamado = async (chamadoData) => { 
   try {
@@ -17,6 +17,27 @@ const listarChamado = async () => {
     throw error;
   }
 }
+
+const listarChamadosPendentes = async (poolsIds) => {
+    try {
+        if (!poolsIds || poolsIds.length === 0) {
+            return [];
+        }
+
+        const placeholders = poolsIds.map(() => '?').join(', ');
+        const sql = `
+            SELECT c.*
+            FROM chamados c
+            JOIN pool p ON c.tipo_id = p.id
+            WHERE c.status = 'pendente' AND p.id IN (${placeholders});
+        `;
+
+        return await query(sql, poolsIds);
+    } catch (error) {
+        console.error('Erro ao buscar chamados pendentes por setor:', error);
+        throw error;
+    }
+};
 
 const obterChamadoPorId = async (id) => {
   try {
@@ -48,115 +69,98 @@ const atualizarChamado = async (req, res) => {
   }
 };
 
-const criarApontamentos = async (id, apontamentosData) => {
+const atualizarStatusChamado = async (chamadoId, novoStatus) => {
+  try {
+      const dadosParaAtualizar = { status: novoStatus };
+      const id = `id = ${chamadoId}`;
+
+      return await update('chamados', dadosParaAtualizar, id);
+  } catch (error) {
+      console.error('Erro ao atualizar o status do chamado:', error);
+      throw error;
+  }
+};
+
+const criarApontamentos = async (id, apontamentoData) => {
   try{
-    await create('apontamentos', {...apontamentosData, chamado_id: id});
+    await create('apontamentos', {...apontamentoData, chamado_id: id});
   } catch (error) {
     console.error('Erro ao criar apontamento: ', error);
     throw error;
   }
 }
 
-const assumirChamado = async (req, res) => {
-  try {
-      const { id } = req.params; 
-      const tecnico_id = req.user.id; 
-      const resultado = await assumirChamado(id, tecnico_id);
-      res.status(200).json({ mensagem: 'Chamado assumido com sucesso', chamado: resultado });
-  } catch (error) {
-      console.error('Erro ao assumir chamado:', error);
-      res.status(400).json({ mensagem: error.message });
-  }
+const assumirChamado = async (id, tecnicoId) => {
+    try {
+        const chamado = await read('chamados', `id = ${id}`);
+        if (!chamado) throw new Error('Chamado não encontrado');
+        if (chamado.tecnico_id) throw new Error('Chamado já foi assumido');
+
+        return await update('chamados', { tecnico_id: tecnicoId, status: 'em andamento'}, `id = ${id}`);
+    } catch (error) {
+        console.error('Erro ao assumir chamado: ', error);
+        throw error;
+    }
 };
 
-const getChamadosStatus = async (tecnicoId) => {
-  try {
-    const total = await query(`SELECT COUNT(*) as total FROM chamados WHERE tecnico_id = ?`, [tecnicoId]);
-    const emAndamento = await query(`SELECT COUNT(*) as total FROM chamados WHERE tecnico_id = ? AND status = 'em andamento'`, [tecnicoId]);
-    const aberto = await query(`SELECT COUNT(*) as total FROM chamados WHERE tecnico_id = ? AND status = 'aberto'`, [tecnicoId]);
-    const finalizado = await query(`SELECT COUNT(*) as total FROM chamados WHERE tecnico_id = ? AND status = 'finalizado'`, [tecnicoId]);
-
-    return {
-      total: total[0].total,
-      emAndamento: emAndamento[0].total,
-      aberto: aberto[0].total,
-      finalizado: finalizado[0].total,
-    };
-  } catch (error) {
-    console.error('Erro ao buscar status do técnico: ', error);
-    throw error;
-  }
+const atualizarPrazoChamado = async (id, prazo) => {
+    try {
+        const dadosParaAtualizar = { prazo: prazo };
+        return await update('chamados', dadosParaAtualizar, `id = ${id}`);
+    } catch (error) {
+        console.error('Erro ao atualizar o prazo do chamado:', error);
+        throw error;
+    }
 };
 
-const getChamadosStatusAdmin = async () => {
+const listarChamadosPorCategoria = async () => {
   try {
-    const total = await query(`SELECT COUNT(*) as total FROM chamados`);
-    const emAndamento = await query(`SELECT COUNT(*) as total FROM chamados WHERE status = 'em andamento'`);
-    const aberto = await query(`SELECT COUNT(*) as total FROM chamados WHERE status = 'aberto'`);
-    const finalizado = await query(`SELECT COUNT(*) as total FROM chamados WHERE status = 'finalizado'`);
+    const chamados = await readAll('chamados'); // pega todos os chamados
 
-    return {
-      total: total[0].total,
-      emAndamento: emAndamento[0].total,
-      aberto: aberto[0].total,
-      finalizado: finalizado[0].total,
-    };
-  } catch (error) {
-    console.error('Erro ao buscar status admin: ', error);
-    throw error;
-  }
-};
+    // agrupar por tipo_id
+    const agrupados = chamados.reduce((acc, chamado) => {
+      const key = chamado.tipo_id; 
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
 
-const getRankingTecnicos = async () => {
-  try {
-    const ranking = await query(`
-      SELECT t.id, t.nome, COUNT(c.id) as totalFinalizados
-      FROM chamados c
-      JOIN tecnicos t ON c.tecnico_id = t.id
-      WHERE c.status = 'finalizado'
-      GROUP BY t.id, t.nome
-      ORDER BY totalFinalizados DESC
-      LIMIT 5
-    `);
-
-    const maior = ranking[0]?.totalFinalizados || 1;
-    return ranking.map(r => ({
-      tecnicoId: r.id,
-      nome: r.nome,
-      totalFinalizados: r.totalFinalizados,
-      percentual: Math.round((r.totalFinalizados / maior) * 100)
+    // transformar em array [{ name: "tipo_id X", value: count }]
+    return Object.entries(agrupados).map(([tipo, count]) => ({
+      name: `Categoria ${tipo}`,
+      value: count
     }));
   } catch (error) {
-    console.error('Erro ao buscar ranking de técnicos: ', error);
+    console.error('Erro ao listar chamados por categoria:', error);
     throw error;
   }
 };
 
-const getCategoriasChamados = async () => {
+const listarRankingTecnicos = async () => {
   try {
-    const categorias = await query(`
-      SELECT categoria, COUNT(*) as total
-      FROM chamados
-      GROUP BY categoria
-      ORDER BY total DESC
-    `);
+    const chamados = await readAll('chamados'); // pega todos os chamados
 
-    return categorias;
+    // filtra só concluídos
+    const concluidos = chamados.filter(c => c.status === 'concluído');
+
+    // agrupar por tecnico_id
+    const ranking = concluidos.reduce((acc, chamado) => {
+      const tecnico = chamado.tecnico_id || 'Sem técnico';
+      acc[tecnico] = (acc[tecnico] || 0) + 1;
+      return acc;
+    }, {});
+
+    // transformar em array [{ nomeTecnico: tecnico_id, chamadosConcluidos: count }]
+    const resultado = Object.entries(ranking).map(([tecnico, count]) => ({
+      nomeTecnico: `Técnico ${tecnico}`,
+      chamadosConcluidos: count
+    }));
+
+    // ordenar e pegar só os 3 primeiros
+    return resultado.sort((a, b) => b.chamadosConcluidos - a.chamadosConcluidos).slice(0, 3);
   } catch (error) {
-    console.error('Erro ao buscar categorias: ', error);
+    console.error('Erro ao listar ranking de técnicos:', error);
     throw error;
   }
 };
 
-export {
-  criarChamado,
-  listarChamado,
-  obterChamadoPorId,
-  atualizarChamado,
-  criarApontamentos,
-  assumirChamado,
-  getChamadosStatus,
-  getChamadosStatusAdmin,
-  getRankingTecnicos,
-  getCategoriasChamados
-};
+export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, listarChamadosPendentes, atualizarStatusChamado, atualizarPrazoChamado, listarChamadosPorCategoria, listarRankingTecnicos };

@@ -1,30 +1,23 @@
 import express from 'express';
-import { 
-  listarRelatoriosController, 
-  listarRelatoriosPorTecnicoController,
-  listarRelatoriosPorEquipamentoController,
-  buscarRelatoriosController
-} from '../controllers/relatorioController.js'; 
-import { gerarRelatoriosPdfController } from '../controllers/relatorioPDFcontroller.js';
-import authMiddleware from '../middlewares/authMiddleware.js';
+import path from 'path';
+import { listarRelatoriosController, buscarRelatoriosController, listarPdfsGeradosController } from '../controllers/relatorioController.js';
+import { gerarRelatorioPdfPorIdController } from '../controllers/relatorioPDFcontroller.js';
+import authMiddleware from '../middlewares/authMiddleware.js'; 
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.get('/', authMiddleware, listarRelatoriosController);
 
-// Rota para listar todos os relatórios (chamados)
-router.get('/', listarRelatoriosController);
+router.get('/buscar', authMiddleware, buscarRelatoriosController);
 
-// Rota para listar relatórios de todos os técnicos
-router.get('/tecnicos', listarRelatoriosPorTecnicoController);
+router.get('/pdfs', authMiddleware, listarPdfsGeradosController);
 
-// Rota para listar relatórios de todos os equipamentos
-router.get('/equipamentos', listarRelatoriosPorEquipamentoController);
+router.get('/pdfs/:nomeDoArquivo', (req, res) => {
+  const nomeDoArquivo = req.params.nomeDoArquivo;
+  const caminhoDoArquivo = path.join('pdfs_gerados', nomeDoArquivo);
+  res.sendFile(path.resolve(caminhoDoArquivo));
+});
 
-// Rota para buscar relatórios com filtros (query params)
-router.get('/buscar', buscarRelatoriosController);
-
-// Rota para gerar PDF
-router.get('/pdf', gerarRelatoriosPdfController);
+router.get('/pdf/:id', authMiddleware, gerarRelatorioPdfPorIdController);
 
 export default router;

@@ -22,6 +22,7 @@ const criarUsuarioController = async (req, res) => {
     const registro = isFake ? req.body.registro : req.user?.sAMAccountName;
     const password = req.body.password;
     const funcao = isFake ? (req.body.funcao || 'usuario') : (req.user?.funcao || 'usuario');
+    const setor = isFake ? req.body.setor : (req.user?.setor || null);
 
     if (!password || !email || !nome || !registro) {
       return res.status(400).json({ error: 'Campos obrigatórios ausentes!' });
@@ -48,6 +49,7 @@ const criarUsuarioController = async (req, res) => {
         senha,
         registro,
         funcao: funcao,
+        setor: setor
       };
 
       await criarUsuario(usuarioData);
@@ -71,6 +73,7 @@ const criarUsuarioController = async (req, res) => {
         email: usuario.email,
         numeroRegistro: usuario.registro,
         funcao: usuario.funcao,
+        setor: usuario.setor
       },
       JWT_SECRET,
       { expiresIn: '1h' }
@@ -85,6 +88,7 @@ const criarUsuarioController = async (req, res) => {
         displayName: usuario.nome,
         email: usuario.email,
         funcao: usuario.funcao,
+        setor: usuario.setor
       },
     });
   } catch (error) {

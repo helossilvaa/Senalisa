@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
     criarChamado,
     listarChamado,
@@ -11,6 +12,14 @@ import {
     getCategoriasChamados
 } from "../models/chamado.js";
 import { criarRelatorio } from "../models/relatorio.js";
+=======
+import {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, atualizarStatusChamado, listarChamadosPendentes, atualizarPrazoChamado, listarChamadosPorCategoria, listarRankingTecnicos} from "../models/chamado.js";
+import { listarPoolsTecnico } from "../models/poolTecnico.js";
+import { criarNotificacao } from "../models/notificacoes.js";
+import { criarRelatorio } from "../models/relatorio.js";
+import notificacaoTextos from '../utils/notificacoesTextos.js';
+
+>>>>>>> 39d5ed45624232b6fcd84d6b37b42331c95054f2
 
 // Função para criar um novo chamado
 const criarChamadoController = async (req, res) => {
@@ -23,6 +32,8 @@ const criarChamadoController = async (req, res) => {
             equipamento_id
         } = req.body;
 
+        const equipamentoIdNumerico = parseInt(equipamento_id, 10);
+
         const chamadoData = {
             titulo,
             descricao,
@@ -30,21 +41,34 @@ const criarChamadoController = async (req, res) => {
             usuario_id: req.usuarioId,
             tecnico_id: null,
             sala_id,
-            equipamento_id,
-            status: 'pendente'
+            equipamento_id: equipamentoIdNumerico,
+            status: 'pendente'   
         };
-
+        
+       
         const chamadosExistentes = await listarChamado();
-        const jaExiste = chamadosExistentes.some(c =>
-            c.equipamento_id === equipamento_id && c.status !== 'encerrado'
+        const jaExiste = chamadosExistentes.some(c => 
+            c.equipamento_id === equipamentoIdNumerico && c.status !== 'concluído'
         );
+        
 
         if (jaExiste) {
             return res.status(400).json({ mensagem: 'Já existe um chamado ativo para este equipamento.' });
         }
 
-        // Se não existir, cria o chamado
+        
         const chamadoId = await criarChamado(chamadoData);
+
+        const poolsDoTecnico = await listarPoolsTecnico(req.usuarioId); 
+        for (const tecnico_id of poolsDoTecnico) {
+            const mensagem = notificacaoTextos.NOVO_CHAMADO(chamadoId); 
+            await criarNotificacao({
+                usuario_id: req.usuarioId, 
+                tecnico_id,
+                mensagem,
+                visualizado: 0
+            });
+        }
         res.status(201).json({ mensagem: 'Chamado criado com sucesso', chamadoId });
 
     } catch (error) {
@@ -93,6 +117,7 @@ const obterChamadoPorIdController = async (req, res) => {
 
 // Função para atualizar um chamado
 const atualizarChamadoController = async (req, res) => {
+
     try {
         const {
             chamado_id,
@@ -126,48 +151,219 @@ const atualizarChamadoController = async (req, res) => {
 const criarApontamentoController = async (req, res) => {
     try {
         const {
-            chamado_id,
-            usuario_id,
-            apontamento,
+            apontamento
         } = req.body;
 
+        const userId = req.usuarioId;
+        const chamadoId = req.params.id;
+
+        const chamadoExistente = await obterChamadoPorId(chamadoId);
+
+        if (!chamadoExistente) {
+            return res.status(404).json({mensagem: 'Chamado não encontrado'});
+        };
+
+        const tipoApontamento = (userId === chamadoExistente.usuario_id) ? 'usuario' : 'tecnico';
+
+        if (tipoApontamento === 'tecnico' && chamadoExistente.tecnico_id !== userId) {
+            return res.status(403).json({ mensagem: 'Você não tem permissão para adicionar apontamentos a este chamado.' });
+        }
+
         const apontamentoData = {
-            chamado_id: chamado_id,
-            usuario_id: usuario_id,
-            apontamento: apontamento
+            usuario_id: req.usuarioId,
+            apontamento: apontamento,
+            tipo: tipoApontamento
+        }
+
+        if (tipoApontamento === 'tecnico') {
+            const mensagem = notificacaoTextos.NOVO_APONTAMENTO_TECNICO(chamadoId);
+            await criarNotificacao({
+                usuario_id: chamadoExistente.usuario_id,
+                tecnico_id: userId,
+                mensagem,
+                visualizado: 0
+            });
         }
 
         const apontamentoId = await criarApontamentos(chamado_id, apontamentoData);
         res.status(201).json({ mensagem: 'Apontamento criado com sucesso', apontamentoData: apontamentoId });
 
+
     } catch (error) {
         console.error('Erro ao criar apontamento: ', error);
         res.status(500).json({ mensagem: 'Erro ao criar apontamento. ' });
     }
-}
+};
 
 // Função para um técnico assumir um chamado
 const assumirChamadoController = async (req, res) => {
     try {
-        const { chamado_id } = req.body;
+        const { id } = req.params;
+        const tecnico_id = req.usuarioId; 
 
-        const tecnico_id = req.user.id; 
-        const resultado = await assumirChamado(chamado_id, tecnico_id);
+        const chamadoExistente = await obterChamadoPorId(id);
+
+        if (!chamadoExistente) {
+            return res.status(404).json({ mensagem: 'Chamado não encontrado.' });
+        }
+
+        const nomeTecnico = req.usuarioNome 
+
+        const resultado = await assumirChamado(id, tecnico_id);
+
+        const mensagem = notificacaoTextos.CHAMADO_EM_ANDAMENTO(id, nomeTecnico);
+        const notificacoesData = {
+            usuario_id: chamadoExistente.usuario_id,
+            tecnico_id: tecnico_id,
+            mensagem,
+            visualizado: 0,
+        };
+
+        await criarNotificacao(notificacoesData);
+
 
         res.status(200).json({ mensagem: 'Chamado assumido com sucesso', chamado: resultado });
+
+        
     } catch (error) {
         console.error('Erro ao assumir chamado:', error);
         res.status(400).json({ mensagem: error.message });
     }
 };
 
-// Função para listar chamados para um técnico
-const listarChamadosParaTecnicoController = async (req, res) => {
+const estipularPrazoController = async (req, res) => {
     try {
-        const tecnico_id = req.usuarioId;
-        const chamadosFiltrados = chamados.filter(c => c.status !== 'encerrado' && (c.tecnico_id === null || c.tecnico_id === tecnico_id));
-        res.status(200).json(chamadosFiltrados);
+        const { id } = req.params;
+        const { prazo } = req.body;
+        const tecnico_id = req.usuarioId; 
 
+        const chamado = await obterChamadoPorId(id);
+
+        if (!chamado) {
+            return res.status(404).json({ mensagem: 'Chamado não encontrado.' });
+        }
+        
+        if (chamado.tecnico_id !== tecnico_id) {
+            return res.status(403).json({ mensagem: 'Você não tem permissão para estipular o prazo deste chamado.' });
+        }
+        
+        await atualizarPrazoChamado(id, prazo);
+
+        await criarNotificacao({
+            usuario_id: chamado.usuario_id,
+            tecnico_id,
+            mensagem: notificacaoTextos.PRAZO_ESTIPULADO(id, prazo),
+            visualizado: 0
+        });
+
+        res.status(200).json({ mensagem: 'Prazo estipulado com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao estipular prazo:', error);
+        res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+    }
+};
+
+
+const atualizarStatusChamadoController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, solucao } = req.body; 
+        const tecnicoId = req.usuarioId; 
+
+        const chamadoExistente = await obterChamadoPorId(id);
+        if (!chamadoExistente) {
+            return res.status(404).json({ mensagem: 'Chamado não encontrado.' });
+        }
+
+        
+        if (chamadoExistente.tecnico_id !== tecnicoId) {
+            return res.status(403).json({ mensagem: 'Você não tem permissão para alterar o status deste chamado.' });
+        }
+
+        await atualizarStatusChamado(id, status);
+
+        let mensagem;
+        let notificacoesData;
+
+        if (status === 'concluido') { 
+            const comeco = new Date(chamadoExistente.criado_em); 
+            const fim = new Date();
+            
+            const solucaoFornecida = solucao || null;
+
+            const relatorioData = {
+                chamado_id: chamadoExistente.id,
+                tecnico_id: tecnicoId,
+                solucao: solucaoFornecida, 
+                comeco: comeco,
+                fim: fim
+            };
+
+            await criarRelatorio(relatorioData);
+
+           
+            mensagem = notificacaoTextos.CHAMADO_CONCLUIDO(id); 
+            notificacoesData = {
+                usuario_id: chamadoExistente.usuario_id,
+                tecnico_id: tecnicoId,
+                mensagem,
+                visualizado: 0
+            };
+            await criarNotificacao(notificacoesData);
+
+        } else if (status === 'em andamento') {
+            
+            mensagem = notificacaoTextos.CHAMADO_EM_ANDAMENTO(id, req.usuarioNome);
+            notificacoesData = {
+                usuario_id: chamadoExistente.usuario_id,
+                tecnico_id: tecnicoId,
+                mensagem,
+                visualizado: 0,
+            };
+            await criarNotificacao(notificacoesData);
+        }
+
+        return res.status(200).json({ mensagem: `Status do chamado ${id} atualizado para ${status}.` });
+
+    } catch (error) {
+        console.error('Erro ao atualizar status do chamado:', error);
+        return res.status(500).json({ mensagem: 'Erro interno ao atualizar status.' });
+    }
+};
+
+
+const listarChamadosPendentesController = async (req, res) => {
+    try {
+        const tecnicoId = req.usuarioId; 
+        
+        if (!tecnicoId) {
+            return res.status(400).json({ mensagem: 'ID do técnico ausente.' });
+        }
+        
+        
+        const poolsIds = await listarPoolsTecnico(tecnicoId);
+        
+        if (poolsIds.length === 0) {
+            return res.status(200).json([]);
+        }
+
+       
+        const chamadosPendentes = await listarChamadosPendentes(poolsIds); 
+        
+        res.status(200).json(chamadosPendentes);
+    } catch (error) {
+        console.error('Erro ao listar chamados pendentes:', error);
+        res.status(500).json({ mensagem: 'Erro ao listar chamados pendentes.' });
+    }
+};
+
+
+const listarChamadosDoTecnicoController = async (req, res) => {
+  try {
+    const tecnico_id = req.usuarioId;
+    const todosChamados = await listarChamado();
+    const chamadosDoTecnico = todosChamados.filter(c => c.status === 'em andamento' && c.tecnico_id === tecnico_id);
+    res.status(200).json(chamadosDoTecnico);
   } catch (error) {
     res.status(500).json({ mensagem: 'Erro ao listar chamados do técnico' });
   }
@@ -185,15 +381,42 @@ const getChamadosStatusController = async (req, res) => {
     }
 };
 
-// Função para obter o status dos chamados para administradores
-const getChamadosStatusAdminController = async (req, res) => {
+const listarHistoricoChamadosController = async (req, res) => {
     try {
-        const status = await getChamadosStatusAdmin();
-        res.status(200).json(status);
+        const todosChamados = await listarChamado();
+        const historico = todosChamados.filter(chamado => chamado.status === 'concluído');
+        res.status(200).json(historico);
     } catch (error) {
-        console.error("Erro ao buscar status admin:", error);
-        res.status(500).json({ mensagem: "Erro ao buscar status admin" });
+        console.error('Erro ao listar histórico de chamados:', error);
+        res.status(500).json({ mensagem: 'Erro ao obter histórico.' });
     }
+};
+
+const listarChamadosPorCategoriaController = async (req, res) => {
+  console.log("Chegou no controller de categorias com user:", req.usuarioId);
+  try {
+    const dados = await listarChamadosPorCategoria();
+
+    if (!dados || !Array.isArray(dados)) {
+      
+      console.error('Dados de categoria inválidos retornados do modelo.');
+      return res.status(500).json({ mensagem: 'Dados de categoria inválidos.' });
+    }
+    res.status(200).json(dados);
+  } catch (error) {
+    console.error('Erro no controller listar chamados por categoria:', error);
+    res.status(500).json({ mensagem: 'Erro ao listar chamados por categoria.' });
+  }
+};
+
+const listarRankingTecnicosController = async (req, res) => {
+  try {
+    const ranking = await listarRankingTecnicos();
+    res.status(200).json(ranking);
+  } catch (error) {
+    console.error('Erro no controller de ranking de técnicos:', error);
+    res.status(500).json({ mensagem: 'Erro ao buscar o ranking de técnicos.' });
+  }
 };
 
 // Função para obter o ranking de técnicos
@@ -207,89 +430,4 @@ const getRankingTecnicosController = async (req, res) => {
     }
 };
 
-// Função para obter categorias de chamados
-const getCategoriasChamadosController = async (req, res) => {
-    try {
-        const categorias = await getCategoriasChamados();
-        res.status(200).json(categorias);
-    } catch (error) {
-        console.error("Erro ao buscar categorias:", error);
-        res.status(500).json({ mensagem: "Erro ao buscar categorias" });
-    }
-};
-
-// Função para finalizar um chamado e gerar um relatório
-const finalizarChamadoController = async (req, res) => {
-    
-    console.log("Finalizar chamado acionado!");
-
-    try {
-        const { id } = req.params;
-        const { descricao_solucao } = req.body;
-        const tecnico_id = req.usuarioId;
-
-        console.log(`Recebendo requisição para finalizar o chamado ${id}`);
-        console.log(`Descrição da solução: ${descricao_solucao}`);
-        console.log(`ID do técnico: ${tecnico_id}`);
-
-        //Obter o chamado existente
-        const chamadoExistente = await obterChamadoPorId(id);
-
-        if (!chamadoExistente) {
-            return res.status(404).json({ mensagem: 'Chamado não encontrado.' });
-        }
-
-        //Verificar se o chamado já está finalizado
-        if (chamadoExistente.status === 'encerrado') {
-            return res.status(400).json({ mensagem: 'Chamado já foi encerrado.' });
-        }
-
-        //Atualizar o status do chamado para 'encerrado'
-        const dataFim = new Date();
-        const dataInicio = new Date(chamadoExistente.criado_em);
-        const duracaoSegundos = Math.floor((dataFim - dataInicio) / 1000);
-
-        const dadosParaAtualizarChamado = {
-            status: 'encerrado',
-            fim: dataFim.toISOString().slice(0, 19).replace('T', ' ')
-        };
-        await atualizarChamado(id, dadosParaAtualizarChamado);
-
-        //Criar o relatório automaticamente
-        const relatorioData = {
-            chamado_id: chamadoExistente.id,
-            tecnico_id: tecnico_id,
-            descricao: descricao_solucao,
-            comeco: chamadoExistente.criado_em,
-            fim: new Date().toISOString(), 
-            duracao: duracaoSegundos
-        };
-
-        console.log("Dados do relatório a ser criado:", relatorioData);
-
-        const relatorioId = await criarRelatorio(relatorioData);
-
-        console.log("Relatório criado com ID:", relatorioId);
-
-        res.status(200).json({ mensagem: 'Chamado finalizado e relatório gerado com sucesso.', relatorioId });
-    } catch (error) {
-        console.error('Erro ao finalizar chamado e gerar relatório:', error);
-        res.status(500).json({ mensagem: 'Erro ao finalizar chamado.' });
-    }
-};
-
-export {
-    criarChamadoController,
-    listarChamadosController,
-    listarChamadosDoUsuarioController,
-    obterChamadoPorIdController,
-    atualizarChamadoController,
-    criarApontamentoController,
-    assumirChamadoController,
-    listarChamadosParaTecnicoController,
-    getChamadosStatusController,
-    getChamadosStatusAdminController,
-    getRankingTecnicosController,
-    getCategoriasChamadosController,
-    finalizarChamadoController
-};
+export {listarChamadosController, atualizarChamadoController, criarChamadoController, obterChamadoPorIdController, criarApontamentoController, assumirChamadoController, listarChamadosPendentesController, listarChamadosDoTecnicoController, atualizarStatusChamadoController, listarHistoricoChamadosController, estipularPrazoController, listarChamadosPorCategoriaController, listarRankingTecnicosController};

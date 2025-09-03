@@ -3,13 +3,17 @@
 import { useEffect } from "react";
 import styles from "@/components/Calendario/page.module.css";
 
-export default function CalendarPage() {
+
+export default function CalendarPage({ onDateSelect, markedDate }) {
   useEffect(() => {
     (async () => {
       const calendarModule = await import("./Calendar.js");
-      if (calendarModule.default) { calendarModule.default(styles); }
+      if (calendarModule.default) {
+       
+        calendarModule.default(styles, onDateSelect, markedDate);
+      }
     })();
-  }, []);
+  }, [onDateSelect, markedDate]); 
 
   return (
     <>
@@ -34,13 +38,12 @@ export default function CalendarPage() {
               <p>Sex</p>
               <p>Sáb</p>
             </div>
-            <div className={styles.diasdasemana}>
-              <div className={styles.days} id="days">
-              </div>
+            <div className={styles.semanaDias}>
+              <div className={styles.days} id="days"></div>
             </div>
           </div>
-
         </div>
       </div>
-    </>);
+    </>
+  );
 }

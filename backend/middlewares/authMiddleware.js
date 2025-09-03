@@ -22,7 +22,9 @@ const authMiddleware = async (req, res, next) => {
     
     req.user = user;
     req.usuarioId = decoded.id;
-    
+    req.usuarioNome = decoded.nome;
+    req.usuarioFuncao = decoded.funcao;
+    req.usuarioSetor = decoded.setor;
     next();
   } catch (error) {
     console.error('Erro no middleware de autenticação:', error);

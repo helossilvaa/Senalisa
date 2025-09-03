@@ -1,19 +1,13 @@
-import { read, readAll, create, update, deleteRecord } from "../config/database.js";
+import { read, readAll, create, update, deleteRecord, query} from "../config/database.js";
 
 // Listar pools, com controle de função
-const listarPoolsTecnico = async (user) => {
+const listarPoolsTecnico = async (tecnicoId) => {
     try {
-        if (user.funcao === 'admin') {
-            // Admin vê todos
-            return await readAll('pools');
-        } else if (user.funcao === 'tecnico') {
-            // Técnico vê apenas os pools direcionados a ele
-            return await readAll('pools', `tecnico_id = ${user.id}`);
-        } else {
-            throw new Error('Função não autorizada');
-        }
+        const sql = `SELECT id_pool FROM pool_tecnico WHERE tecnico_id = ?`;
+        const rows = await query(sql, [tecnicoId]);
+        return rows.map(row => row.id_pool);
     } catch (error) {
-        console.error('Erro ao listar pools: ', error);
+        console.error('Erro ao listar pools do técnico:', error);
         throw error;
     }
 };
@@ -39,7 +33,7 @@ const obterPoolTecnicoId = async (id, user) => {
 // Criar pool (admin direciona chamado para técnico)
 const criarPoolTecnico = async (poolTecnicoData, user) => {
     try {
-        if (user.funcao !== 'admin') throw new Error('Apenas admin pode criar pools');
+        if (req.usuarioFuncao !== 'admin') throw new Error('Apenas admin pode criar pools');
         return await create('pools', poolTecnicoData);
     } catch (error) {
         console.error('Erro ao criar pool: ', error);
@@ -54,7 +48,7 @@ const atualizarPoolTecnico = async (id, poolTecnicoData, user) => {
         if (!pool) throw new Error('Pool não encontrado');
 
         // Admin pode atualizar qualquer coisa, técnico só status
-        if (user.funcao === 'admin' || (user.funcao === 'tecnico' && pool.tecnico_id === user.id)) {
+        if (req.usuarioFuncao === 'admin') {
             return await update('pools', poolTecnicoData, `id = ${id}`);
         } else {
             throw new Error('Acesso negado');
@@ -68,7 +62,7 @@ const atualizarPoolTecnico = async (id, poolTecnicoData, user) => {
 // Deletar pool (somente admin)
 const deletarPoolTecnico = async (id, user) => {
     try {
-        if (user.funcao !== 'admin') throw new Error('Apenas admin pode deletar pools');
+        if (req.usuarioFuncao !== 'admin') throw new Error('Apenas admin pode deletar pools');
         return await deleteRecord('pools', `id = ${id}`);
     } catch (error) {
         console.error('Erro ao deletar pool: ', error);

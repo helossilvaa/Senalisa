@@ -1,8 +1,8 @@
 import { read, create, readAll, update, deleteRecord } from '../config/database.js';
 
-const listarTarefas = async () => {
+const listarTarefas = async (usuario_id) => {
     try {
-        return await readAll('tarefas');
+        return await readAll('tarefas', `usuario_id = ${usuario_id}`);
     } catch (error) {
         console.error('Erro ao listar tarefas: ', error);
         throw error;

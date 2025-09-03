@@ -1,13 +1,9 @@
-import { create, readAll, update } from "../config/database.js";
+import { create, readAll, update, deleteRecord } from "../config/database.js";
 
-const criarNotificacao = async () => {
+const criarNotificacao = async (notificacoesData) => {
+
     try {
-        return await create('notificacoes', {
-            usuario_id: usuario_id,
-            tecnico_id: tecnico_id,
-            mensagem,
-            status: 'nao_vista'
-        })
+        return await create('notificacoes', notificacoesData);
         
     } catch (error) {
         console.error('Erro ao criar notificações: ', error);
@@ -16,7 +12,8 @@ const criarNotificacao = async () => {
     }
 }
 
-const listarNotificacoesPorTecnico = async () => {
+const listarNotificacoesPorTecnico = async (tecnico_id) => {
+
     try {
         return await readAll('notificacoes', `tecnico_id = ${tecnico_id} ORDER BY criado_em DESC`)
         
@@ -26,7 +23,8 @@ const listarNotificacoesPorTecnico = async () => {
     }
 }
 
-const listarNotificacoesPorUsuario = async () => {
+const listarNotificacoesPorUsuario = async (usuario_id) => {
+
     try {
         return await readAll('notificacoes', `usuario_id = ${usuario_id} ORDER BY criado_em DESC`)
         
@@ -37,12 +35,24 @@ const listarNotificacoesPorUsuario = async () => {
 };
 
 const marcarComoVista = async (id) => {
+
     try {
-        return await update('notificacoes', { status: 'vista'}, `id = ${id}`)
+        return await update('notificacoes', { visualizado: 1}, `id = ${id}`)
     } catch (error) {
         console.error('Erro ao atualizar as notificações como vista: ', error);
         throw error;
     }
 }
 
-export {criarNotificacao, listarNotificacoesPorTecnico, listarNotificacoesPorUsuario, marcarComoVista};
+const deletarNotificacao = async (id) => {
+    try {
+        return await deleteRecord('notificacoes', `id = ${id}`);
+        
+    } catch (error) {
+        console.error('Erro ao deletar notificação:', error);
+        throw error;
+    }
+}
+
+
+export {criarNotificacao, listarNotificacoesPorTecnico, listarNotificacoesPorUsuario, marcarComoVista, deletarNotificacao};

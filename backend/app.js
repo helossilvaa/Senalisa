@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import { initWebSocket } from './websocket.js';
+
 import authRotas from './routes/authRotas.js';
 import passport from './config/ldap.js';
 import usuarioRotas from './routes/usuarioRotas.js';
@@ -9,8 +11,11 @@ import chamadoRotas from './routes/chamadoRotas.js';
 import salasRotas from './routes/salasRotas.js';
 import EquipamentoRotas from './routes/equipamento.js';
 import PoolRotas from './routes/poolRotas.js';
+import chatMensagensRotas from './routes/chatMensagensRotas.js';
+import chatRotas from './routes/chatRotas.js';
+import notificacoesRotas from './routes/notificacoesRotas.js';
+import tarefasRotas from './routes/tarefasRotas.js';
 import relatoriosRotas from './routes/relatoriosRotas.js';
-import TarefaRotas from './routes/tarefasRotas.js';
 
 dotenv.config();
 
@@ -43,6 +48,17 @@ try {
 }
 
 app.use('/auth', authRotas);
+app.use('/usuarios', usuarioRotas);
+app.use('/chamados', chamadoRotas);
+app.use('/salas', salasRotas);
+app.use('/equipamentos', EquipamentoRotas);
+app.use('/pools', PoolRotas);
+app.use('/chats', chatRotas);
+app.use('/mensagem', chatMensagensRotas)
+app.use('/notificacoes', notificacoesRotas);
+app.use('/tarefas', tarefasRotas);
+app.use('/relatorios', relatoriosRotas);
+
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'online' });
@@ -64,6 +80,7 @@ const server = app.listen(porta, () => {
 }).on('error', (err) => {
   console.error('Erro ao iniciar:', err);
 });
+initWebSocket(server);
 
 process.on('SIGTERM', () => {
   server.close(() => {
@@ -74,14 +91,3 @@ process.on('SIGTERM', () => {
 app.get('/', (req, res) => {
   res.send('Backend funcionando!');
 });
-
-app.use('/auth', authRotas);
-app.use("/api/chamados", chamadoRotas);
-app.use('/usuarios', usuarioRotas);
-app.use('/chamados', chamadoRotas);
-app.use('/salas', salasRotas);
-app.use('/relatorios', relatoriosRotas);
-app.use('/equipamentos', EquipamentoRotas);
-app.use('/pools', PoolRotas);
-app.use('/relatorios', relatoriosRotas);
-app.use('/tarefas', TarefaRotas);

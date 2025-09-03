@@ -1,11 +1,16 @@
 import jwt from 'jsonwebtoken';
 import { read, compare } from '../config/database.js';
 import { JWT_SECRET } from '../config/jwt.js'; 
+import { criarNotificacao } from '../models/notificacoes.js';
+import notificacaoTextos from '../utils/notificacoesTextos.js';
+import { verificarPrimeiroLogin, marcarLoginFeito } from '../models/usuario.js';
+
 
 const loginController = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
+    
     // Verificar se o usuário existe no banco de dados
     const usuario = await read('usuarios', `email = '${email}'`);
 
@@ -20,8 +25,21 @@ const loginController = async (req, res) => {
       return res.status(401).json({ mensagem: 'Senha incorreta' });
     }
 
+    const ehPrimeiroLogin = await verificarPrimeiroLogin(usuario.id);
+
+    if (ehPrimeiroLogin) {
+        const mensagem = notificacaoTextos.BEM_VINDO(usuario.nome);
+        const notificacoesData = {
+            usuario_id: usuario.id,
+            mensagem,
+            visualizado: 'nao_vista'
+        };
+        await criarNotificacao(notificacoesData);
+        await marcarLoginFeito(usuario.id);
+    }
+
     // Gerar o token JWT
-    const token = jwt.sign({ id: usuario.id, tipo: usuario.tipo }, JWT_SECRET, {
+    const token = jwt.sign({ id: usuario.id, tipo: usuario.tipo, nome: usuario.nome }, JWT_SECRET, {
       expiresIn: '1h',
     });
 

@@ -1,47 +1,81 @@
-import Card from '@/components/Card/Card';
-import HeaderTecnico from '@/components/HeaderTecnico/headerTecnico';
-import styles from '@/app/tecnico/Historico/page.module.css';
-export default function Historico() {
+"use client";
 
-    const infoChamadas = [
-        {
-            id: 1,
-            titulo: 'Mouse Quebrado na sala de DEV',
-            autor: 'Isabella Nunes',
-            data: '14 de Fevereiro',
-            descricao: 'The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.',
-        },
-        {
-            id: 2,
-            titulo: 'Mouse Quebrado',
-            autor: 'Isabella Nunes',
-            data: '14 de Fevereiro',
-            descricao: 'The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.',
-        },
-        {
-            id: 3,
-            titulo: 'Mouse Quebrado na sala de DEV',
-            autor: 'Isabella Nunes',
-            data: '14 de Fevereiro',
-            descricao: 'The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.',
+import { useEffect, useState } from "react";
+import Card from "@/components/Card/Card";
+import HeaderTecnico from "@/components/HeaderTecnico/headerTecnico";
+import styles from "@/app/tecnico/Chamadas/page.module.css";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+
+export default function Chamadas() {
+
+  const [chamados, setChamados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const API_URL = "http://localhost:8080";
+
+  useEffect(() => {
+    
+    const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+    const fetchChamados = async () => {
+      
+
+      try {
+        
+        const decoded = jwtDecode(token);
+
+        if (decoded.exp < Date.now() / 1000) {
+          localStorage.removeItem("token");
+          alert("Seu login expirou.");
+          router.push("/login");
+          return;
         }
-    ]
-    return (
-        <>
-            <div className={styles.container}>
-                <HeaderTecnico />
-                <div className={styles.chamadas}>
-                    <div className={styles.titulo}>
-                        <h1>Histórico</h1>
-                    </div>
 
-                    <div className={styles.card}>
-                        {infoChamadas.map((chamada) => (
-                            <Card key={chamada.id} titulo={chamada.titulo} data={chamada.data} id={chamada.id} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+
+        const res = await fetch(`${API_URL}/chamados/historico`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Erro ao buscar chamados");
+
+        const data = await res.json();
+        setChamados(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChamados();
+  }, [router]);
+
+
+  if (loading) return <p>Carregando chamados...</p>;
+
+  return (
+    <div className={styles.container}>
+      <HeaderTecnico />
+      <div className={styles.chamadas}>
+        <h1>Histórico</h1>
+        <div className={styles.card}>
+          {chamados.map((chamado) => (
+            <Card
+              key={chamado.id}
+              id={chamado.id}
+              titulo={chamado.titulo}
+              data={new Date(chamado.criado_em).toLocaleDateString()}
+
+            />
+          ))}
+          {chamados.length === 0 && <p>Sem chamados pendentes</p>}
+        </div>
+      </div>
+    </div>
+  );
 }

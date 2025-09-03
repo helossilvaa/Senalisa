@@ -17,7 +17,8 @@ const fakeUsers = [
     nome: 'Teste',
     senha: '12345',
     email: '11122233@educ123.sp.senai.br',
-    funcao: 'usuario',
+    funcao: 'tecnico',
+    setor: 'externo'
   },
   {
     registro: '87654321',
@@ -25,6 +26,7 @@ const fakeUsers = [
     senha: '12345',
     email: '87654321@educ123.sp.senai.br',
     funcao: 'tecnico',
+    setor: 'manutencao'
   },
   {
     registro: '11223344',
@@ -60,6 +62,7 @@ router.post('/login', async (req, res, next) => {
       email: usuarioFake.email,
       password: usuarioFake.senha,
       funcao: usuarioFake.funcao,
+      setor: usuarioFake.setor,
     };
 
     return criarUsuarioController(req, res);
