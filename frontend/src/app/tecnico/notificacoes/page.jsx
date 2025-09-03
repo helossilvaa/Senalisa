@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from '@/components/Header/header';
 import { SidebarProvider } from '@/components/Header/sidebarContext';
-import "./notificacoes.css";
+import "/page.module.css";
 
 // Componente de Avaliação
 function Avaliacao({ chamadoId, onAvaliacaoEnviada }) {
