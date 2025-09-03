@@ -4,6 +4,8 @@ import {
   obterUsuario,
   obterUsuarioId,
   obterUsuarioPorEmail,
+  listarTecnicos,
+  listarTecnicosComPools
 } from '../models/usuario.js';
 
 import jwt from 'jsonwebtoken';
@@ -120,6 +122,16 @@ const obterUsuarioIdController = async (req, res) => {
   }
 };
 
+const listarTecnicosController = async (req, res) => {
+  try {
+    const tecnicos = await listarTecnicos();
+    res.status(200).json(tecnicos);
+  } catch (error) {
+    console.error('Erro ao listar técnicos:', error);
+    res.status(500).json({ mensagem: 'Erro ao listar técnicos.', error });
+  }
+};
+
 const obterUsuarioLogadoController = async (req, res) => {
   try {
     const usuario = await obterUsuario(req.usuarioId); 
@@ -131,10 +143,22 @@ const obterUsuarioLogadoController = async (req, res) => {
   }
 };
 
+const listarTecnicosComPoolsController = async (req, res) => {
+  try {
+    const tecnicos = await listarTecnicosComPools();
+    res.status(200).json(tecnicos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensagem: 'Erro ao listar técnicos com pools.', error });
+  }
+};
+
 
 export {
   criarUsuarioController,
   listarUsuariosController,
   obterUsuarioIdController,
-  obterUsuarioLogadoController
+  obterUsuarioLogadoController,
+  listarTecnicosController,
+  listarTecnicosComPoolsController
 };

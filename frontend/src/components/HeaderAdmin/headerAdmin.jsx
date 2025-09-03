@@ -24,6 +24,12 @@ export default function HeaderAdmin () {
         };
  
     }, []);
+
+    const handleLogout = () => {
+
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    };
  
     return (
         <>
@@ -69,9 +75,9 @@ export default function HeaderAdmin () {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="/admin/historico">
-                                <i className="bi bi-clock me-2" />
-                                <span className="item-description">Histórico</span>
+                            <a href="/admin/chamadas">
+                                <i className="bi bi-exclamation-circle-fill me-2" />
+                                <span className="item-description">Chamados</span>
                             </a>
                         </li>
                     </ul>
@@ -86,10 +92,10 @@ export default function HeaderAdmin () {
                         <span className="item-description">Perfil</span>
                         </a>
                     </button>
-                    <button id="logout_btn">
-                        <i className="text-danger bi bi-box-arrow-right" />
-                        <span className="text-danger item-description">Logout</span>
-                    </button>
+                    <button id="logout_btn" onClick={handleLogout}>
+                            <i className="text-danger bi bi-box-arrow-right" />
+                            <span className="text-danger item-description">Logout</span>
+                        </button>
                 </div>
             </nav>
             

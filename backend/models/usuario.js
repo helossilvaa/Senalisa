@@ -1,4 +1,4 @@
-import {create, readAll, read } from '../config/database.js';
+import {create, readAll, read, query } from '../config/database.js';
 
 const criarUsuario = async (usuarioData) => {
     try {
@@ -57,4 +57,41 @@ const marcarLoginFeito = async (id) => {
     await update('usuarios', { primeiro_login: 0 }, `id = ${id}`);
 };
 
-export {criarUsuario, listarUsuarios, obterUsuario, obterUsuarioPorEmail, obterUsuarioId, verificarPrimeiroLogin, marcarLoginFeito};
+const listarTecnicos = async () => {
+    try {
+      return await readAll('usuarios', `funcao = 'tecnico'`);
+    } catch (error) {
+      console.error('Erro ao listar técnicos: ', error);
+      throw error;
+    }
+};
+
+const listarTecnicosComPools = async () => {
+    const sql = `
+      SELECT
+        u.id,
+        u.nome,
+        u.setor,
+        p.id AS pool_id,
+        p.titulo AS pool_nome
+      FROM usuarios u
+      LEFT JOIN pool_tecnico tp ON u.id = tp.tecnico_id
+      LEFT JOIN pool p ON tp.id_pool = p.id
+      WHERE u.funcao = 'tecnico';
+    `;
+    const rows = await query(sql);
+
+    const tecnicosMap = {};
+    rows.forEach(row => {
+        if (!tecnicosMap[row.id]) {
+            tecnicosMap[row.id] = { id: row.id, nome: row.nome, setor: row.setor, pools: [] };
+        }
+        if (row.pool_id) {
+            tecnicosMap[row.id].pools.push({ id: row.pool_id, nome: row.pool_nome });
+        }
+    });
+
+    return Object.values(tecnicosMap);
+}
+
+export {criarUsuario, listarUsuarios, obterUsuario, obterUsuarioPorEmail, obterUsuarioId, verificarPrimeiroLogin, marcarLoginFeito, listarTecnicos, listarTecnicosComPools};

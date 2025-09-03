@@ -24,7 +24,7 @@ const gerarRelatorioPdfPorIdController = async (req, res) => {
       tecnico: tecnico ? { id: tecnico.id, nome: tecnico.nome, email: tecnico.email } : null
     };
 
-    // 🔹 Função para formatar data e hora
+    
     const formatarDataHora = (dataISO) => {
       if (!dataISO) return 'N/A';
       return new Date(dataISO).toLocaleString('pt-BR', {
@@ -65,7 +65,7 @@ const gerarRelatorioPdfPorIdController = async (req, res) => {
 
     doc.pipe(fs.createWriteStream(caminhoDoArquivo));
 
-    // 🔹 Cabeçalho
+   
     doc.font('Helvetica-Bold').fontSize(20).fillColor('black')
       .text(`Relatório do Chamado`, { align: 'center', underline: true });
     doc.moveDown(1);
@@ -74,7 +74,7 @@ const gerarRelatorioPdfPorIdController = async (req, res) => {
       .text(`${chamado?.titulo || 'Sem título'} - ${chamado?.id || ''}`, { align: 'center' });
     doc.moveDown(2);
 
-    // 🔹 Técnico
+    
     doc.font('Helvetica-Bold').fontSize(14).fillColor('black').text('Técnico Responsável');
     doc.moveDown(0.5);
 
@@ -85,7 +85,7 @@ const gerarRelatorioPdfPorIdController = async (req, res) => {
     doc.moveTo(40, doc.y).lineTo(550, doc.y).stroke('#AAAAAA');
     doc.moveDown(1);
 
-    // 🔹 Chamado
+   
     doc.font('Helvetica-Bold').fontSize(14).fillColor('black').text('Detalhes do Chamado');
     doc.moveDown(0.5);
 
@@ -95,7 +95,7 @@ const gerarRelatorioPdfPorIdController = async (req, res) => {
     doc.moveTo(40, doc.y).lineTo(550, doc.y).stroke('#AAAAAA');
     doc.moveDown(1);
 
-    // 🔹 Solução
+   
     doc.font('Helvetica-Bold').fontSize(14).fillColor('black').text('Solução Adotada');
     doc.moveDown(0.5);
 

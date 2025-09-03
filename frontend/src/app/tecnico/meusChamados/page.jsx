@@ -61,10 +61,10 @@ console.log("Token encontrado:", token);
           ) : (
             chamados.map(chamado => (
               <Card
-                key={chamada.id}
-                titulo={chamada.titulo}
-                data={new Date(chamada.atualizado_em).toLocaleDateString()}
-                id={chamada.id}
+                key={chamado.id}
+                titulo={chamado.titulo}
+                data={new Date(chamado.atualizado_em).toLocaleDateString()}
+                id={chamado.id}
                 mostrarBotaoAceitar={false}
               />
             ))

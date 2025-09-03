@@ -25,6 +25,12 @@ export default function HeaderTecnico() {
 
     }, []);
 
+    const handleLogout = () => {
+
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    };
+
     return (
         <>
             <link
@@ -44,7 +50,7 @@ export default function HeaderTecnico() {
 
                     <ul id="side_items">
                         <li className="side-item active mt-4">
-                            <a href="/tecnico/Dashboard">
+                            <a href="/tecnico/dashboard">
                                 <i className="bi bi-speedometer2 me-2" />
                                 <span className="item-description">Dashboard</span>
                             </a>
@@ -92,10 +98,10 @@ export default function HeaderTecnico() {
                     </a>
                         
                     </button>
-                    <button id="logout_btn">
-                        <i className="text-danger bi bi-box-arrow-right" />
-                        <span className="text-danger item-description">Logout</span>
-                    </button>
+                    <button id="logout_btn" onClick={handleLogout}>
+                            <i className="text-danger bi bi-box-arrow-right" />
+                            <span className="text-danger item-description">Logout</span>
+                        </button>
                 </div>
             </nav>
 
