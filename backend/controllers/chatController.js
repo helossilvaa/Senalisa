@@ -14,7 +14,7 @@ const criarChatController = async (req, res) => {
 
 const listarChatsController = async (req, res) => {
   try {
-    const usuarioId = req.user.id; 
+    const usuarioId = req.usuarioId; 
     const chats = await listarChats(usuarioId);
     console.log(chats);
     

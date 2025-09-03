@@ -57,7 +57,7 @@ export default function Sidebar() {
                             </a>
                         </li>
                         <li className="side-item">
-                            <a href="#">
+                            <a href="/usuario/Chat">
                                 <i className="bi bi-chat-left-text me-2" />
                                 <span className="item-description">Conversas</span>
                             </a>

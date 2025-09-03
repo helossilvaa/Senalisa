@@ -3,9 +3,9 @@ import bcrypt from 'bcryptjs';
 
 
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
+    host: '10.189.80.101',
+    user: 'Vitoria',
+    password: 'Senaliza@123',
     database: 'senaliza', 
     waitForConnections: true,
     connectionLimit: 10,
@@ -18,21 +18,20 @@ async function getConnection() {
     return pool.getConnection();
 }
 
-// Função para ler todos os registros
-async function readAll(table, where = null) {
+async function readAll(table, where = null, params = []) {
     const connection = await getConnection();
     try {
         let sql = `SELECT * FROM ${table}`;
         if (where) {
             sql += ` WHERE ${where}`;
         }
-
-        const [rows] = await connection.execute(sql);
+        const [rows] = await connection.execute(sql, params);
         return rows;
     } finally {
         connection.release();
     }
 }
+
 
 // Função para ler um registro específico
 async function read(table, where) {
@@ -53,31 +52,21 @@ async function read(table, where) {
 // Função para inserir um novo registro
 // Função assíncrona para inserir dados em uma tabela do banco de dados
 async function create(table, data) {
-    // Obtém uma conexão com o banco de dados
     const connection = await getConnection();
     try {
-        // Obtém as chaves do objeto 'data' e as junta em uma string separada por vírgulas
         const columns = Object.keys(data).join(', ');
-
-        // Cria um array de placeholders "?" com o mesmo número de colunas e o transforma em uma string
         const placeholders = Array(Object.keys(data).length).fill('?').join(', ');
-
-        // Monta a query SQL para inserção dos dados na tabela especificada
         const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`;
-
-        // Obtém os valores do objeto 'data' para serem usados na query
         const values = Object.values(data);
-
-        // Executa a query SQL com os valores fornecidos e armazena o resultado
         const [result] = await connection.execute(sql, values);
 
-        // Retorna o ID do registro inserido
-        return result.insertId;
+        // Retorna o objeto inserido (com id)
+        return { id: result.insertId, ...data };
     } finally {
-        // Libera a conexão com o banco de dados
         connection.release();
     }
 }
+
 
 // Função para atualizar um registro
 async function update(table, data, where) {
