@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from '@/components/Header/header';
 import { SidebarProvider } from '@/components/Header/sidebarContext';
-import "/page.module.css";
+import "./notificacoes.css";
 
+<<<<<<< HEAD
 // Componente de Avaliação
 function Avaliacao({ chamadoId, onAvaliacaoEnviada }) {
   const [pontuacao, setPontuacao] = useState(0);
@@ -77,6 +78,8 @@ function Avaliacao({ chamadoId, onAvaliacaoEnviada }) {
   );
 }
 
+=======
+>>>>>>> 31873eecdfb4bc96612d315f435f8f0a52fe9c34
 export default function Notificacoes() {
   const [selected, setSelected] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -86,6 +89,10 @@ export default function Notificacoes() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
   useEffect(() => {
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 31873eecdfb4bc96612d315f435f8f0a52fe9c34
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -118,11 +125,19 @@ export default function Notificacoes() {
   }, [router]);
 
   const handleNotificationClick = async (notification) => {
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 31873eecdfb4bc96612d315f435f8f0a52fe9c34
     setSelected({ ...notification, visualizado: 1 });
     setNotifications(prev =>
       prev.map(n => n.id === notification.id ? { ...n, visualizado: 1 } : n)
     );
 
+<<<<<<< HEAD
+=======
+   
+>>>>>>> 31873eecdfb4bc96612d315f435f8f0a52fe9c34
     if (notification.visualizado === 1) return;
 
     try {
@@ -138,6 +153,10 @@ export default function Notificacoes() {
       if (!response.ok) throw new Error('Erro ao marcar notificação como vista');
     } catch (error) {
       console.error("Erro ao marcar notificação como vista:", error);
+<<<<<<< HEAD
+=======
+      
+>>>>>>> 31873eecdfb4bc96612d315f435f8f0a52fe9c34
       setNotifications(prev =>
         prev.map(n => n.id === notification.id ? { ...n, visualizado: 0 } : n)
       );
@@ -145,6 +164,7 @@ export default function Notificacoes() {
     }
   };
 
+<<<<<<< HEAD
   return (
     <SidebarProvider>
       <div className="container-fluid vh-100">
@@ -207,4 +227,60 @@ export default function Notificacoes() {
       </div >
     </SidebarProvider>
   );
+=======
+
+    return (
+        <SidebarProvider>
+            <div className="container-fluid vh-100">
+                <div className="row h-100">
+                    <Header />
+                    <main className="col p-4 d-flex flex-column flex-md-row gap-4" >
+                        <div className="card" >
+                            <div className="card-body" >
+                                <h1 className="card-title mb-3">Notificações</h1>
+                                <ul className="list-group list-group-flush">
+                                    {isLoading ? (
+                                        <p className="text-muted text-center mt-3">Carregando notificações...</p>
+                                    ) : notifications.length === 0 ? (
+                                        <p className="text-muted text-center mt-3">Nenhuma notificação por enquanto.</p>
+                                    ) : (
+                                        notifications.map((n) => (
+                                            <li
+                                                key={n.id}
+                                                className="list-group-item d-flex align-items-center justify-content-between notification-item" style={{ marginTop: '10px' }}
+                                                onClick={() => handleNotificationClick(n)}
+                                            >
+                                                <div>
+                                                    <p className="mb-1 fw-semibold">{n.mensagem}</p>
+                                                </div>
+                                                {n.visualizado === 'nao_vista' && <span className="badge bg-danger rounded-circle p-2"></span>}
+                                            </li>
+                                        ))
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {selected && (
+                            <div className="card shadow-sm flex-grow-1 rounded-4 animate__animated animate__fadeInRight drawer-card" >
+                                <div
+                                    className="card-header d-flex justify-content-between align-items-center text-white rounded-top-4"
+                                    style={{ backgroundColor: '#b10000', height: '60px' }}>
+                                    <h6 className="mb-0">Detalhes da Notificação</h6>
+                                    <button
+                                        className="btn-close btn-close-white"
+                                        onClick={() => setSelected(null)}>
+                                    </button>
+                                </div>
+                                <div className="card-body">
+                                    <p><b>Mensagem:</b> {selected.mensagem}</p>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            </div >
+        </SidebarProvider>
+    );
+>>>>>>> 31873eecdfb4bc96612d315f435f8f0a52fe9c34
 }

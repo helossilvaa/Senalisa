@@ -92,6 +92,20 @@ const assumirChamado = async (id, tecnicoId) => {
     }
 };
 
+const atribuirChamado = async (chamadoId, tecnico_id) => {
+    try {
+      const dadosParaAtualizar = {
+        tecnico_id: tecnico_id,
+        status: 'em andamento'
+      };
+      const condicao = `id = ${chamadoId}`;
+      return await update('chamados', dadosParaAtualizar, condicao);
+    } catch (error) {
+      console.error('Erro ao atribuir chamado:', error);
+      throw error;
+    }
+  };
+
 const atualizarPrazoChamado = async (id, prazo) => {
     try {
         const dadosParaAtualizar = { prazo: prazo };
@@ -104,16 +118,16 @@ const atualizarPrazoChamado = async (id, prazo) => {
 
 const listarChamadosPorCategoria = async () => {
   try {
-    const chamados = await readAll('chamados'); // pega todos os chamados
+    const chamados = await readAll('chamados'); 
 
-    // agrupar por tipo_id
+ 
     const agrupados = chamados.reduce((acc, chamado) => {
       const key = chamado.tipo_id; 
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
 
-    // transformar em array [{ name: "tipo_id X", value: count }]
+
     return Object.entries(agrupados).map(([tipo, count]) => ({
       name: `Categoria ${tipo}`,
       value: count
@@ -127,25 +141,24 @@ const listarChamadosPorCategoria = async () => {
 
 const listarRankingTecnicos = async () => {
   try {
-    const chamados = await readAll('chamados'); // pega todos os chamados
+    const chamados = await readAll('chamados');
 
-    // filtra só concluídos
+  
     const concluidos = chamados.filter(c => c.status === 'concluído');
 
-    // agrupar por tecnico_id
+   
     const ranking = concluidos.reduce((acc, chamado) => {
       const tecnico = chamado.tecnico_id || 'Sem técnico';
       acc[tecnico] = (acc[tecnico] || 0) + 1;
       return acc;
     }, {});
 
-    // transformar em array [{ nomeTecnico: tecnico_id, chamadosConcluidos: count }]
     const resultado = Object.entries(ranking).map(([tecnico, count]) => ({
       nomeTecnico: `Técnico ${tecnico}`,
       chamadosConcluidos: count
     }));
 
-    // ordenar e pegar só os 3 primeiros
+    
     return resultado.sort((a, b) => b.chamadosConcluidos - a.chamadosConcluidos).slice(0, 3);
   } catch (error) {
     console.error('Erro ao listar ranking de técnicos:', error);
@@ -156,4 +169,4 @@ const listarRankingTecnicos = async () => {
 
 
 
-export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, listarChamadosPendentes, atualizarStatusChamado, atualizarPrazoChamado, listarChamadosPorCategoria, listarRankingTecnicos };
+export {criarChamado, listarChamado, obterChamadoPorId, atualizarChamado, criarApontamentos, assumirChamado, listarChamadosPendentes, atualizarStatusChamado, atualizarPrazoChamado, listarChamadosPorCategoria, listarRankingTecnicos, atribuirChamado};

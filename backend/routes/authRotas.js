@@ -13,6 +13,13 @@ const fakeUsers = [
     funcao: 'usuario',
   },
   {
+    registro: '111111111',
+    nome: 'Mariana',
+    senha: '12345',
+    email: '111111111@educ123.sp.senai.br',
+    funcao: 'usuario',
+  },
+  {
     registro: '11122233',
     nome: 'Teste',
     senha: '12345',
